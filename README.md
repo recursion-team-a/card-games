@@ -37,6 +37,7 @@ flowchart TB
 ### 検討事項
 - チップを賭ける機能の実装をどうするか
 - 複数人での対戦機能
+- チュートリアルページ
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -71,7 +72,19 @@ flowchart TB
     K --> R
     R --Yes--> D
     R --No--> S((End))
+```
 
+## War
+### 検討事項
+- 
 
-
+```mermaid
+%%{init:{'theme':'base'}}%%
+flowchart TB
+    A((Start)) --> B{Play Tutorial?}
+    B --yes--> C(TutorialPage)
+    style C fill:#dfc,stroke:#333,stroke-width:4px
+    C --> D
+    B --No--> D[Select CPU level]
+    D --> E[Select number of people]
 ```
