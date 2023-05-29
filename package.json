@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"format": "prettier --write ./srcs/*.ts",
+    "format": "prettier --write ./srcs/*.ts",
     "lint": "eslint --fix ./srcs/*ts",
-    "fix": "npm run format && npm run lint"
+    "fix": "npm run format && npm run lint",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "husky": "^8.0.3",
     "phaser": "^3.60.0",
     "typescript": "^5.0.4"
   },
@@ -21,6 +23,7 @@
     "@typescript-eslint/parser": "^5.59.7",
     "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "husky": "^8.0.0"
   }
 }
