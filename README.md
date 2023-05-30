@@ -1,1 +1,4 @@
 # card-games
+
+## 技術スタックの構成図
+![sample](https://github.com/recursion-team-a/card-games/assets/99064128/d4a30c91-cbe6-4a9f-b46b-abfa76193cb2)
