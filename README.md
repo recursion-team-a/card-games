@@ -226,3 +226,189 @@ flowchart TB
     Z --No--> a
     Z --Yes--> G
 ```
+
+## クラス図
+
+```mermaid
+---
+title: Card Game 
+---
+classDiagram
+Table <|-- BlackjackTable
+Table <|-- PorkerTable
+Table <|-- SpeedTable
+Table <|-- WarTable
+
+Player <|-- BlackjackPlayer
+Player <|-- PorkerPlayer
+Player <|-- SpeedPlayer
+Player <|-- WarPlayer
+
+Table *-- "1.." Player: players
+BlackjackTable *-- "2-7" Player: players
+BlackjackTable *-- "1" Player: house
+PorkerTable *-- "2-10" Player: players
+SpeedTable *-- "1" Player: player
+WarTable *-- "1" Player: player
+WarTable *-- "1" Player: house
+
+Table *-- "1" Deck: #deck
+
+Deck *-- "0..53" Card: cards
+
+Player *-- "0..*" Card: -hand
+BlackjackPlayer *-- "2.." Card: -hand
+PorkerPlayer *-- "5" Card: -hand
+SpeedPlayer *-- "0..25" Card: -hand
+WarPlayer *-- "1" Card: -hand
+Player ..> GameDecision
+BlackjackPlayer ..> GameDecision
+PorkerPlayer ..> GameDecision
+SpeedPlayer ..> GameDecision
+WarPlayer ..> GameDecision
+
+
+    class Table {
+        <<Abstract>>
+        -List~int~ betDenominations
+        #int turnCounter
+        -string gamePhase
+        -List~string~ resultsLog
+
+        +assignPlayerHands() void
+        +clearPlayerHandsAndBets() void
+        +Abstract evaluateAndGetRoundResults() string
+        +Abstract evaluateMove(Player player) void
+        +Abstract getTurnPlayer() Player
+        +Abstract haveTurn() void
+        +isFirstPlayer() bool
+        +isLastPlayer() bool
+    }
+
+    class BlackjackTable {
+        -isBlackjack(Player) bool
+        -isAllPlayerActionsResolved() bool
+        -getHandScore(Player) int
+    }
+
+    class PorkerTable {
+        -getHandScore(Player) int
+    }
+
+    class SpeedTable {
+
+    }
+
+    class WarTable {
+
+    }
+
+    class Player {
+        <<Abstract>>
+        -string name
+        -string playerType
+        -int chips
+        -int bet
+        -int winAmount
+        -string gameStatus
+
+        + Abstract promptPlayer(int nullable userData) GameDecision
+        + Abstract getHandScore() int
+    }
+
+    class BlackjackPlayer{
+        -getAIBetGameDecision() GameDecision
+        -getAIActionGameDecision() GameDecision
+        -getUserActionGameDecision() GameDecision
+        -getHouseActionGameDecision() GameDecision
+    }
+
+    class PorkerPlayer{
+        -getAIBetGameDecision() GameDecision
+        -getAIActionGameDecision() GameDecision
+        -getUserActionGameDecision() GameDecision
+    }
+
+    
+    class SpeedPlayer {
+        -getUserActionGameDecision() GameDecision
+        -getHouseActionGameDecision() GameDecision
+    }
+
+    class WarPlayer {
+        -getUserActionGameDecision() GameDecision
+        -getHouseActionGameDecision() GameDecision
+    }
+
+    class Card {
+        -string suit
+        -string rank
+
+        +getRankNumber(string gameType) int
+    }
+
+    class Deck {
+        -string gameType
+
+        +shuffle() void
+        +drawOne() Card
+        +resetDeck() void
+    }
+
+    %% どのようなベットやアクションを取るべきかというプレイヤーの決定を表すクラス
+    class GameDecision {
+        - string action
+        - int amount
+    }
+```
+
+## クラスの説明
+
+### Table
+
+|  関数名・変数名  |  説明  |
+| :--: | :--: |
+|  betDenominations	|  テーブルで可能なベット金額の単位を表す整数の配列. <br>例えば、[5, 20, 50, 100]など. |
+|  resultLog  |  	各ラウンド終了時のハウス以外の全プレイヤーの状態を、文字列の配列の形で記録する.  |
+| turnConter | ラウンドロビン形式のゲームで現在ターンのプレイヤーを識別するためのカウンター |
+| evaluateMove() |Table.haveTurn()内で呼ぶ関数. <br>Player.promptPlayer()から現在のプレーヤーのgameDecision(ベット方法やアクションなど)を受け取り,<br>それにしたがって、そのプレイヤーのベット、ハンド、GameStatus、チップの状態などを更新する |
+| haveTurn() | ラウンドロビン形式のゲームで、ゲームフローの制御とテーブルの状態を更新する |
+
+
+### BlackJackTable
+
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| gamePhase | ゲームの段階を表す. {'betting', 'acting', 'roundOver', 'endOfGame'}のどれか. |
+| assignPlayerHands() | 各プレイヤーにカードを2枚ずつ配布する. |
+| evaluateAndGetRoundResults() | すべてのプレイヤーのアクションが終わり, <br>現在のプレイヤーがプレイヤーの配列の最後のプレイヤーである場合に呼び出される.<br>このメソッドは、ブラックジャックの勝敗判定ルールに従ってプレイヤーを更新し, <br>ラウンドが終了してテーブルがクリアされる前の各プレイヤーの状態を表す文字列を返す. <br>この返された文字列は、Table.resultsLogに追加される. <br> gameStatusが'bust'となっているプレイヤーなど, <br>既にラウンドが決定しているプレイヤーは一切更新されない。 |
+| isAllPlayerActionsResolved() | 全てのプレイヤーがセット{'broken', 'bust', 'stand'}の<br>Player.gameStatusを持っていればtrueを返し,持っていなければfalseを返す. <br>ハウスを含むプレイヤーは何度も'hit'し続ける可能性があるので, <br>'acting'フェーズがいつ終わるか把握する必要がある。 |
+
+
+### Player
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| promtPlayer() | TableのgamePhaseとPlayerのplayerTypeに応じて, <br>各Playerが取る行動をGameDecisionクラスのオブジェクトとして返す. |
+
+
+### BlackjackPlayer
+
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| gameStatus | プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。 |
+| getAIBetGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>AIのベット金額を決める. <br>所持金からベット可能な金額をランダムに決定する. |
+| getAIActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. AIのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションをランダムに決定する. |
+| getUserActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Userのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションを決定する. <br>bustしない限り、hitは何度でもできる. |
+| getHouseActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Houseのアクションを決める.<br>持ち札のスコアが17未満であれば、17以上になるまで、Hitを続ける |
+
+
+### GameDecision
+
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| action | 各ゲームで取りうるアクション.<br> -Blackjack: {'bust', 'bet', 'stand', 'hit', 'blackjack'} <br> -Porker: {'bet', 'check', 'call', 'raise', 'drop', 'draw'}<br>-Speed: {}<br>-War: {}|
+| userData | betのアクションがあるゲームでは、bet金額. |
+
+
+
+
