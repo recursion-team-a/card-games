@@ -374,7 +374,7 @@ WarPlayer ..> GameDecision
     class Deck {
         -string gameType
         -List~Card~ Cards
-        
+
         +generateDeck() void
         +shuffle() void
         +drawOne() Card
