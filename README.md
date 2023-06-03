@@ -3,6 +3,8 @@
 ## 技術スタックの構成図
 ![sample](https://github.com/recursion-team-a/card-games/assets/99064128/d4a30c91-cbe6-4a9f-b46b-abfa76193cb2)
 
+
+## ワイヤーフレーム
 ![Slice 1 (1)](https://github.com/recursion-team-a/card-games/assets/127278864/09112875-217e-482f-83e2-c5b90b5d1adb)
 
 ## アクティビティ図
@@ -38,8 +40,8 @@ flowchart TB
 ### 検討事項
 - 複数人での対戦機能
 - チュートリアルページ
-- CPUレベルに応じた処理
-- SurrenderやDoubleの追加ルールの実装
+- CPUレベルに応じた処理(ベーシックストラテジー)
+- Surrenderのとき, 掛け金の半額
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -55,8 +57,13 @@ flowchart TB
     F --> G{Player's turn}
     G --Stand--> H{Dealer's turn}
     G --Hit--> I[deal one more card]
+    G --Surrender--> R
+    G --Double--> b[double down]
+    b --> H
     I --> J{Total exceeds 21?}
-    J --No--> G
+    J --No--> c{Player's turn <br> from the second time}
+    c --Hit--> J
+    c --Stand--> H
     J --Yes--> K[Player Loses]
     style K fill:#fcc,stroke:#333,stroke-width:4px
     H --> L{Total exceeds 17?}
@@ -230,6 +237,11 @@ flowchart TB
 ```
 
 ## クラス図
+### 検討事項
+- CardクラスはPhaserではアニメーション, 座標等が必要になる可能性あり
+- 各ゲームのTableクラスでは, create(), update()で処理を行う必要がある. また, ボタン等の作成が必要.
+- 各クラスの変数はゲッター・セッターを使って, 必要に応じてバリデーションをつける方が良いか
+- DeckクラスにisEmpty()を追加（Speedで使う？）
 
 ```mermaid
 ---
@@ -276,29 +288,31 @@ WarPlayer ..> GameDecision
         #int turnCounter
         -string gamePhase
         -List~string~ resultsLog
+        #Deck deck
+        -Abstract List~Player~ players
 
-        +assignPlayerHands() void
-        +clearPlayerHandsAndBets() void
-        +Abstract evaluateAndGetRoundResults() string
+        +Abstract assignPlayerHands() void
+        +Abstract clearPlayerHandsAndBets() void
         +Abstract evaluateMove(Player player) void
         +Abstract getTurnPlayer() Player
         +Abstract haveTurn() void
-        +isFirstPlayer() bool
+        +Abstract evaluateAndGetRoundResults() string
         +isLastPlayer() bool
     }
 
     class BlackjackTable {
         -isBlackjack(Player) bool
         -isAllPlayerActionsResolved() bool
-        -getHandScore(Player) int
     }
 
     class PorkerTable {
-        -getHandScore(Player) int
     }
 
     class SpeedTable {
+        - List~Card~ LeadCards
+        - List~Deck~ PlayerDeck
 
+        -DealLeadCards() void
     }
 
     class WarTable {
@@ -313,33 +327,25 @@ WarPlayer ..> GameDecision
         -int bet
         -int winAmount
         -string gameStatus
+        -List~Card~ hand
 
         + Abstract promptPlayer(int nullable userData) GameDecision
         + Abstract getHandScore() int
     }
 
     class BlackjackPlayer{
-        -getAIBetGameDecision() GameDecision
-        -getAIActionGameDecision() GameDecision
-        -getUserActionGameDecision() GameDecision
-        -getHouseActionGameDecision() GameDecision
+
     }
 
     class PorkerPlayer{
-        -getAIBetGameDecision() GameDecision
-        -getAIActionGameDecision() GameDecision
-        -getUserActionGameDecision() GameDecision
+        + getHandRank() number
     }
 
     
     class SpeedPlayer {
-        -getUserActionGameDecision() GameDecision
-        -getHouseActionGameDecision() GameDecision
     }
 
     class WarPlayer {
-        -getUserActionGameDecision() GameDecision
-        -getHouseActionGameDecision() GameDecision
     }
 
     class Card {
@@ -351,6 +357,7 @@ WarPlayer ..> GameDecision
 
     class Deck {
         -string gameType
+        -List~Card~ Cards
 
         +shuffle() void
         +drawOne() Card
@@ -370,38 +377,59 @@ WarPlayer ..> GameDecision
 
 |  関数名・変数名  |  説明  |
 | :--: | :--: |
-|  betDenominations	|  テーブルで可能なベット金額の単位を表す整数の配列. <br>例えば、[5, 20, 50, 100]など. |
-|  resultLog  |  	各ラウンド終了時のハウス以外の全プレイヤーの状態を、文字列の配列の形で記録する.  |
-| turnConter | ラウンドロビン形式のゲームで現在ターンのプレイヤーを識別するためのカウンター |
-| evaluateMove() |Table.haveTurn()内で呼ぶ関数. <br>Player.promptPlayer()から現在のプレーヤーのgameDecision(ベット方法やアクションなど)を受け取り,<br>それにしたがって、そのプレイヤーのベット、ハンド、GameStatus、チップの状態などを更新する |
-| haveTurn() | ラウンドロビン形式のゲームで、ゲームフローの制御とテーブルの状態を更新する |
+|  betDenominations	|  テーブルで可能なベット金額の単位を表す整数の配列. <br>例えば、[5, 20, 50, 100]など. プレイヤーはこれらの値を組み合わせて任意のベット額を作成することが可能.|
+| turnConter | 現在のターン数を表す数値. 0から始まり各ターンが終了するたびにインクリメントされる.<br> 複数人対戦の場合, 現在のプレイヤーを判断するために使用される. |
+| gamePhase | ゲームの段階を表す. <br>ゲームごとに設定するが, Blackjackの場合, {'betting', 'acting', 'evaluatingWinner','roundOver', 'endOfGame'}のどれか. |
+|  resultsLog  |  各ラウンド終了時のハウス以外の全プレイヤーの状態を、文字列の配列の形で記録する.  |
+| assignPlayerHands() | 各プレイヤーに手札を配る. |
+| clearPlayerHandsAndBets() | 各ラウンド開始時に実行され, 各プレイヤーの手札とベットを初期化する. |
+| evaluateMove(Player player) |Table.haveTurn()内で呼ぶ関数. <br>引数のPlayer.promptPlayer()から現在のプレーヤーのgameDecision(ベット方法やアクションなど)を受け取り,<br>それにしたがって、そのプレイヤーのベット、ハンド、GameStatus、チップの状態などを更新する. <br>例：blackjackでplayerが"hit"し, 手札が21以上のとき, player.gameStatusを'bust'にし,チップからベットを引く. |
+| getTurnPlayer() | 現在のターンが誰のものかを返す. evaluateMove()とともに使用する. |
+| haveTurn() | ラウンドロビン形式のゲームで、各ターンを管理する役割. <br> 最初に現在のゲームの段階(gamePhase)を確認する. <br> その後, getTurnPlayer()を用いて現在のプレイヤーを特定し, Player.promptPlayer()を使って, そのプレイヤーに行動を促す. <br> プレイヤーの行動(gameDecisionオブジェクト)はevaluateMove()によって評価され, プレイヤー・ゲーム状態が更新される. <br> 最後にターン数(turnCounter)を一つ増やす. |
+| evaluateAndGetRoundResults() | ラウンド終了時にresultLsLogを更新する関数. 詳細は各ゲームに記載. |
+| isLastPlayer() | プレイヤー配列の最後のプレイヤーかチェックする関数. <br> haveTurnで使用されゲームの段階を切り替える(gamePhase='betting'→'acting'). |
 
 
 ### BlackJackTable
 
 | 関数名・変数名 | 説明 |
 | :--: | :--: |
-| gamePhase | ゲームの段階を表す. {'betting', 'acting', 'roundOver', 'endOfGame'}のどれか. |
-| assignPlayerHands() | 各プレイヤーにカードを2枚ずつ配布する. |
 | evaluateAndGetRoundResults() | すべてのプレイヤーのアクションが終わり, <br>現在のプレイヤーがプレイヤーの配列の最後のプレイヤーである場合に呼び出される.<br>このメソッドは、ブラックジャックの勝敗判定ルールに従ってプレイヤーを更新し, <br>ラウンドが終了してテーブルがクリアされる前の各プレイヤーの状態を表す文字列を返す. <br>この返された文字列は、Table.resultsLogに追加される. <br> gameStatusが'bust'となっているプレイヤーなど, <br>既にラウンドが決定しているプレイヤーは一切更新されない。 |
+| isBlackjack(Player) | プレイヤーの手札がブラックジャック(21ちょうど)かどうかを判定する. |
 | isAllPlayerActionsResolved() | 全てのプレイヤーがセット{'broken', 'bust', 'stand'}の<br>Player.gameStatusを持っていればtrueを返し,持っていなければfalseを返す. <br>ハウスを含むプレイヤーは何度も'hit'し続ける可能性があるので, <br>'acting'フェーズがいつ終わるか把握する必要がある。 |
+
+### Speedtable
+
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| LeadCards | 台札2枚 |
+| PlayerDeck | プレイヤーとhouseの山札を管理するリスト. |
+| DealLeadCards() | ゲームの初めや一定時間経過後に, 台札にカードを置く.<br> 山札がない場合は手札からだす.|
 
 
 ### Player
 | 関数名・変数名 | 説明 |
 | :--: | :--: |
+| playerType | プレイヤーの種類を表す. 例：AI, house, user|
+| chips | 所持しているチップの数 |
+| bet | 現在のゲームに賭けたチップの数 |
+| winAmount | 各ラウンド終了時の勝ち負け金額を表す. <br> chipsと同様に処理を行うが各ラウンドの結果表示の際に用いられる. |
+| gameStatus | プレイヤーの状態を表す. 詳細は各ゲームを参照. |
+| hand | playerの手札 |
 | promtPlayer() | TableのgamePhaseとPlayerのplayerTypeに応じて, <br>各Playerが取る行動をGameDecisionクラスのオブジェクトとして返す. |
-
+| getHandScore() | 手札の合計値をゲームの種類に合わせて計算. CardクラスのgetRankNumberメソッドを用いる. | 
 
 ### BlackjackPlayer
 
 | 関数名・変数名 | 説明 |
 | :--: | :--: |
 | gameStatus | プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。 |
-| getAIBetGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>AIのベット金額を決める. <br>所持金からベット可能な金額をランダムに決定する. |
-| getAIActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. AIのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションをランダムに決定する. |
-| getUserActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Userのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションを決定する. <br>bustしない限り、hitは何度でもできる. |
-| getHouseActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Houseのアクションを決める.<br>持ち札のスコアが17未満であれば、17以上になるまで、Hitを続ける |
+
+### PokerPlayer
+
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| getHandRank() | 手札の役の強さを判定する. |
 
 
 ### GameDecision
@@ -409,7 +437,21 @@ WarPlayer ..> GameDecision
 | 関数名・変数名 | 説明 |
 | :--: | :--: |
 | action | 各ゲームで取りうるアクション.<br> -Blackjack: {'bust', 'bet', 'stand', 'hit', 'blackjack'} <br> -Porker: {'bet', 'check', 'call', 'raise', 'drop', 'draw'}<br>-Speed: {}<br>-War: {}|
-| userData | betのアクションがあるゲームでは、bet金額. |
+| amount | betのアクションがあるゲームでは、bet金額. |
+
+### Deck
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| shuffle() | gameTypeごとに必要になるCardを格納した, 配列をランダムにシャッフルする関数. |
+| drawOne() | Cardの配列からpopして先頭1枚のCardを取り出す関数. |
+| resetDeck() | gameTypeごとに適したCardを格納した配列を初期化する関数. |
+
+### Card
+| 関数名・変数名 | 説明 |
+| :--: | :--: |
+| suit | カードの種類(ダイヤ・スペード・クローバー・ハート) |
+| rank | カードの数字(A,2,3,...Q,K) |
+| getRankNumber(string gameType) | gemeType(ゲームの種類)を受け取り, カードのrankを数字にして返す関数. <br> 例えば, Blackjackの場合, rankがJ,Q,Kのとき, 整数10を返す. |
 
 
 
