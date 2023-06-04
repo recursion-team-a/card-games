@@ -1,4 +1,3 @@
-import { time } from 'console'
 import GameDecision from '../common/gameDesicion'
 import Player from '../common/player'
 
