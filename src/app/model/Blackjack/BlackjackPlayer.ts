@@ -9,7 +9,7 @@ export default class BlackjackPlayer extends Player {
 
         このメソッドは、どのようなベットやアクションを取るべきかというプレイヤーの決定を取得する. プレイヤーのタイプ、ハンド、チップの状態を読み取り、GameDecisionを返す.
  */
-  promptPlayer(userData: number | null): GameDecision {
+  promptPlayer(): GameDecision {
     let action = ''
     const hand = this.getHandScore()
 

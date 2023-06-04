@@ -26,7 +26,7 @@ export default abstract class Player {
     this.gameStatus = 'bet'
   }
 
-  abstract promptPlayer(userData: number | null): GameDecision
+  abstract promptPlayer(): GameDecision
 
   abstract getHandScore(): number
 }
