@@ -439,7 +439,7 @@ WarPlayer ..> GameDecision
 
 | 関数名・変数名 |                                    説明                                    |
 | :------------: | :------------------------------------------------------------------------: |
-|   gameStatus   | プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。 |
+|   gameStatus   | プレイヤーの状態を表す. {'betting', 'acting', 'hit', 'bust'}のどれか。 |
 
 ### PokerPlayer
 
