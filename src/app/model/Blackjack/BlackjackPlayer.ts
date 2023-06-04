@@ -8,9 +8,8 @@ export default class BlackjackPlayer extends Player {
       検討：Number houseCard : ハウスの表向きのカードのランク。
       return GameDecision : 状態を考慮した上で、プレイヤーが行った決定。
 
-        このメソッドは、どのようなベットやアクションを取るべきかというプレイヤーの決定を取得する. プレイヤーのタイプ、ハンド、チップの状態を読み取り、GameDecisionを返します.
-        パラメータにuserData使うことによって、プレイヤーが「user」の場合、このメソッドにユーザーの情報を渡すことができますし、プレイヤーが 「ai」の場合、 userDataがデフォルトとしてnullを使います.
-    */
+        このメソッドは、どのようなベットやアクションを取るべきかというプレイヤーの決定を取得する. プレイヤーのタイプ、ハンド、チップの状態を読み取り、GameDecisionを返す.
+ */
   promptPlayer(userData: number | null): GameDecision {
     let action = ''
     const hand = this.getHandScore()
@@ -32,12 +31,16 @@ export default class BlackjackPlayer extends Player {
     }
     // houseは17以上のときstand, それ以外はhit
     if (this.playerType == 'house') {
-      if (hand >= 17) {
-        action = 'stand'
-        this.gameStatus = 'stand'
-      } else {
-        action = 'hit'
-        this.gameStatus = 'hit'
+      if (this.gameStatus == 'betting') {
+        this.gameStatus = 'acting'
+      } else if (this.gameStatus == 'acting' || this.gameStatus == 'hit') {
+        if (hand >= 17) {
+          action = 'stand'
+          this.gameStatus = 'stand'
+        } else {
+          action = 'hit'
+          this.gameStatus = 'hit'
+        }
       }
     }
 
