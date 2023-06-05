@@ -9,7 +9,7 @@
     "lint": "next lint",
     "lint:fix": "yarn lint --fix",
     "format": "prettier --write .",
-	"fix": "npm run lint && npm run lint:fix && npm run format",
+    "fix": "npm run lint && npm run lint:fix && npm run format",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -35,7 +35,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "npm run fix"
+      "npm run format"
     ]
   }
 }
