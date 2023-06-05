@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "yarn lint --fix",
-    "format": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
-	"prepare": "husky install"
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@types/node": "20.2.5",
@@ -33,10 +33,10 @@
     "prettier": "^2.8.8"
   },
   "lint-staged": {
-	"*.{ts,tsx,}": [
-		"npm run lint",
-		"npm run lint:fix",
-		"npm run format"
-	]
+    "*.{ts,tsx}": [
+      "yarn lint",
+      "yarn lint:fix",
+      "yarn format"
+    ]
   }
 }
