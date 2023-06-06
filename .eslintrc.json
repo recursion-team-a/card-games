@@ -1,24 +1,18 @@
 {
-    "env": {
-        "es2021": true,
-        "browser": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "prettier"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "sourceType": "module",
-        "project": "./tsconfig.json"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "@typescript-eslint/no-explicit-any": 1,
-        "@typescript-eslint/no-non-null-assertion": 1
-    },
-    "root": true
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:import/recommended",
+    "plugin:import/warnings",
+    "prettier"
+  ],
+  "rules": {
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc"
+        }
+      }
+    ]
+  }
 }

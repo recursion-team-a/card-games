@@ -1,6 +1,7 @@
 # card-games
 
 ## 技術スタックの構成図
+
 ![sample](https://github.com/recursion-team-a/card-games/assets/99064128/d4a30c91-cbe6-4a9f-b46b-abfa76193cb2)
 
 
@@ -8,7 +9,9 @@
 ![Slice 1 (1)](https://github.com/recursion-team-a/card-games/assets/127278864/09112875-217e-482f-83e2-c5b90b5d1adb)
 
 ## アクティビティ図
-Subがついているのはサブアクティビティ
+
+Sub がついているのはサブアクティビティ
+
 ```mermaid
 %%{init:{'theme':'base'}}%%
 flowchart TB
@@ -37,7 +40,9 @@ flowchart TB
 ```
 
 ## Black Jack
+
 ### 検討事項
+
 - 複数人での対戦機能
 - チュートリアルページ
 - CPUレベルに応じた処理(ベーシックストラテジー)
@@ -88,10 +93,12 @@ flowchart TB
 ```
 
 ## War
+
 ### 検討事項
+
 - ルールはディーラーとプレイヤーに一枚ずつ配りカードの強さを比較
-- カードの強さはAが最も強く, その他は数字が大きい方が強い
-- CPUレベルに応じた処理
+- カードの強さは A が最も強く, その他は数字が大きい方が強い
+- CPU レベルに応じた処理
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -106,7 +113,7 @@ flowchart TB
     E --> F{Compare cards}
     F --player's card > Dealer's card--> G[Player win]
     F -- player's card < Dealer's card--> H[Player loses]
-    F --player's card = Dealer's card--> I[Draw] 
+    F --player's card = Dealer's card--> I[Draw]
     style G fill:#fcc,stroke:#333,stroke-width:4px
     style H fill:#fcc,stroke:#333,stroke-width:4px
     style I fill:#fcc,stroke:#333,stroke-width:4px
@@ -121,8 +128,10 @@ flowchart TB
 ```
 
 ## Speed
+
 ### 検討事項
-- 
+
+-
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -150,14 +159,16 @@ flowchart TB
     O --No--> M
     N --No--> M((End))
 ```
+
 ゲーム進行は下記のシーケンス図で示す.
+
 ```mermaid
 sequenceDiagram
     participant pl as Player
     participant dl as Dealer
     participant te as 手札
     participant da as 台札
-    
+
     loop どちらかの山札がなくなるまで
         opt 場札がなくなる
             pl ->> te: カードを引く
@@ -184,9 +195,12 @@ sequenceDiagram
         end
     end
 ```
+
 ## Poker
+
 ### 検討事項
-- 
+
+-
 
 ルールは[任天堂](https://www.nintendo.co.jp/others/playing_cards/howtoplay/poker/index.html)を参照
 
@@ -214,7 +228,7 @@ flowchart TB
     K --Call--> M{誰もRaiseしないまま<br>一巡した}
     M --No--> K
     M --Yes--> N[1回目のBit終了]
-    N --> O{残りのPlayerが2人以上いるか} 
+    N --> O{残りのPlayerが2人以上いるか}
     O --Yes--> P[カード交換]
     O --No--> b
     P --> Q[二回目のBitを順番に開始]
@@ -245,7 +259,7 @@ flowchart TB
 
 ```mermaid
 ---
-title: Card Game 
+title: Card Game
 ---
 classDiagram
 Table <|-- BlackjackTable
@@ -341,7 +355,7 @@ WarPlayer ..> GameDecision
         + getHandRank() number
     }
 
-    
+
     class SpeedPlayer {
     }
 
@@ -452,7 +466,3 @@ WarPlayer ..> GameDecision
 | suit | カードの種類(ダイヤ・スペード・クローバー・ハート) |
 | rank | カードの数字(A,2,3,...Q,K) |
 | getRankNumber(string gameType) | gemeType(ゲームの種類)を受け取り, カードのrankを数字にして返す関数. <br> 例えば, Blackjackの場合, rankがJ,Q,Kのとき, 整数10を返す. |
-
-
-
-
