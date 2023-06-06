@@ -1,12 +1,15 @@
 # card-games
 
 ## 技術スタックの構成図
+
 ![sample](https://github.com/recursion-team-a/card-games/assets/99064128/d4a30c91-cbe6-4a9f-b46b-abfa76193cb2)
 
 ![Slice 1 (1)](https://github.com/recursion-team-a/card-games/assets/127278864/09112875-217e-482f-83e2-c5b90b5d1adb)
 
 ## アクティビティ図
-Subがついているのはサブアクティビティ
+
+Sub がついているのはサブアクティビティ
+
 ```mermaid
 %%{init:{'theme':'base'}}%%
 flowchart TB
@@ -35,11 +38,13 @@ flowchart TB
 ```
 
 ## Black Jack
+
 ### 検討事項
+
 - 複数人での対戦機能
 - チュートリアルページ
-- CPUレベルに応じた処理
-- SurrenderやDoubleの追加ルールの実装
+- CPU レベルに応じた処理
+- Surrender や Double の追加ルールの実装
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -81,10 +86,12 @@ flowchart TB
 ```
 
 ## War
+
 ### 検討事項
+
 - ルールはディーラーとプレイヤーに一枚ずつ配りカードの強さを比較
-- カードの強さはAが最も強く, その他は数字が大きい方が強い
-- CPUレベルに応じた処理
+- カードの強さは A が最も強く, その他は数字が大きい方が強い
+- CPU レベルに応じた処理
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -99,7 +106,7 @@ flowchart TB
     E --> F{Compare cards}
     F --player's card > Dealer's card--> G[Player win]
     F -- player's card < Dealer's card--> H[Player loses]
-    F --player's card = Dealer's card--> I[Draw] 
+    F --player's card = Dealer's card--> I[Draw]
     style G fill:#fcc,stroke:#333,stroke-width:4px
     style H fill:#fcc,stroke:#333,stroke-width:4px
     style I fill:#fcc,stroke:#333,stroke-width:4px
@@ -114,8 +121,10 @@ flowchart TB
 ```
 
 ## Speed
+
 ### 検討事項
-- 
+
+-
 
 ```mermaid
 %%{init:{'theme':'base'}}%%
@@ -143,14 +152,16 @@ flowchart TB
     O --No--> M
     N --No--> M((End))
 ```
+
 ゲーム進行は下記のシーケンス図で示す.
+
 ```mermaid
 sequenceDiagram
     participant pl as Player
     participant dl as Dealer
     participant te as 手札
     participant da as 台札
-    
+
     loop どちらかの山札がなくなるまで
         opt 場札がなくなる
             pl ->> te: カードを引く
@@ -177,9 +188,12 @@ sequenceDiagram
         end
     end
 ```
+
 ## Poker
+
 ### 検討事項
-- 
+
+-
 
 ルールは[任天堂](https://www.nintendo.co.jp/others/playing_cards/howtoplay/poker/index.html)を参照
 
@@ -207,7 +221,7 @@ flowchart TB
     K --Call--> M{誰もRaiseしないまま<br>一巡した}
     M --No--> K
     M --Yes--> N[1回目のBit終了]
-    N --> O{残りのPlayerが2人以上いるか} 
+    N --> O{残りのPlayerが2人以上いるか}
     O --Yes--> P[カード交換]
     O --No--> b
     P --> Q[二回目のBitを順番に開始]
@@ -233,7 +247,7 @@ flowchart TB
 
 ```mermaid
 ---
-title: Card Game 
+title: Card Game
 ---
 classDiagram
 Table <|-- BlackjackTable
@@ -331,7 +345,7 @@ WarPlayer ..> GameDecision
         -getUserActionGameDecision() GameDecision
     }
 
-    
+
     class SpeedPlayer {
         -getUserActionGameDecision() GameDecision
         -getHouseActionGameDecision() GameDecision
@@ -368,49 +382,42 @@ WarPlayer ..> GameDecision
 
 ### Table
 
-|  関数名・変数名  |  説明  |
-| :--: | :--: |
-|  betDenominations	|  テーブルで可能なベット金額の単位を表す整数の配列. <br>例えば、[5, 20, 50, 100]など. |
-|  resultLog  |  	各ラウンド終了時のハウス以外の全プレイヤーの状態を、文字列の配列の形で記録する.  |
-| turnConter | ラウンドロビン形式のゲームで現在ターンのプレイヤーを識別するためのカウンター |
-| evaluateMove() |Table.haveTurn()内で呼ぶ関数. <br>Player.promptPlayer()から現在のプレーヤーのgameDecision(ベット方法やアクションなど)を受け取り,<br>それにしたがって、そのプレイヤーのベット、ハンド、GameStatus、チップの状態などを更新する |
-| haveTurn() | ラウンドロビン形式のゲームで、ゲームフローの制御とテーブルの状態を更新する |
-
+|  関数名・変数名  |                                                                                                             説明                                                                                                              |
+| :--------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| betDenominations |                                                                      テーブルで可能なベット金額の単位を表す整数の配列. <br>例えば、[5, 20, 50, 100]など.                                                                      |
+|    resultLog     |                                                                        各ラウンド終了時のハウス以外の全プレイヤーの状態を、文字列の配列の形で記録する.                                                                        |
+|    turnConter    |                                                                         ラウンドロビン形式のゲームで現在ターンのプレイヤーを識別するためのカウンター                                                                          |
+|  evaluateMove()  | Table.haveTurn()内で呼ぶ関数. <br>Player.promptPlayer()から現在のプレーヤーの gameDecision(ベット方法やアクションなど)を受け取り,<br>それにしたがって、そのプレイヤーのベット、ハンド、GameStatus、チップの状態などを更新する |
+|    haveTurn()    |                                                                          ラウンドロビン形式のゲームで、ゲームフローの制御とテーブルの状態を更新する                                                                           |
 
 ### BlackJackTable
 
-| 関数名・変数名 | 説明 |
-| :--: | :--: |
-| gamePhase | ゲームの段階を表す. {'betting', 'acting', 'roundOver', 'endOfGame'}のどれか. |
-| assignPlayerHands() | 各プレイヤーにカードを2枚ずつ配布する. |
-| evaluateAndGetRoundResults() | すべてのプレイヤーのアクションが終わり, <br>現在のプレイヤーがプレイヤーの配列の最後のプレイヤーである場合に呼び出される.<br>このメソッドは、ブラックジャックの勝敗判定ルールに従ってプレイヤーを更新し, <br>ラウンドが終了してテーブルがクリアされる前の各プレイヤーの状態を表す文字列を返す. <br>この返された文字列は、Table.resultsLogに追加される. <br> gameStatusが'bust'となっているプレイヤーなど, <br>既にラウンドが決定しているプレイヤーは一切更新されない。 |
-| isAllPlayerActionsResolved() | 全てのプレイヤーがセット{'broken', 'bust', 'stand'}の<br>Player.gameStatusを持っていればtrueを返し,持っていなければfalseを返す. <br>ハウスを含むプレイヤーは何度も'hit'し続ける可能性があるので, <br>'acting'フェーズがいつ終わるか把握する必要がある。 |
-
+|        関数名・変数名        |                                                                                                                                                                                                                                   説明                                                                                                                                                                                                                                   |
+| :--------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|          gamePhase           |                                                                                                                                                                                               ゲームの段階を表す. {'betting', 'acting', 'roundOver', 'endOfGame'}のどれか.                                                                                                                                                                                               |
+|     assignPlayerHands()      |                                                                                                                                                                                                                 各プレイヤーにカードを 2 枚ずつ配布する.                                                                                                                                                                                                                 |
+| evaluateAndGetRoundResults() | すべてのプレイヤーのアクションが終わり, <br>現在のプレイヤーがプレイヤーの配列の最後のプレイヤーである場合に呼び出される.<br>このメソッドは、ブラックジャックの勝敗判定ルールに従ってプレイヤーを更新し, <br>ラウンドが終了してテーブルがクリアされる前の各プレイヤーの状態を表す文字列を返す. <br>この返された文字列は、Table.resultsLog に追加される. <br> gameStatus が'bust'となっているプレイヤーなど, <br>既にラウンドが決定しているプレイヤーは一切更新されない。 |
+| isAllPlayerActionsResolved() |                                                                                                       全てのプレイヤーがセット{'broken', 'bust', 'stand'}の<br>Player.gameStatus を持っていれば true を返し,持っていなければ false を返す. <br>ハウスを含むプレイヤーは何度も'hit'し続ける可能性があるので, <br>'acting'フェーズがいつ終わるか把握する必要がある。                                                                                                       |
 
 ### Player
-| 関数名・変数名 | 説明 |
-| :--: | :--: |
-| promtPlayer() | TableのgamePhaseとPlayerのplayerTypeに応じて, <br>各Playerが取る行動をGameDecisionクラスのオブジェクトとして返す. |
 
+| 関数名・変数名 |                                                             説明                                                             |
+| :------------: | :--------------------------------------------------------------------------------------------------------------------------: |
+| promtPlayer()  | Table の gamePhase と Player の playerType に応じて, <br>各 Player が取る行動を GameDecision クラスのオブジェクトとして返す. |
 
 ### BlackjackPlayer
 
-| 関数名・変数名 | 説明 |
-| :--: | :--: |
-| gameStatus | プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。 |
-| getAIBetGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>AIのベット金額を決める. <br>所持金からベット可能な金額をランダムに決定する. |
-| getAIActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. AIのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションをランダムに決定する. |
-| getUserActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Userのアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションを決定する. <br>bustしない限り、hitは何度でもできる. |
-| getHouseActionGameDecision() | Table.promptPlayer()内で呼ぶ関数. <br>Houseのアクションを決める.<br>持ち札のスコアが17未満であれば、17以上になるまで、Hitを続ける |
-
+|        関数名・変数名        |                                                                                      説明                                                                                       |
+| :--------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|          gameStatus          |                                                   プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。                                                    |
+|    getAIBetGameDecision()    |                               Table.promptPlayer()内で呼ぶ関数. <br>AI のベット金額を決める. <br>所持金からベット可能な金額をランダムに決定する.                                |
+|  getAIActionGameDecision()   |                    Table.promptPlayer()内で呼ぶ関数. AI のアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションをランダムに決定する.                     |
+| getUserActionGameDecision()  | Table.promptPlayer()内で呼ぶ関数. <br>User のアクションを決める. <br>所持金を考慮し、{'hit', 'stand'}の候補からアクションを決定する. <br>bust しない限り、hit は何度でもできる. |
+| getHouseActionGameDecision() |                     Table.promptPlayer()内で呼ぶ関数. <br>House のアクションを決める.<br>持ち札のスコアが 17 未満であれば、17 以上になるまで、Hit を続ける                      |
 
 ### GameDecision
 
-| 関数名・変数名 | 説明 |
-| :--: | :--: |
-| action | 各ゲームで取りうるアクション.<br> -Blackjack: {'bust', 'bet', 'stand', 'hit', 'blackjack'} <br> -Porker: {'bet', 'check', 'call', 'raise', 'drop', 'draw'}<br>-Speed: {}<br>-War: {}|
-| userData | betのアクションがあるゲームでは、bet金額. |
-
-
-
-
+| 関数名・変数名 |                                                                                         説明                                                                                         |
+| :------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|     action     | 各ゲームで取りうるアクション.<br> -Blackjack: {'bust', 'bet', 'stand', 'hit', 'blackjack'} <br> -Porker: {'bet', 'check', 'call', 'raise', 'drop', 'draw'}<br>-Speed: {}<br>-War: {} |
+|    userData    |                                                                     bet のアクションがあるゲームでは、bet 金額.                                                                      |
