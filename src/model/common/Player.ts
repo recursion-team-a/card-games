@@ -1,5 +1,5 @@
-import Card from './card'
-import GameDecision from './gameDesicion'
+import Card from './Card'
+import GameDecision from './GameDesicion'
 
 export default abstract class Player {
   name: string

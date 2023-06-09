@@ -1,5 +1,5 @@
-import GameDecision from '../common/gameDesicion'
-import Player from '../common/player'
+import GameDecision from '../common/GameDesicion'
+import Player from '../common/Player'
 
 export default class SpeedPlayer extends Player {
   promptPlayer(): GameDecision {
