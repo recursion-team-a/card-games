@@ -7,6 +7,7 @@
 ## ワイヤーフレーム
 
 ![Slice 1 (1)](https://github.com/recursion-team-a/card-games/assets/127278864/09112875-217e-482f-83e2-c5b90b5d1adb)
+[![Figma](https://www.figma.com/file/aNUo5K2FqEuhw6yX1v0cc5/card?type=design&t=eImlOvYMc3ek51XQ-0)
 
 ## アクティビティ図
 
