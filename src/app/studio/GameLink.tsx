@@ -7,7 +7,6 @@ interface GameLinkProps {
 }
 
 const GameLink: React.FC<GameLinkProps> = ({ title, ruleLink, playLink }) => {
-  console.log(ruleLink)
   return (
     <div className='flex flex-col p-8 rounded-xl bg-white shadow-xl translate-x-4 translate-y-4 w-96 md:w-auto'>
       <div className='mt-3 font-semibold text-xl text-center'>{title}</div>
