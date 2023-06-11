@@ -1,6 +1,7 @@
 import Deck from '../common/Deck'
 import Player from '../common/Player'
 import Table from '../common/Table'
+import BlackjackPlayer from './BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
   protected players: Array<Player> = []
@@ -31,7 +32,9 @@ export default class BlackJackTable extends Table {
   public evaluateMove(player: Player): void {}
   public getTurnPlayer(): void {}
   public haveTurn(): void {}
-  public evaluateAndGetRoundResults(): string {}
+  public evaluateAndGetRoundResults(): string {
+    return ''
+  }
   public isBlackJack(player: Player): boolean {
     return player.getHandScore() === 21
   }
