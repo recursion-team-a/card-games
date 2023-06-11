@@ -3,14 +3,15 @@ import Player from './Player'
 
 export default abstract class Table {
   private betDominations: Array<number> = [5, 20, 50, 100]
+  private resultsLog: Array<string> = []
   protected turnCounter: number = 0
   protected abstract gamePhase: Array<string>
-  private resultsLog: Array<string> = []
   protected abstract deck: Deck
-  abstract players: Array<Player>
+  protected abstract players: Array<Player>
+
   constructor() {}
   abstract assignPlayerHands(): void
-  abstract clearPlayerHandsAndBets(): void
+  abstract clearPlayerHandsAndBet(): void
   abstract evaluateMove(player: Player): void
   abstract getTurnPlayer(): void
   abstract haveTurn(): void

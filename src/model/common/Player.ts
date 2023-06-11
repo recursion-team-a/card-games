@@ -29,4 +29,9 @@ export default abstract class Player {
   abstract promptPlayer(): GameDecision
 
   abstract getHandScore(): number
+
+  public initializeHandAndBet(): void {
+    this.bet = 0
+    this.hand = []
+  }
 }
