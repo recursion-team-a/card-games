@@ -1,5 +1,6 @@
 {
   "extends": [
+	"airbnb-base",
     "next/core-web-vitals",
     "plugin:import/recommended",
     "plugin:import/warnings",
