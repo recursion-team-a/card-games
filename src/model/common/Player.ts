@@ -2,7 +2,7 @@ import Card from './Card'
 import GameDecision from './GameDesicion'
 
 export default abstract class Player {
-  name: string
+  readonly name: string
 
   playerType: string
 

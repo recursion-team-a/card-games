@@ -1,7 +1,7 @@
 export default class Card {
-  suit: string
+  readonly suit: string
 
-  rank: string
+  readonly rank: string
 
   constructor(suit: string, rank: string) {
     this.suit = suit
