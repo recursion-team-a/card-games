@@ -2,6 +2,7 @@ import Card from './Card'
 
 export default class Deck {
   gameType: string
+
   cards: Card[]
 
   constructor(gameType: string) {
@@ -19,8 +20,8 @@ export default class Deck {
     const suits = ['♥︎', '♦', '♣', '♠']
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
-    for (let i = 0; i < suits.length; i++) {
-      for (let j = 0; j < ranks.length; j++) {
+    for (let i = 0; i < suits.length; i += 1) {
+      for (let j = 0; j < ranks.length; j += 1) {
         this.cards.push(new Card(suits[i], ranks[i]))
       }
     }
@@ -30,9 +31,9 @@ export default class Deck {
         return null : デッキの状態を更新（ランダムに順番を入れ替える）
      */
   shuffle(): void {
-    for (let i = this.cards.length - 1; i >= 0; i--) {
-      let randomIndex = Math.floor(Math.random() * (i + 1))
-      let temp = this.cards[i]
+    for (let i = this.cards.length - 1; i >= 0; i -= 1) {
+      const randomIndex = Math.floor(Math.random() * (i + 1))
+      const temp = this.cards[i]
       this.cards[i] = this.cards[randomIndex]
       this.cards[randomIndex] = temp
     }

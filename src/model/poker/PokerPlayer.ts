@@ -11,6 +11,6 @@ export default class PokerPlayer extends Player {
   }
 
   getHandRank(): number {
-    return 0
+    return this.hand.length
   }
 }
