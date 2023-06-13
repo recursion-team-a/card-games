@@ -1,5 +1,5 @@
-import Rules from '../../../components/Rules'
 import { games } from '@/app/games'
+import Rules from '@/components/Rules'
 
 const page = () => {
   return (

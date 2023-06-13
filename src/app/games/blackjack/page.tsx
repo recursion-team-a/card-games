@@ -1,7 +1,19 @@
-import React from 'react'
+'use client'
 
-const page = () => {
-  return <>Black jack</>
+import Phaser from 'phaser'
+import React, { useEffect } from 'react'
+import { gameConfig } from '../../../Phaser/config'
+
+const GamePage: React.FC = () => {
+  useEffect(() => {
+    const game = new Phaser.Game(gameConfig)
+
+    return () => {
+      game.destroy(true)
+    }
+  }, [])
+
+  return <div id='phaser-game' />
 }
 
-export default page
+export default GamePage
