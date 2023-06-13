@@ -366,7 +366,7 @@ WarPlayer ..> GameDecision
         +isThreeOfAKind() bool
         +isTwoPair() bool
         +isOnePair() bool
-        +countRanks() number[] 
+        +countRanks() number[]
     }
 
 
