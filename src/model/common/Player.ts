@@ -3,12 +3,19 @@ import GameDecision from './GameDesicion'
 
 export default abstract class Player {
   name: string
+
   playerType: string
+
   chips: number
+
   bet: number
+
   winAmount: number
+
   gameStatus: string
+
   hand: Array<Card> = []
+
   /*
         String name : プレイヤーの名前
         String playerType : プレイヤータイプ. {'ai', 'user', 'house'}から選択.

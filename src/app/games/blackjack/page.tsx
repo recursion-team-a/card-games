@@ -1,7 +1,5 @@
 import React from 'react'
 
-const page = () => {
-  return <>Black jack</>
-}
+const page = () => <>Black jack</>
 
 export default page
