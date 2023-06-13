@@ -1,4 +1,4 @@
-import { games } from '../games'
+import games from '../games'
 import GameLink from './GameLink'
 
 export default function Studio() {
@@ -10,12 +10,17 @@ export default function Studio() {
         </div>
 
         <div className='flex flex-col md:flex-row space-x-0 md:space-x-8 space-y-12 md:space-y-0 justify-center items-center mt-10'>
-          {games.map((game, index) => (
-            <GameLink key={index} {...game} />
+          {games.map((game) => (
+            <GameLink
+              key={game.id}
+              title={game.title}
+              ruleLink={game.ruleLink}
+              playLink={game.playLink}
+            />
           ))}
         </div>
 
-        <div className='flex justify-center mt-12'></div>
+        <div className='flex justify-center mt-12' />
       </div>
     </div>
   )

@@ -6,6 +6,5 @@ const lintFixCommand = (filenames) =>
 const formatCommand = () => `npm run format`
 
 module.exports = {
-  //   '*.{js,jsx,ts,tsx}': [lintCommand, lintFixCommand, formatCommand],
-  '*.{js,jsx,ts,tsx}': [formatCommand],
+  '*.{js,jsx,ts,tsx}': [lintCommand, lintFixCommand, formatCommand],
 }

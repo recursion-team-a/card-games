@@ -1,11 +1,15 @@
 {
   "extends": [
-    "airbnb-base",
+    "airbnb",
+    "airbnb-typescript",
     "next/core-web-vitals",
     "plugin:import/recommended",
     "plugin:import/warnings",
     "prettier"
   ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "rules": {
     "import/extensions": [
       "error",
@@ -16,7 +20,7 @@
         "ts": "never",
         "tsx": "never"
       }
-   ],
+    ],
     "import/order": [
       "error",
       {
