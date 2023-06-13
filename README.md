@@ -355,7 +355,18 @@ WarPlayer ..> GameDecision
     }
 
     class PorkerPlayer{
-        + getHandRank() number
+        -List~string~ suits
+        -List~int~ ranks
+        +getHandRank() number
+        +isStraightFlush() bool
+        +isFourOfAKind() bool
+        +isFullHouse() bool
+        +isFlush() bool
+        +isStraight() bool
+        +isThreeOfAKind() bool
+        +isTwoPair() bool
+        +isOnePair() bool
+        +countRanks() number[] 
     }
 
 
