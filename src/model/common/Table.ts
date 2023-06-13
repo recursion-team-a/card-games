@@ -3,26 +3,30 @@ import Player from './Player'
 
 export default abstract class Table {
   private static _betDominations: Array<number> = [5, 20, 50, 100]
-  private _turnCounter: number
-  private _gamePhase: string
+
+  private p_turnCounter: number
+
+  private p_gamePhase: string
+
   protected abstract deck: Deck
+
   protected abstract players: Array<Player>
 
   constructor(gamePhase: string) {
-    this._turnCounter = 0
-    this._gamePhase = gamePhase
+    this.p_turnCounter = 0
+    this.p_gamePhase = gamePhase
   }
 
   get turnCounter(): number {
-    return this._turnCounter
+    return this.p_turnCounter
   }
 
   set turnCounter(turnCounter: number) {
-    this._turnCounter = turnCounter
+    this.p_turnCounter = turnCounter
   }
 
   get gamePhase(): string {
-    return this._gamePhase
+    return this.p_gamePhase
   }
 
   set gamePhase(gamePhase: string) {

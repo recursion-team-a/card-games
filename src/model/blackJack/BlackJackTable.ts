@@ -1,3 +1,5 @@
+/* eslint no-param-reassign: ["error", { "props": false }] */
+
 import Deck from '../common/Deck'
 import GameDescision from '../common/GameDesicion'
 import Table from '../common/Table'
@@ -5,6 +7,7 @@ import BlackjackPlayer from './BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
   protected players: Array<BlackjackPlayer> = []
+
   protected deck: Deck = new Deck('Blackjack')
 
   constructor(gamePhase: string) {
@@ -16,24 +19,22 @@ export default class BlackJackTable extends Table {
   // playerのhandにpushするには、this.deck.drawOne()の戻り値がCardのみでなくてはならない
   // BlackjackPlayerクラスにaddHandメソッドを追加
   public assignPlayerHands(): void {
-    for (let i = 0; i < 2; i++) {
-      for (let player of this.players) {
-        let card = this.deck.drawOne()
-        console.log(card)
-        player.addHand(card)
+    for (let i = 0; i < this.playersSize; i += 1) {
+      for (let j = 0; j < 2; j += 1) {
+        this.players[i].addHand(this.deck.drawOne())
       }
     }
   }
 
   // PlayerクラスにinitializeHandAndBetメソッドを追加
   public clearPlayerHandsAndBet(): void {
-    for (let player of this.players) {
-      player.initializeHandAndBet()
+    for (let i = 0; i < this.playersSize; i += 1) {
+      this.players[i].initializeHandAndBet()
     }
   }
 
   // プレイヤーの手札がbustするならgameStatusを変更する
-  public handlePlayerBust(player: BlackjackPlayer): void {
+  public static handlePlayerBust(player: BlackjackPlayer): void {
     if (player.getHandScore() > 21) {
       player.gameStatus = 'bust'
       player.chips -= player.bet
@@ -42,15 +43,15 @@ export default class BlackJackTable extends Table {
   }
 
   public evaluateMove(player: BlackjackPlayer): void {
-    let gameDescision: GameDescision = player.promptPlayer()
+    const gameDescision: GameDescision = player.promptPlayer()
     if (gameDescision.action === 'hit') {
       player.addHand(this.deck.drawOne())
-      this.handlePlayerBust(player)
+      BlackJackTable.handlePlayerBust(player)
     }
     if (gameDescision.action === 'double') {
       player.bet *= 2
       player.addHand(this.deck.drawOne())
-      this.handlePlayerBust(player)
+      BlackJackTable.handlePlayerBust(player)
     }
   }
 
@@ -59,7 +60,7 @@ export default class BlackJackTable extends Table {
   }
 
   public haveTurn(): void {
-    let currentPlayer: BlackjackPlayer = this.getTurnPlayer()
+    const currentPlayer: BlackjackPlayer = this.getTurnPlayer()
     if (this.gamePhase === 'betting') {
       if (currentPlayer.gameStatus !== 'bust') this.evaluateMove(currentPlayer)
       if (this.isLastPlayer(currentPlayer)) this.gamePhase = 'acting'
@@ -80,26 +81,26 @@ export default class BlackJackTable extends Table {
   }
 
   public evaluateAndGetRoundResults(): Array<BlackjackPlayer> {
-    let winners: Array<BlackjackPlayer> = []
+    const winners: Array<BlackjackPlayer> = []
     let highestScore = 0
-    for (let player of this.players) {
-      if (player.gameStatus === 'bust') continue
-      highestScore = Math.max(highestScore, player.getHandScore())
+    for (let i = 0; i < this.playersSize; i += 1) {
+      if (this.players[i].gameStatus !== 'bust')
+        highestScore = Math.max(highestScore, this.players[i].getHandScore())
     }
-    for (let player of this.players) {
-      if (player.getHandScore() == highestScore) winners.push(player)
+    for (let i = 0; i < this.playersSize; i += 1) {
+      if (this.players[i].getHandScore() === highestScore) winners.push(this.players[i])
     }
     return winners
   }
 
-  public isBlackJack(player: BlackjackPlayer): boolean {
-    return player.hand.length == 2 && player.getHandScore() === 21
+  public static isBlackJack(player: BlackjackPlayer): boolean {
+    return player.hand.length === 2 && player.getHandScore() === 21
   }
 
   public isAllPlayerActionResolved(): boolean {
     let resolved: boolean = true
-    for (let player of this.players) {
-      if (['bust', 'stand'].findIndex((status) => player.gameStatus === status) === -1)
+    for (let i = 0; i < this.playersSize; i += 1) {
+      if (['bust', 'stand'].findIndex((status) => this.players[i].gameStatus === status) === -1)
         resolved = false
     }
     return resolved
