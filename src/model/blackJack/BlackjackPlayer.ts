@@ -15,13 +15,13 @@ export default class BlackjackPlayer extends Player {
     const hand = this.getHandScore()
 
     // 【要変更】AIの処理
-    if (this.playerType == 'ai') {
-      if (this.gameStatus == 'betting') {
-        if (this.chips == 0) this.bet = 0
+    if (this.playerType === 'ai') {
+      if (this.gameStatus === 'betting') {
+        if (this.chips === 0) this.bet = 0
         else this.bet = 20
         action = 'bet'
         this.gameStatus = 'acting'
-      } else if (this.gameStatus == 'acting' || this.gameStatus == 'hit') {
+      } else if (this.gameStatus === 'acting' || this.gameStatus === 'hit') {
         if (hand > 8 || hand < 12) action = 'double'
         else if (hand > 16) action = 'stand'
         else action = 'hit'
@@ -30,10 +30,10 @@ export default class BlackjackPlayer extends Player {
       }
     }
     // houseは17以上のときstand, それ以外はhit
-    if (this.playerType == 'house') {
-      if (this.gameStatus == 'betting') {
+    if (this.playerType === 'house') {
+      if (this.gameStatus === 'betting') {
         this.gameStatus = 'acting'
-      } else if (this.gameStatus == 'acting' || this.gameStatus == 'hit') {
+      } else if (this.gameStatus === 'acting' || this.gameStatus === 'hit') {
         if (hand >= 17) {
           action = 'stand'
           this.gameStatus = 'stand'
@@ -55,8 +55,8 @@ export default class BlackjackPlayer extends Player {
     let handScore = 0
     let numbersOfAces = 0
 
-    for (let i = 0; i < this.hand.length; i++) {
-      if (this.hand[i].rank == 'A') numbersOfAces++
+    for (let i = 0; i < this.hand.length; i += 1) {
+      if (this.hand[i].rank === 'A') numbersOfAces += 1
       handScore += this.hand[i].getRankNumber('blackjack')
     }
 
@@ -64,7 +64,7 @@ export default class BlackjackPlayer extends Player {
     if (handScore > 21) {
       while (handScore > 21 && numbersOfAces > 0) {
         handScore -= 10
-        numbersOfAces--
+        numbersOfAces -= 1
       }
     }
 
