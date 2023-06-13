@@ -1,7 +1,7 @@
 export default class GameDecision {
-  action: string
+  private _action: string
 
-  amount: number
+  private _amount: number
 
   /*
       String action : プレイヤーのアクションの選択（ブラックジャックでは、hit、standなど）
@@ -9,7 +9,23 @@ export default class GameDecision {
       これはPlayer.promptPlayer()が常にreturnする、標準化されたフォーマットです。
   */
   constructor(action: string, amount: number) {
-    this.action = action
-    this.amount = amount
+    this._action = action
+    this._amount = amount
+  }
+
+  get action(): string {
+    return this._action
+  }
+
+  set action(action: string) {
+    this._action = action
+  }
+
+  get amount(): number {
+    return this._amount
+  }
+
+  set amount(amount: number) {
+    this._amount = amount
   }
 }

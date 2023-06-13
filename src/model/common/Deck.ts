@@ -1,7 +1,7 @@
 import Card from './Card'
 
 export default class Deck {
-  gameType: string
+  private gameType: string
 
   protected cards: Card[]
 

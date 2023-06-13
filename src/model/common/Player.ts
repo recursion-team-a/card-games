@@ -2,19 +2,19 @@ import Card from './Card'
 import GameDecision from './GameDesicion'
 
 export default abstract class Player {
-  readonly name: string
+  readonly _name: string
 
-  playerType: string
+  readonly _playerType: string
 
-  chips: number
+  private _chips: number
 
-  bet: number
+  private _bet: number
 
-  winAmount: number
+  private _winAmount: number
 
-  gameStatus: string
+  private _gameStatus: string
 
-  hand: Array<Card> = []
+  private _hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前
@@ -25,12 +25,56 @@ export default abstract class Player {
         gameStatus : ゲームの状態 {'betting', 'acting'}
     */
   constructor(name: string, playerType: string, chips = 400) {
-    this.name = name
-    this.playerType = playerType
-    this.chips = chips
-    this.bet = 0
-    this.winAmount = 0
-    this.gameStatus = 'bet'
+    this._name = name
+    this._playerType = playerType
+    this._chips = chips
+    this._bet = 0
+    this._winAmount = 0
+    this._gameStatus = 'bet'
+  }
+
+  get name(): string {
+    return this._name
+  }
+
+  get playerType(): string {
+    return this._playerType
+  }
+
+  get chips(): number {
+    return this._chips
+  }
+
+  set chips(chips: number) {
+    this._chips = chips
+  }
+
+  get bet(): number {
+    return this._bet
+  }
+
+  set bet(bet: number) {
+    this._bet = bet
+  }
+
+  get winAmount(): number {
+    return this._winAmount
+  }
+
+  set winAmount(winAmount: number) {
+    this._winAmount = winAmount
+  }
+
+  get gameStatus(): string {
+    return this._gameStatus
+  }
+
+  set gameStatus(gameStatus: string) {
+    this._gameStatus = gameStatus
+  }
+
+  get hand(): Array<Card> {
+    return this._hand
   }
 
   abstract promptPlayer(): GameDecision

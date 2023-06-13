@@ -1,11 +1,19 @@
 export default class Card {
-  readonly suit: string
+  readonly _suit: string
 
-  readonly rank: string
+  readonly _rank: string
 
   constructor(suit: string, rank: string) {
-    this.suit = suit
-    this.rank = rank
+    this._suit = suit
+    this._rank = rank
+  }
+
+  get suit(): string {
+    return this._suit
+  }
+
+  get rank(): string {
+    return this._rank
   }
 
   // カードのゲームごとの強さを整数で返す
@@ -81,6 +89,6 @@ export default class Card {
         }
         break
     }
-    return rankToNumber[this.rank] ?? 0 // if runktoNumber[this.rank] is undefined, the function returns 0
+    return rankToNumber[this._rank] ?? 0 // if runktoNumber[this.rank] is undefined, the function returns 0
   }
 }
