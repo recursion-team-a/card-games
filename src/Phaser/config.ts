@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import MainScene from './MainScene'
 import TitleScene from './TitleScene'
 
-export const gameConfig: Phaser.Types.Core.GameConfig = {
+const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'phaser-game',
   scale: {
@@ -26,3 +26,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   scene: [TitleScene, MainScene],
 }
+
+export default gameConfig

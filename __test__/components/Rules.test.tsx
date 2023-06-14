@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { games } from '@/app/games'
+import games from '@/app/games'
 import Rules from '@/components/Rules'
 import '@testing-library/jest-dom'
 

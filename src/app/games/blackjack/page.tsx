@@ -2,9 +2,9 @@
 
 import Phaser from 'phaser'
 import React, { useEffect } from 'react'
-import { gameConfig } from '../../../Phaser/config'
+import gameConfig from '../../../Phaser/config'
 
-const GamePage: React.FC = () => {
+function GamePage() {
   useEffect(() => {
     const game = new Phaser.Game(gameConfig)
 

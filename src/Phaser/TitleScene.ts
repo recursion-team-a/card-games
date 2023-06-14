@@ -21,7 +21,6 @@ export default class TitleScene extends Phaser.Scene {
 
     const tableScaleX = width / table.width
     const tableScaleY = height / table.height
-    console.log(tableScaleX)
     const tableScale = Math.max(tableScaleX, tableScaleY)
     table.setScale(tableScale)
 
