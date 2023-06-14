@@ -2,19 +2,19 @@ import Card from './Card'
 import GameDecision from './GameDesicion'
 
 export default abstract class Player {
-  readonly _name: string
+  readonly p_name: string
 
-  readonly _playerType: string
+  readonly p_playerType: string
 
-  private _chips: number
+  private p_chips: number
 
-  private _bet: number
+  private p_bet: number
 
-  private _winAmount: number
+  private p_winAmount: number
 
-  private _gameStatus: string
+  private p_gameStatus: string
 
-  private _hand: Array<Card> = []
+  private p_hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前
@@ -25,56 +25,56 @@ export default abstract class Player {
         gameStatus : ゲームの状態 {'betting', 'acting'}
     */
   constructor(name: string, playerType: string, chips = 400) {
-    this._name = name
-    this._playerType = playerType
-    this._chips = chips
-    this._bet = 0
-    this._winAmount = 0
-    this._gameStatus = 'bet'
+    this.p_name = name
+    this.p_playerType = playerType
+    this.p_chips = chips
+    this.p_bet = 0
+    this.p_winAmount = 0
+    this.p_gameStatus = 'bet'
   }
 
   get name(): string {
-    return this._name
+    return this.p_name
   }
 
   get playerType(): string {
-    return this._playerType
+    return this.p_playerType
   }
 
   get chips(): number {
-    return this._chips
+    return this.p_chips
   }
 
   set chips(chips: number) {
-    this._chips = chips
+    this.p_chips = chips
   }
 
   get bet(): number {
-    return this._bet
+    return this.p_bet
   }
 
   set bet(bet: number) {
-    this._bet = bet
+    this.p_bet = bet
   }
 
   get winAmount(): number {
-    return this._winAmount
+    return this.p_winAmount
   }
 
   set winAmount(winAmount: number) {
-    this._winAmount = winAmount
+    this.p_winAmount = winAmount
   }
 
   get gameStatus(): string {
-    return this._gameStatus
+    return this.p_gameStatus
   }
 
   set gameStatus(gameStatus: string) {
-    this._gameStatus = gameStatus
+    this.p_gameStatus = gameStatus
   }
 
   get hand(): Array<Card> {
-    return this._hand
+    return this.p_hand
   }
 
   abstract promptPlayer(): GameDecision
