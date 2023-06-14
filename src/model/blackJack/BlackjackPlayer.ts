@@ -2,13 +2,6 @@ import GameDecision from '../common/GameDesicion'
 import Player from '../common/Player'
 
 export default class BlackjackPlayer extends Player {
-  /*
-      ?Number userData : モデル外から渡されるパラメータ. nullになることもある.
-      検討：Number houseCard : ハウスの表向きのカードのランク。
-      return GameDecision : 状態を考慮した上で、プレイヤーが行った決定。
-
-        このメソッドは、どのようなベットやアクションを取るべきかというプレイヤーの決定を取得する. プレイヤーのタイプ、ハンド、チップの状態を読み取り、GameDecisionを返す.
- */
   promptPlayer(): GameDecision {
     let action = ''
     const hand = this.getHandScore()

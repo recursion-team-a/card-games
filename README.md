@@ -306,7 +306,7 @@ WarPlayer ..> GameDecision
         -string gamePhase
         -List~string~ resultsLog
         #Deck deck
-        -Abstract List~Player~ players
+        +Abstract List~Player~ players
 
         +Abstract assignPlayerHands() void
         +Abstract clearPlayerHandsAndBets() void
@@ -355,7 +355,18 @@ WarPlayer ..> GameDecision
     }
 
     class PorkerPlayer{
-        + getHandRank() number
+        -List~string~ suits
+        -List~int~ ranks
+        +getHandRank() number
+        +isStraightFlush() bool
+        +isFourOfAKind() bool
+        +isFullHouse() bool
+        +isFlush() bool
+        +isStraight() bool
+        +isThreeOfAKind() bool
+        +isTwoPair() bool
+        +isOnePair() bool
+        +countRanks() number[]
     }
 
 
@@ -374,7 +385,7 @@ WarPlayer ..> GameDecision
 
     class Deck {
         -string gameType
-        -List~Card~ Cards
+        #List~Card~ Cards
 
         +generateDeck() void
         +shuffle() void

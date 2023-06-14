@@ -1,11 +1,21 @@
-export default class Card {
-  suit: string
+/* eslint no-underscore-dangle:0 */
 
-  rank: string
+export default class Card {
+  readonly p_suit: string
+
+  readonly p_rank: string
 
   constructor(suit: string, rank: string) {
-    this.suit = suit
-    this.rank = rank
+    this.p_suit = suit
+    this.p_rank = rank
+  }
+
+  get suit(): string {
+    return this.p_suit
+  }
+
+  get rank(): string {
+    return this.p_rank
   }
 
   // カードのゲームごとの強さを整数で返す
@@ -46,6 +56,23 @@ export default class Card {
           K: 13,
         }
         break
+      case 'poker':
+        rankToNumber = {
+          A: 0,
+          '2': 1,
+          '3': 2,
+          '4': 3,
+          '5': 4,
+          '6': 5,
+          '7': 6,
+          '8': 7,
+          '9': 8,
+          '10': 9,
+          J: 10,
+          Q: 11,
+          K: 12,
+        }
+        break
       default:
         rankToNumber = {
           A: 1,
@@ -64,6 +91,6 @@ export default class Card {
         }
         break
     }
-    return rankToNumber[this.rank] ?? 0 // if runktoNumber[this.rank] is undefined, the function returns 0
+    return rankToNumber[this.p_rank] ?? 0 // if runktoNumber[this.rank] is undefined, the function returns 0
   }
 }

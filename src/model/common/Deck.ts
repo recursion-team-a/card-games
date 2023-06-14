@@ -1,9 +1,9 @@
 import Card from './Card'
 
 export default class Deck {
-  gameType: string
+  private gameType: string
 
-  cards: Card[]
+  protected cards: Card[]
 
   constructor(gameType: string) {
     // ゲームの種類
