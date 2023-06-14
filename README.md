@@ -6,6 +6,7 @@
 
 ## ワイヤーフレーム
 
+![Slice 1 (1)](https://github.com/recursion-team-a/card-games/assets/127278864/09112875-217e-482f-83e2-c5b90b5d1adb)
 [![Figma](https://www.figma.com/file/aNUo5K2FqEuhw6yX1v0cc5/card?type=design&t=eImlOvYMc3ek51XQ-0)
 
 ## アクティビティ図
@@ -305,7 +306,7 @@ WarPlayer ..> GameDecision
         -string gamePhase
         -List~string~ resultsLog
         #Deck deck
-        -Abstract List~Player~ players
+        +Abstract List~Player~ players
 
         +Abstract assignPlayerHands() void
         +Abstract clearPlayerHandsAndBets() void
@@ -354,7 +355,18 @@ WarPlayer ..> GameDecision
     }
 
     class PorkerPlayer{
-        + getHandRank() number
+        -List~string~ suits
+        -List~int~ ranks
+        +getHandRank() number
+        +isStraightFlush() bool
+        +isFourOfAKind() bool
+        +isFullHouse() bool
+        +isFlush() bool
+        +isStraight() bool
+        +isThreeOfAKind() bool
+        +isTwoPair() bool
+        +isOnePair() bool
+        +countRanks() number[]
     }
 
 
@@ -373,8 +385,9 @@ WarPlayer ..> GameDecision
 
     class Deck {
         -string gameType
-        -List~Card~ Cards
+        #List~Card~ Cards
 
+        +generateDeck() void
         +shuffle() void
         +drawOne() Card
         +resetDeck() void
@@ -436,9 +449,9 @@ WarPlayer ..> GameDecision
 
 ### BlackjackPlayer
 
-| 関数名・変数名 |                                    説明                                    |
-| :------------: | :------------------------------------------------------------------------: |
-|   gameStatus   | プレイヤーの状態を表す. {'ready', 'bet', 'stand', 'hit', 'bust'}のどれか。 |
+| 関数名・変数名 |                                  説明                                  |
+| :------------: | :--------------------------------------------------------------------: |
+|   gameStatus   | プレイヤーの状態を表す. {'betting', 'acting', 'hit', 'bust'}のどれか。 |
 
 ### PokerPlayer
 

@@ -1,12 +1,6 @@
 import Rules from '../../../components/Rules'
-import { games } from '@/app/games'
+import games from '@/app/games'
 
-const page = () => {
-  return (
-    <>
-      <Rules game={games[3]} />
-    </>
-  )
-}
+const page = () => <Rules game={games[3]} />
 
 export default page
