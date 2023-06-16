@@ -3,7 +3,7 @@ import Card from './Card'
 export default class Deck {
   private gameType: string
 
-  protected cards: Card[]
+  public cards: Card[]
 
   constructor(gameType: string) {
     // ゲームの種類
@@ -12,6 +12,7 @@ export default class Deck {
     this.cards = []
     // デッキの生成
     this.generateDeck()
+    this.shuffle()
   }
 
   generateDeck(): void {
@@ -22,7 +23,7 @@ export default class Deck {
 
     for (let i = 0; i < suits.length; i += 1) {
       for (let j = 0; j < ranks.length; j += 1) {
-        this.cards.push(new Card(suits[i], ranks[i]))
+        this.cards.push(new Card(suits[i], ranks[j]))
       }
     }
   }
