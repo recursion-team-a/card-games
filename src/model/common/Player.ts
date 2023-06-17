@@ -1,5 +1,5 @@
 import Card from './Card'
-import GameDecision from './GameDesicion'
+import GameDecision from './GameDecision'
 
 export default abstract class Player {
   readonly p_name: string

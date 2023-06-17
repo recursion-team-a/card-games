@@ -1,7 +1,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import Deck from '../common/Deck'
-import GameDescision from '../common/GameDesicion'
+import GameDescision from '../common/GameDecision'
 import Table from '../common/Table'
 import BlackjackPlayer from './BlackjackPlayer'
 
