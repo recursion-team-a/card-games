@@ -3,7 +3,7 @@
 import Deck from '../common/Deck'
 import GameDescision from '../common/GameDesicion'
 import Table from '../common/Table'
-import BlackjackPlayer from './BlackjackPlayer'
+import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
   public players: Array<BlackjackPlayer> = []

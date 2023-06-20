@@ -1,13 +1,13 @@
-import Card from '../common/Card'
-import Deck from '../common/Deck'
-import Player from '../common/Player'
-import Table from '../common/Table'
-import WarPlayer from './WarPlayer'
+import Card from '@/model/common/Card'
+import Deck from '@/model/common/Deck'
+import Player from '@/model/common/Player'
+import Table from '@/model/common/Table'
+import WarPlayer from '@/model/war/WarPlayer'
 
 export default class WarTable extends Table {
   protected deck: Deck = new Deck('War')
 
-  protected players: Array<WarPlayer> = []
+  protected p_players: Array<WarPlayer> = []
 
   // 台札
   private p_player1Lead: Array<Card> = []
@@ -18,6 +18,10 @@ export default class WarTable extends Table {
     super(gamePhase)
     this.players.push(new WarPlayer('A', 'WarPlayer'))
     this.players.push(new WarPlayer('B', 'WarPlayer'))
+  }
+
+  get players(): Array<WarPlayer> {
+    return this.p_players
   }
 
   get player1() {
