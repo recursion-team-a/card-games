@@ -14,7 +14,7 @@ export default abstract class Player {
 
   private p_gameStatus: string
 
-  private p_hand: Array<Card> = []
+  public p_hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前

@@ -6,7 +6,7 @@ import Table from '../common/Table'
 import BlackjackPlayer from './BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
-  protected players: Array<BlackjackPlayer> = []
+  public players: Array<BlackjackPlayer> = []
 
   protected deck: Deck = new Deck('Blackjack')
 
