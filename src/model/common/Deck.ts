@@ -1,29 +1,39 @@
 import Card from './Card'
 
 export default class Deck {
-  private gameType: string
-
   public cards: Card[]
 
-  constructor(gameType: string) {
-    // ゲームの種類
-    this.gameType = gameType
+  constructor(gameType?: string, playerType?: string) {
     // カードの配列
     this.cards = []
     // デッキの生成
-    this.generateDeck()
+    this.generateDeck(gameType, playerType)
     this.shuffle()
   }
 
-  generateDeck(): void {
-    // if(this.gameType == ??)等でゲームの種類に応じて変更可能
-    // 現時点では, どのゲームも52枚で<List>cardsを生成
+  generateDeck(gameType?: string, playerType?: string): void {
     const suits = ['♥︎', '♦', '♣', '♠']
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
-    for (let i = 0; i < suits.length; i += 1) {
-      for (let j = 0; j < ranks.length; j += 1) {
-        this.cards.push(new Card(suits[i], ranks[j]))
+    if (gameType === 'speed') {
+      if (playerType === 'house') {
+        for (let i = 0; i < suits.length - 2; i += 1) {
+          for (let j = 0; j < ranks.length; j += 1) {
+            this.cards.push(new Card(suits[i], ranks[j]))
+          }
+        }
+      } else {
+        for (let i = 2; i < suits.length; i += 1) {
+          for (let j = 0; j < ranks.length; j += 1) {
+            this.cards.push(new Card(suits[i], ranks[j]))
+          }
+        }
+      }
+    } else {
+      for (let i = 0; i < suits.length; i += 1) {
+        for (let j = 0; j < ranks.length; j += 1) {
+          this.cards.push(new Card(suits[i], ranks[j]))
+        }
       }
     }
   }

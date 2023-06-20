@@ -63,10 +63,6 @@ export default class BlackjackPlayer extends Player {
     return handScore
   }
 
-  public addHand(card: Card | undefined): void {
-    if (card instanceof Card) this.hand.push(card)
-  }
-
   public receiveCardFaceDown(card: Card | undefined): void {
     card?.setFaceDown(true)
     if (card instanceof Card) this.hand.push(card)

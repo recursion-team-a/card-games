@@ -132,7 +132,7 @@ export default class MainScene extends Phaser.Scene {
       cardImage = this.add.image(0, 0, 'cardBack')
       this.faceDownImage = cardImage
     }
-    const xOffset = (hand.p_hand.length - 1) * 50
+    const xOffset = (hand.hand.length - 1) * 50
     if (hand === this.playerHand) {
       this.createCardTween(
         cardImage,
@@ -340,7 +340,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private handleFlipOver() {
-    ;(<BlackjackPlayer>this.dealerHand)?.p_hand.forEach((card) => {
+    ;(<BlackjackPlayer>this.dealerHand)?.hand.forEach((card) => {
       if (card.getFaceDown()) {
         card.setFaceDown(false)
         const cardFront = this.add.image(

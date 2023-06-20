@@ -52,34 +52,34 @@ export default class PokerPlayer extends Player {
 
   // 各役の判定メソッド
   // ロイヤルストレートフラッシュ(10, 11, 12, 13, 1の5枚でsuitが同じ)
-  isRoyalFlush(): boolean {
+  private isRoyalFlush(): boolean {
     return this.isFlush() && this.isStraight() && this.ranks[0] === 10
   }
 
   // ストレートフラッシュ
-  isStraightFlush(): boolean {
+  private isStraightFlush(): boolean {
     return this.isFlush() && this.isStraight()
   }
 
   // フォーカード
-  isFourOfAKind(): boolean {
+  private isFourOfAKind(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(4)
   }
 
   // フルハウス（同数位のカード3枚とペア）
-  isFullHouse(): boolean {
+  private isFullHouse(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(3) && rankCounts.includes(2)
   }
 
   // フラッシュ(一種類のsuit)
-  isFlush(): boolean {
+  private isFlush(): boolean {
     return new Set(this.suits).size === 1
   }
 
   // ストレート（5枚のカードの数位が連続・10JQKAはストレート・KA2などは×）
-  isStraight(): boolean {
+  private isStraight(): boolean {
     if (
       this.ranks[0] === 0 &&
       this.ranks[1] === 9 &&
@@ -98,25 +98,25 @@ export default class PokerPlayer extends Player {
   }
 
   // スリーカード
-  isThreeOfAKind(): boolean {
+  private isThreeOfAKind(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(3)
   }
 
   // ツーペア
-  isTwoPair(): boolean {
+  private isTwoPair(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.filter((count) => count === 2).length === 2
   }
 
   // ワンペア
-  isOnePair(): boolean {
+  private isOnePair(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(2)
   }
 
   // 各ランクの数を数えます
-  countRanks(): number[] {
+  private countRanks(): number[] {
     const counts: number[] = Array(13).fill(0)
     for (let i = 0; i < this.ranks.length; i += 1) {
       counts[this.ranks[i]] += 1

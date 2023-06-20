@@ -1,7 +1,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import Deck from '../common/Deck'
-import GameDescision from '../common/GameDecision'
+import GameDecision from '../common/GameDecision'
 import Table from '../common/Table'
 import BlackjackPlayer from './BlackjackPlayer'
 
@@ -43,7 +43,7 @@ export default class BlackJackTable extends Table {
   }
 
   public evaluateMove(player: BlackjackPlayer): void {
-    const gameDescision: GameDescision = player.promptPlayer()
+    const gameDescision: GameDecision = player.promptPlayer()
     if (gameDescision.action === 'hit') {
       player.addHand(this.deck.drawOne())
       BlackJackTable.handlePlayerBust(player)
