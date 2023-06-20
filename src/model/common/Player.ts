@@ -77,12 +77,16 @@ export default abstract class Player {
     return this.p_hand
   }
 
+  set hand(card: Card) {
+    this.p_hand.push(card)
+  }
+
   abstract promptPlayer(): GameDecision
 
   abstract getHandScore(): number
 
   public initializeHandAndBet(): void {
     this.bet = 0
-    this.hand = []
+    this.hand = <any>[]
   }
 }
