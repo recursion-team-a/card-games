@@ -63,6 +63,11 @@ export default class BlackjackPlayer extends Player {
     return handScore
   }
 
+  public addHand(card: Card | undefined): void {
+    if (card instanceof Card) this.hand.push(card)
+  }
+
+  // 裏向きで描画するため
   public receiveCardFaceDown(card: Card | undefined): void {
     card?.setFaceDown(true)
     if (card instanceof Card) this.hand.push(card)

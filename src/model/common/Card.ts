@@ -5,6 +5,7 @@ export default class Card {
 
   readonly p_rank: string
 
+  // カードが表か裏か
   private faceDown: boolean = false
 
   constructor(suit: string, rank: string) {
@@ -20,6 +21,7 @@ export default class Card {
     return this.p_rank
   }
 
+  // XMLの中のトランプの名前
   public getAtlasFrame(): string {
     return `card${this.p_suit}${this.p_rank}.png`
   }

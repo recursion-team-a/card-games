@@ -1,7 +1,7 @@
 import Card from './Card'
 
 export default class Deck {
-  public cards: Card[]
+  private cards: Card[]
 
   constructor(gameType?: string, playerType?: string) {
     // カードの配列

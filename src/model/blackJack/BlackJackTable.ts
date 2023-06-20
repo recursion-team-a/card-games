@@ -6,6 +6,7 @@ import Table from '../common/Table'
 import BlackjackPlayer from './BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
+  // playするときに利用するため、publicに変更した
   public players: Array<BlackjackPlayer> = []
 
   protected deck: Deck = new Deck('Blackjack')
@@ -91,10 +92,6 @@ export default class BlackJackTable extends Table {
       if (this.players[i].getHandScore() === highestScore) winners.push(this.players[i])
     }
     return winners
-  }
-
-  public static isBlackJack(player: BlackjackPlayer): boolean {
-    return player.hand.length === 2 && player.getHandScore() === 21
   }
 
   public isAllPlayerActionResolved(): boolean {
