@@ -3,7 +3,7 @@ import Card from './Card'
 export default class Deck {
   private gameType: string
 
-  public cards: Card[]
+  private cards: Card[]
 
   constructor(gameType: string) {
     // ゲームの種類
@@ -21,6 +21,7 @@ export default class Deck {
     const suits = ['♥︎', '♦', '♣', '♠']
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
+    // 添字がiとiになっていたため変更
     for (let i = 0; i < suits.length; i += 1) {
       for (let j = 0; j < ranks.length; j += 1) {
         this.cards.push(new Card(suits[i], ranks[j]))

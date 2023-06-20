@@ -1,10 +1,11 @@
+// gameの結果
 enum GameResult {
   WIN = 'WIN',
   LOSS = 'LOSS',
   PUSH = 'PUSH',
   BLACKJACK = 'BLACKJACK',
   BUST = 'BUST',
-  NONE = 'NONE',
+  SURRENDER = 'SURRENDER',
 }
 
 export default GameResult
