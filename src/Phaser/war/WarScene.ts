@@ -6,13 +6,14 @@ import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH, CardFactory } from '@/Factories/cardFactory'
+import BetScene from '@/Phaser/BetScene'
 import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
 import BlackJackTable from '@/model/blackjack/BlackjackTable'
 import GameResult from '@/model/blackjack/gameResult'
 import Deck from '@/model/common/Deck'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
-export default class WarScene extends Phaser.Scene {
+export default class MainScene extends Phaser.Scene {
   private blackjack: BlackJackTable | undefined
 
   private dealerHand: BlackjackPlayer | undefined
@@ -36,6 +37,8 @@ export default class WarScene extends Phaser.Scene {
   private moneyText: Text | undefined
 
   private cardImages: Image[] | undefined
+
+  private betScene: BetScene | undefined
 
   private gameZone: Zone | undefined
 
@@ -69,6 +72,7 @@ export default class WarScene extends Phaser.Scene {
     this.atlasTexture = this.textures.get(CARD_ATLAS_KEY)
     this.load.image('back', path.join('/assets', 'back.png'))
     this.load.image('cardBack', path.join('/assets/Cards', 'cardBack.png'))
+    this.betScene = this.scene.get('BetScene') as BetScene
     this.load.image('chipYellow', path.join('/assets/Chips', 'chipYellow.png'))
     this.load.image('chipOrange', path.join('/assets/Chips', 'chipOrange.png'))
   }
@@ -93,6 +97,7 @@ export default class WarScene extends Phaser.Scene {
     })
 
     this.gameZone = this.add.zone(width * 0.5, height * 0.5, width, height)
+    this.setUpMoneyText()
     this.setUpNewGame()
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
     Phaser.Display.Align.To.TopLeft(
@@ -127,7 +132,7 @@ export default class WarScene extends Phaser.Scene {
       cardImage = this.add.image(0, 0, 'cardBack')
       this.faceDownImage = cardImage
     }
-    const xOffset = (hand.p_hand.length - 1) * 50
+    const xOffset = hand.p_hand.length - 1
     if (hand === this.playerHand) {
       this.createCardTween(
         cardImage,
@@ -148,9 +153,7 @@ export default class WarScene extends Phaser.Scene {
 
   private dealInitialCards() {
     setTimeout(this.handOutCard.bind(this), 1, this.playerHand, false)
-    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, false)
-    setTimeout(this.handOutCard.bind(this), 1000, this.playerHand, false)
-    setTimeout(this.handOutCard.bind(this), 1500, this.dealerHand, true)
+    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, true)
     setTimeout(this.checkForBlackJack.bind(this), 1500)
   }
 
@@ -171,6 +174,7 @@ export default class WarScene extends Phaser.Scene {
   }
 
   private endHand(result: GameResult) {
+    this.payout(result)
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
     })
@@ -195,6 +199,17 @@ export default class WarScene extends Phaser.Scene {
     )
   }
 
+  private payout(result: GameResult) {
+    if (result === GameResult.WIN) {
+      ;(<BetScene>this.betScene).money += (<BetScene>this.betScene).bet
+    } else if (result === GameResult.BLACKJACK) {
+      ;(<BetScene>this.betScene).money += Math.floor((<BetScene>this.betScene).bet * 1.5)
+    } else {
+      ;(<BetScene>this.betScene).money -= (<BetScene>this.betScene).bet
+    }
+    this.updateMoneyText()
+  }
+
   private createCardTween(image: Image, x: number, y: number, duration: number = 500) {
     this.tweens.add({
       targets: image,
@@ -203,6 +218,24 @@ export default class WarScene extends Phaser.Scene {
       duration,
       ease: 'Linear',
     })
+  }
+
+  private setUpMoneyText(): void {
+    this.moneyText = this.add.text(0, 0, '', textStyle)
+    const betText: Text = this.add.text(0, 0, '', textStyle)
+
+    this.updateMoneyText()
+    this.updateBetText(betText)
+  }
+
+  private updateMoneyText(): void {
+    ;(this.moneyText as Text).setText(`Money: $${(<BetScene>this.betScene).money}`)
+    Phaser.Display.Align.In.TopRight(this.moneyText as Text, this.gameZone as Zone, -20, -20)
+  }
+
+  private updateBetText(text: Text) {
+    text.setText(`Bet: $${(<BetScene>this.betScene).bet}`)
+    Phaser.Display.Align.To.BottomLeft(text, this.moneyText as Text)
   }
 
   private setUpNewGame() {
@@ -216,11 +249,13 @@ export default class WarScene extends Phaser.Scene {
   }
 
   private setUpHitButton() {
-    this.hitButton = this.add.image(
-      (this.gameZone as Zone).width * 0.33,
-      (this.gameZone as Zone).height * 0.5,
-      'chipYellow',
-    )
+    this.hitButton = this.add
+      .image(
+        (this.gameZone as Zone).width * 0.33,
+        (this.gameZone as Zone).height * 0.5,
+        'chipYellow',
+      )
+      .setScale(1.4 * (<BetScene>this.betScene).p_scale)
     this.textHit = this.add.text(
       (this.gameZone as Zone).width * 0.33,
       (this.gameZone as Zone).height * 0.5,
@@ -229,6 +264,7 @@ export default class WarScene extends Phaser.Scene {
     )
     Phaser.Display.Align.In.Center(this.textHit, this.hitButton)
     this.hitButton.setInteractive()
+    this.setUpHoverStyles(this.hitButton)
     this.setUpClickHandler(this.hitButton, this.handleHit.bind(this))
   }
 
@@ -238,12 +274,31 @@ export default class WarScene extends Phaser.Scene {
     })
   }
 
-  private setUpStayButton(): void {
-    this.stayButton = this.add.image(
-      (this.gameZone as Zone).width * 0.66,
-      (this.gameZone as Zone).height * 0.5,
-      'chipOrange',
+  private setUpHoverStyles(image: Image) {
+    image.on(
+      'pointerover',
+      () => {
+        image.setScale(1.4 * (<BetScene>this.betScene).p_scale)
+      },
+      this,
     )
+    image.on(
+      'pointerout',
+      () => {
+        image.setScale(1.2 * (<BetScene>this.betScene).p_scale)
+      },
+      this,
+    )
+  }
+
+  private setUpStayButton(): void {
+    this.stayButton = this.add
+      .image(
+        (this.gameZone as Zone).width * 0.66,
+        (this.gameZone as Zone).height * 0.5,
+        'chipOrange',
+      )
+      .setScale(1.4 * (<BetScene>this.betScene).p_scale)
     this.textStay = this.add.text(
       (this.gameZone as Zone).width * 0.66,
       (this.gameZone as Zone).height * 0.5,
@@ -252,6 +307,7 @@ export default class WarScene extends Phaser.Scene {
     )
     Phaser.Display.Align.In.Center(this.textStay, this.stayButton)
     this.stayButton.setInteractive()
+    this.setUpHoverStyles(this.stayButton)
     this.setUpClickHandler(this.stayButton, this.handleStay.bind(this))
   }
 
