@@ -14,7 +14,8 @@ export default abstract class Player {
 
   private p_gameStatus: string
 
-  private p_hand: Array<Card> = []
+  // playerのカードの情報を取るためにpublicに変更
+  public p_hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前

@@ -5,6 +5,9 @@ export default class Card {
 
   readonly p_rank: string
 
+  // カードが表か裏か
+  private faceDown: boolean = false
+
   constructor(suit: string, rank: string) {
     this.p_suit = suit
     this.p_rank = rank
@@ -16,6 +19,19 @@ export default class Card {
 
   get rank(): string {
     return this.p_rank
+  }
+
+  // XMLの中のトランプの名前
+  public getAtlasFrame(): string {
+    return `card${this.p_suit}${this.p_rank}.png`
+  }
+
+  public setFaceDown(faceDown: boolean) {
+    this.faceDown = faceDown
+  }
+
+  public getFaceDown(): boolean {
+    return this.faceDown
   }
 
   // カードのゲームごとの強さを整数で返す
