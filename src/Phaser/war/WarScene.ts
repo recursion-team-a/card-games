@@ -10,13 +10,10 @@ import Card from '@/model/common/Card'
 import Deck from '@/model/common/Deck'
 import warPlayer from '@/model/war/WarPlayer'
 import WarPlayer from '@/model/war/WarPlayer'
-import warTable from '@/model/war/WarTable'
 import GameResult from '@/model/war/gameResult'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
 export default class MainScene extends Phaser.Scene {
-  private war: warTable | undefined
-
   private dealerHand: warPlayer
 
   private playerHand: warPlayer
@@ -128,9 +125,9 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private haveTurn() {
-    this.dealInitialCards()
+    this.assignPlayerCards()
     this.time.delayedCall(2000, () => {
-      this.setUpStayButton()
+      this.setUpBattleButton()
     })
   }
 
@@ -165,19 +162,19 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  private dealInitialCards() {
+  // プレイヤーに手札を配る
+  private assignPlayerCards() {
     setTimeout(this.handOutCard.bind(this), 1, this.playerHand, this.playerLead, false)
     setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, this.dealerLead, true)
   }
 
-  // カードの勝敗を判定する
-  private handleStay(): void {
+  private handleBattle(): void {
     ;(this.textStay as Text).destroy()
     this.handleFlipOver()
-    setTimeout(() => this.drawCardsUntil17(), this.CARD_FLIP_TIME)
+    setTimeout(() => this.evaluateWinner(), this.CARD_FLIP_TIME)
   }
 
-  private endHand(result: GameResult) {
+  private showResult(result: GameResult) {
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
     })
@@ -216,7 +213,7 @@ export default class MainScene extends Phaser.Scene {
     image.on('pointerout', () => {}, this)
   }
 
-  private setUpStayButton(): void {
+  private setUpBattleButton(): void {
     this.stayButton = this.add
       .image(
         (this.gameZone as Zone).width * 0.66,
@@ -233,10 +230,10 @@ export default class MainScene extends Phaser.Scene {
     Phaser.Display.Align.In.Center(this.textStay, this.stayButton)
     this.stayButton.setInteractive()
     this.setUpHoverStyles(this.stayButton)
-    this.setUpClickHandler(this.stayButton, this.handleStay.bind(this))
+    this.setUpClickHandler(this.stayButton, this.handleBattle.bind(this))
   }
 
-  private drawCardsUntil17(): void {
+  private evaluateWinner(): void {
     const dealerScore: number = this.dealerLead[this.dealerLead.length - 1].getRankNumber('war')
     const playerScore: number = this.playerLead[this.playerLead.length - 1].getRankNumber('war')
     let result: GameResult
@@ -253,7 +250,7 @@ export default class MainScene extends Phaser.Scene {
     } else {
       result = GameResult.TIE
     }
-    setTimeout(() => this.endHand(result), 500)
+    setTimeout(() => this.showResult(result), 500)
   }
 
   private handleFlipOver() {
