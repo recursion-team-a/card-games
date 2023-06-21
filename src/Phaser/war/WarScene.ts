@@ -7,20 +7,26 @@ import Zone = Phaser.GameObjects.Zone
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH, CardFactory } from '@/Factories/cardFactory'
 import BetScene from '@/Phaser/BetScene'
-import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
-import BlackJackTable from '@/model/blackjack/BlackjackTable'
-import GameResult from '@/model/blackjack/gameResult'
+import Card from '@/model/common/Card'
 import Deck from '@/model/common/Deck'
+import warPlayer from '@/model/war/WarPlayer'
+import WarPlayer from '@/model/war/WarPlayer'
+import warTable from '@/model/war/WarTable'
+import GameResult from '@/model/war/gameResult'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
 export default class MainScene extends Phaser.Scene {
-  private blackjack: BlackJackTable | undefined
+  private war: warTable | undefined
 
-  private dealerHand: BlackjackPlayer | undefined
+  private dealerHand: warPlayer
 
-  private playerHand: BlackjackPlayer | undefined
+  private playerHand: warPlayer
 
-  private deck: Deck | undefined
+  private dealerLead: Array<Card> = []
+
+  private playerLead: Array<Card> = []
+
+  private deck: Deck
 
   private atlasTexture: Texture | undefined
 
@@ -50,6 +56,10 @@ export default class MainScene extends Phaser.Scene {
 
   private dealerHandZone: Zone | undefined
 
+  private playerScore: number
+
+  private dealerScore: number
+
   private faceDownImage: Image | undefined
 
   private CARD_FLIP_TIME = 600
@@ -60,6 +70,11 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     super({ key: 'MainScene', active: false })
+    this.playerScore = 0
+    this.dealerScore = 0
+    this.deck = new Deck('war')
+    this.dealerHand = new WarPlayer('Dealer', 'Dealer')
+    this.playerHand = new WarPlayer('Player', 'Player')
   }
 
   preload(): void {
@@ -93,7 +108,7 @@ export default class MainScene extends Phaser.Scene {
     button.setInteractive()
 
     button.on('pointerdown', () => {
-      this.scene.start('BetScene')
+      window.location.href = '/studio'
     })
 
     this.gameZone = this.add.zone(width * 0.5, height * 0.5, width, height)
@@ -116,13 +131,13 @@ export default class MainScene extends Phaser.Scene {
     )
     this.dealInitialCards()
     this.time.delayedCall(2000, () => {
-      this.setUpHitButton()
       this.setUpStayButton()
     })
   }
 
-  private handOutCard(hand: BlackjackPlayer, faceDownCard: boolean) {
-    const card = this.deck?.drawOne()
+  private handOutCard(hand: warPlayer, lead: Array<Card>, faceDownCard: boolean) {
+    const card = this.deck.drawOne()
+    lead.push(<any>card)
     let cardImage: Image
     if (!faceDownCard) {
       hand.addHand(card)
@@ -152,25 +167,15 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private dealInitialCards() {
-    setTimeout(this.handOutCard.bind(this), 1, this.playerHand, false)
-    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, true)
-    setTimeout(this.checkForBlackJack.bind(this), 1500)
+    setTimeout(this.handOutCard.bind(this), 1, this.playerHand, this.playerLead, false)
+    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, this.dealerLead, true)
   }
 
-  private checkForBlackJack() {
-    if (this.playerHand?.getHandScore() === 21) {
-      this.endHand(GameResult.BLACKJACK)
-    }
-  }
-
-  private handleHit(): void {
-    this.handOutCard(<BlackjackPlayer>this.playerHand, false)
-    this.setPlayerScoreText()
-    if ((<BlackjackPlayer>this.playerHand).getHandScore() > 21) {
-      ;(this.textHit as Text).destroy()
-      ;(this.textStay as Text).destroy()
-      this.endHand(GameResult.BUST)
-    }
+  // カードの勝敗を判定する
+  private handleStay(): void {
+    ;(this.textStay as Text).destroy()
+    this.handleFlipOver()
+    setTimeout(() => this.drawCardsUntil17(), this.CARD_FLIP_TIME)
   }
 
   private endHand(result: GameResult) {
@@ -190,7 +195,7 @@ export default class MainScene extends Phaser.Scene {
         this.input.once(
           'pointerdown',
           () => {
-            this.scene.start('BetScene')
+            window.location.href = '/studio'
           },
           this,
         )
@@ -202,8 +207,6 @@ export default class MainScene extends Phaser.Scene {
   private payout(result: GameResult) {
     if (result === GameResult.WIN) {
       ;(<BetScene>this.betScene).money += (<BetScene>this.betScene).bet
-    } else if (result === GameResult.BLACKJACK) {
-      ;(<BetScene>this.betScene).money += Math.floor((<BetScene>this.betScene).bet * 1.5)
     } else {
       ;(<BetScene>this.betScene).money -= (<BetScene>this.betScene).bet
     }
@@ -239,33 +242,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private setUpNewGame() {
-    this.deck = new Deck('blackjack')
-    this.blackjack = new BlackJackTable('')
-    if (this.blackjack.players && this.blackjack.players.length >= 2) {
-      ;[this.dealerHand, this.playerHand] = this.blackjack.players
-    }
     this.setUpDealerScoreText()
     this.setUpPlayerScoreText()
-  }
-
-  private setUpHitButton() {
-    this.hitButton = this.add
-      .image(
-        (this.gameZone as Zone).width * 0.33,
-        (this.gameZone as Zone).height * 0.5,
-        'chipYellow',
-      )
-      .setScale(1.4 * (<BetScene>this.betScene).p_scale)
-    this.textHit = this.add.text(
-      (this.gameZone as Zone).width * 0.33,
-      (this.gameZone as Zone).height * 0.5,
-      'Hit',
-      textStyle,
-    )
-    Phaser.Display.Align.In.Center(this.textHit, this.hitButton)
-    this.hitButton.setInteractive()
-    this.setUpHoverStyles(this.hitButton)
-    this.setUpClickHandler(this.hitButton, this.handleHit.bind(this))
   }
 
   private setUpClickHandler(image: Image, handlerFunction: Function) {
@@ -302,7 +280,7 @@ export default class MainScene extends Phaser.Scene {
     this.textStay = this.add.text(
       (this.gameZone as Zone).width * 0.66,
       (this.gameZone as Zone).height * 0.5,
-      'Stay',
+      'Battle',
       textStyle,
     )
     Phaser.Display.Align.In.Center(this.textStay, this.stayButton)
@@ -311,34 +289,28 @@ export default class MainScene extends Phaser.Scene {
     this.setUpClickHandler(this.stayButton, this.handleStay.bind(this))
   }
 
-  private handleStay(): void {
-    ;(this.textStay as Text).destroy()
-    ;(this.textHit as Text).destroy()
-    this.handleFlipOver()
-    setTimeout(() => this.drawCardsUntil17(), this.CARD_FLIP_TIME)
-  }
-
   private drawCardsUntil17(): void {
-    const dealerScore: number = (<BlackjackPlayer>this.dealerHand).getHandScore()
-    const playerScore: number = (<BlackjackPlayer>this.playerHand).getHandScore()
-    if (dealerScore < 17) {
-      this.handOutCard(<BlackjackPlayer>this.dealerHand, false)
-      setTimeout(() => this.drawCardsUntil17(), 500)
-      return
-    }
-    let result: GameResult = GameResult.NONE
-    if (dealerScore > 21 || (playerScore < 22 && playerScore > dealerScore)) {
+    const dealerScore: number = this.dealerLead[this.dealerLead.length - 1].getRankNumber('war')
+    const playerScore: number = this.playerLead[this.playerLead.length - 1].getRankNumber('war')
+    let result: GameResult
+    if (dealerScore < playerScore) {
       result = GameResult.WIN
-    } else if (dealerScore === playerScore) {
-      result = GameResult.PUSH
-    } else {
+      this.dealerScore += this.dealerLead.length + this.playerLead.length
+      this.dealerLead = []
+      this.playerLead = []
+    } else if (dealerScore > playerScore) {
       result = GameResult.LOSS
+      this.playerScore += this.dealerLead.length + this.playerLead.length
+      this.dealerLead = []
+      this.playerLead = []
+    } else {
+      result = GameResult.TIE
     }
     setTimeout(() => this.endHand(result), 500)
   }
 
   private handleFlipOver() {
-    ;(<BlackjackPlayer>this.dealerHand)?.p_hand.forEach((card) => {
+    ;(<warPlayer>this.dealerHand)?.p_hand.forEach((card) => {
       if (card.getFaceDown()) {
         card.setFaceDown(false)
         const cardFront = this.add.image(
@@ -383,10 +355,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private setDealerScoreText() {
-    ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.dealerHand?.getHandScore()}`)
+    ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.playerScore}`)
   }
 
   private setPlayerScoreText() {
-    ;(this.playerScoreText as Text).setText(`Your Score: ${this.playerHand?.getHandScore()}`)
+    ;(this.playerScoreText as Text).setText(`Your Score: ${this.dealerScore}`)
   }
 }

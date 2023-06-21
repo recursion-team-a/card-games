@@ -75,8 +75,8 @@ export default class WarTable extends Table {
 
   // 勝敗がつかない場合は、さらに札を出す
   public evaluateMove(): void {
-    const player1Score = WarPlayer.calculateLeadCardScore(this.player1Lead)
-    const player2Score = WarPlayer.calculateLeadCardScore(this.player2Lead)
+    const player1Score = this.player1Lead[this.player1Lead.length - 1].getRankNumber('war')
+    const player2Score = this.player2Lead[this.player2Lead.length - 1].getRankNumber('war')
     if (player1Score > player2Score)
       this.player1.obtainedCards.push(...this.player1Lead, ...this.player2Lead)
     else if (player1Score < player2Score)

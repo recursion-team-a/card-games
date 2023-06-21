@@ -26,14 +26,6 @@ export default class WarPlayer extends Player {
     throw new Error('Method not implemented!')
   }
 
-  public static calculateLeadCardScore(cards: Array<Card>) {
-    let score = 0
-    for (let i = 0; i < cards.length; i += 1) {
-      score += cards[i].getRankNumber('war')
-    }
-    return score
-  }
-
   getHandScore(): number {
     let handScore = 0
     for (let i = 0; i < this.hand.length; i += 1) {
@@ -41,5 +33,10 @@ export default class WarPlayer extends Player {
     }
 
     return handScore
+  }
+
+  public receiveCardFaceDown(card: Card | undefined): void {
+    card?.setFaceDown(true)
+    if (card instanceof Card) this.hand.push(card)
   }
 }
