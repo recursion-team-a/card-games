@@ -1,5 +1,4 @@
 import Phaser from 'phaser'
-import BetScene from '@/Phaser/BetScene'
 import WarScene from '@/Phaser/war/WarScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -24,7 +23,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [WarScene, BetScene],
+  scene: [WarScene],
 }
 
 export default gameConfig

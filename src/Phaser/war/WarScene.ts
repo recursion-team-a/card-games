@@ -6,7 +6,6 @@ import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH, CardFactory } from '@/Factories/cardFactory'
-import BetScene from '@/Phaser/BetScene'
 import Card from '@/model/common/Card'
 import Deck from '@/model/common/Deck'
 import warPlayer from '@/model/war/WarPlayer'
@@ -43,8 +42,6 @@ export default class MainScene extends Phaser.Scene {
   private moneyText: Text | undefined
 
   private cardImages: Image[] | undefined
-
-  private betScene: BetScene | undefined
 
   private gameZone: Zone | undefined
 
@@ -87,7 +84,6 @@ export default class MainScene extends Phaser.Scene {
     this.atlasTexture = this.textures.get(CARD_ATLAS_KEY)
     this.load.image('back', path.join('/assets', 'back.png'))
     this.load.image('cardBack', path.join('/assets/Cards', 'cardBack.png'))
-    this.betScene = this.scene.get('BetScene') as BetScene
     this.load.image('chipYellow', path.join('/assets/Chips', 'chipYellow.png'))
     this.load.image('chipOrange', path.join('/assets/Chips', 'chipOrange.png'))
   }
@@ -112,7 +108,6 @@ export default class MainScene extends Phaser.Scene {
     })
 
     this.gameZone = this.add.zone(width * 0.5, height * 0.5, width, height)
-    this.setUpMoneyText()
     this.setUpNewGame()
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
     Phaser.Display.Align.To.TopLeft(
@@ -129,6 +124,10 @@ export default class MainScene extends Phaser.Scene {
       0,
       GUTTER_SIZE,
     )
+    this.haveTurn()
+  }
+
+  private haveTurn() {
     this.dealInitialCards()
     this.time.delayedCall(2000, () => {
       this.setUpStayButton()
@@ -179,7 +178,6 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private endHand(result: GameResult) {
-    this.payout(result)
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
     })
@@ -189,28 +187,7 @@ export default class MainScene extends Phaser.Scene {
     const resultText: Text = this.add.text(0, 0, <string>result, textStyle)
     resultText.setColor('#ffde3d')
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
-    this.input.once(
-      'pointerdown',
-      () => {
-        this.input.once(
-          'pointerdown',
-          () => {
-            window.location.href = '/studio'
-          },
-          this,
-        )
-      },
-      this,
-    )
-  }
-
-  private payout(result: GameResult) {
-    if (result === GameResult.WIN) {
-      ;(<BetScene>this.betScene).money += (<BetScene>this.betScene).bet
-    } else {
-      ;(<BetScene>this.betScene).money -= (<BetScene>this.betScene).bet
-    }
-    this.updateMoneyText()
+    this.haveTurn()
   }
 
   private createCardTween(image: Image, x: number, y: number, duration: number = 500) {
@@ -221,24 +198,6 @@ export default class MainScene extends Phaser.Scene {
       duration,
       ease: 'Linear',
     })
-  }
-
-  private setUpMoneyText(): void {
-    this.moneyText = this.add.text(0, 0, '', textStyle)
-    const betText: Text = this.add.text(0, 0, '', textStyle)
-
-    this.updateMoneyText()
-    this.updateBetText(betText)
-  }
-
-  private updateMoneyText(): void {
-    ;(this.moneyText as Text).setText(`Money: $${(<BetScene>this.betScene).money}`)
-    Phaser.Display.Align.In.TopRight(this.moneyText as Text, this.gameZone as Zone, -20, -20)
-  }
-
-  private updateBetText(text: Text) {
-    text.setText(`Bet: $${(<BetScene>this.betScene).bet}`)
-    Phaser.Display.Align.To.BottomLeft(text, this.moneyText as Text)
   }
 
   private setUpNewGame() {
@@ -253,20 +212,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private setUpHoverStyles(image: Image) {
-    image.on(
-      'pointerover',
-      () => {
-        image.setScale(1.4 * (<BetScene>this.betScene).p_scale)
-      },
-      this,
-    )
-    image.on(
-      'pointerout',
-      () => {
-        image.setScale(1.2 * (<BetScene>this.betScene).p_scale)
-      },
-      this,
-    )
+    image.on('pointerover', () => {}, this)
+    image.on('pointerout', () => {}, this)
   }
 
   private setUpStayButton(): void {
@@ -276,7 +223,7 @@ export default class MainScene extends Phaser.Scene {
         (this.gameZone as Zone).height * 0.5,
         'chipOrange',
       )
-      .setScale(1.4 * (<BetScene>this.betScene).p_scale)
+      .setScale(1.4)
     this.textStay = this.add.text(
       (this.gameZone as Zone).width * 0.66,
       (this.gameZone as Zone).height * 0.5,
