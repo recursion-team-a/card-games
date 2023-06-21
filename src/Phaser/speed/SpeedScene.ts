@@ -1,0 +1,587 @@
+import Text = Phaser.GameObjects.Text
+import Image = Phaser.GameObjects.Image
+import Zone = Phaser.GameObjects.Zone
+import GameObject = Phaser.GameObjects.GameObject
+import TimeEvent = Phaser.Time.TimerEvent
+
+import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
+import BetScene from '@/Phaser/BetScene'
+import BaseScene from '@/Phaser/common/BaseScene'
+import GameResult from '@/model/blackJack/gameResult'
+import Card from '@/model/common/CardImage'
+import Deck from '@/model/common/DeckImage'
+import { Result } from '@/model/common/types/game'
+import SpeedPlayer from '@/model/speed/SpeedPlayer'
+import { GUTTER_SIZE, textStyle } from '@/utility/constants'
+import makeMoneyString from '@/utils/general'
+
+export default class Speed extends BaseScene {
+  constructor() {
+    super({ key: 'Speed', active: false })
+  }
+
+  protected players: SpeedPlayer[] = []
+
+  protected gamePhase: string | undefined
+
+  protected playerDeck: Deck | undefined
+
+  protected houseDeck: Deck | undefined
+
+  protected playerDeckSizeText: Text | undefined
+
+  protected houseDeckSizeText: Text | undefined
+
+  protected gameZone: Zone | undefined
+
+  protected playerHandZone: Zone | undefined
+
+  protected houseHandZone: Zone | undefined
+
+  protected timeEvent: TimeEvent | undefined
+
+  protected houseTimeEvent: TimeEvent | undefined
+
+  protected dealerTimeEvent: TimeEvent | undefined
+
+  protected dropZones: Zone[] = []
+
+  protected dropCardRanks: number[] = [] // 台札のカード番号, 長さ2の配列
+
+  preload(): void {
+    this.betScene = this.scene.get('BetScene') as BetScene
+  }
+
+  create(): void {
+    // betsceneに戻るためのボタン
+    this.createField()
+
+    this.gamePhase = 'betting'
+
+    this.players = [new SpeedPlayer('A', 'player'), new SpeedPlayer('B', 'house')]
+
+    this.setUpMoneyText()
+
+    this.createHandZone()
+
+    this.setUpNewGame()
+
+    this.createDropZones()
+
+    this.createDragAndDropEvent()
+
+    this.dealInitialCards()
+
+    this.startCountDown()
+
+    this.startHousePlay(7000)
+
+    this.startDealer()
+  }
+
+  update(): void {
+    let result: GameResult | undefined
+
+    if (this.gamePhase === 'acting') {
+      result = this.judgeGameResult()
+    }
+
+    if (this.gamePhase === 'end' && result) {
+      this.time.delayedCall(2000, () => {
+        this.houseTimeEvent?.remove()
+        this.dealerTimeEvent?.remove()
+        this.endHand(result as GameResult)
+      })
+    }
+  }
+
+  createHandZone() {
+    this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH * 5 + GUTTER_SIZE * 4, CARD_HEIGHT)
+    Phaser.Display.Align.To.TopLeft(
+      this.playerHandZone,
+      this.playerDeckSizeText as Text,
+      0,
+      GUTTER_SIZE,
+    )
+
+    this.houseHandZone = this.add.zone(0, 0, CARD_WIDTH * 5, CARD_HEIGHT)
+    Phaser.Display.Align.To.BottomLeft(
+      this.houseHandZone,
+      this.houseDeckSizeText as Text,
+      0,
+      GUTTER_SIZE,
+    )
+  }
+
+  private createDropZones(): void {
+    this.dropZones = []
+
+    const xOffset = {
+      player: CARD_WIDTH,
+      house: -CARD_WIDTH,
+    }
+
+    this.players.forEach((player) => {
+      const dropZone = this.add
+        .zone(0, 0, CARD_WIDTH * 1.5, CARD_HEIGHT * 1.5)
+        .setRectangleDropZone(CARD_WIDTH, CARD_HEIGHT)
+      Phaser.Display.Align.In.Center(
+        dropZone,
+        this.gameZone as GameObject,
+        xOffset[player.playerType as 'player' | 'house'],
+      )
+      this.dropZones.push(dropZone)
+    })
+  }
+
+  private startCountDown(): void {
+    this.time.delayedCall(3000, () => {
+      this.createTimerText()
+      this.timeEvent = this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          this.countDown(() => {
+            this.gamePhase = 'acting'
+            this.ableCardDraggable()
+            if (this.timeEvent) this.timeEvent.remove()
+          })
+        },
+        callbackScope: this,
+        loop: true,
+      })
+    })
+  }
+
+  // ハウスのプレイを一定間隔で行うための関数（playhouseTurn()を呼び出す）
+  private startHousePlay(delay: number): void {
+    this.time.delayedCall(delay, () => {
+      this.houseTimeEvent = this.time.addEvent({
+        delay: 3600,
+        callback: this.playHouseTurn,
+        callbackScope: this,
+        loop: true,
+      })
+    })
+  }
+
+  // ディーラーがカードを置く動作を定期的に行う関数
+  private startDealer(): void {
+    this.time.delayedCall(7000, () => {
+      this.dealerTimeEvent = this.time.addEvent({
+        delay: 5000,
+        callback: this.playHouse,
+        callbackScope: this,
+        loop: true,
+      })
+    })
+  }
+
+  // 一定間隔で呼び出される関数. 出せるカードがある場合手札からカードを抜き, 台札におく
+  private playHouseTurn(): void {
+    const house = this.players[1]
+    if (!this.isStagnant(house)) {
+      this.putCardFromHand()
+    }
+  }
+
+  // プレイヤー同士, 置くカードがない場合, housePlayを一時中止し, 台札にカードを置き, housePlayを再開
+  private playHouse(): void {
+    if (!this.isGameStopped()) return
+
+    this.houseTimeEvent?.remove()
+    this.putLeadCard()
+    this.startHousePlay(2000)
+  }
+
+  // ハウスのカードを置く動作
+  private putCardFromHand(): void {
+    const house: SpeedPlayer = this.players[1]
+    const { card, index } = this.getAvailableCard(house)
+
+    if (!card) return
+    if (index === undefined) return
+
+    this.children.bringToTop(card)
+    this.dropCardRanks[index] = card.getRankNumber('speed')
+    this.createCardTween(card, (this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
+    this.handOutCard(this.houseDeck as Deck, house as SpeedPlayer, card.x, card.y, false)
+  }
+
+  // playerの手札から台札におくことが出来るカードと台札のインデックスを取得
+  private getAvailableCard(player: SpeedPlayer): {
+    card: Card | undefined
+    index: number | undefined
+  } {
+    for (let i = 0; i < player.hand.length; i += 1) {
+      const card = player.hand[i]
+      for (let index = 0; index < this.dropCardRanks.length; index += 1) {
+        if (Speed.isNextRank(card.getRankNumber('speed'), this.dropCardRanks[index])) {
+          player.removeCard(card)
+          return { card, index }
+        }
+      }
+    }
+    return { card: undefined, index: undefined }
+  }
+
+  // 引数プレイヤーが台札に出せるカードがあるかどうかを返す
+  private isStagnant(player: SpeedPlayer): boolean {
+    let canContinue = false
+    player.hand.forEach((card: Card) => {
+      this.dropZones.forEach((dropZone: Zone) => {
+        canContinue = canContinue || this.canDropCard(card, dropZone)
+      })
+    })
+
+    return !canContinue
+  }
+
+  // プレイヤーもしくはハウスが出せるカードがあるかを返す
+  private isGameStopped(): boolean {
+    let canContinue = true
+    this.players.forEach((player) => {
+      canContinue = canContinue && this.isStagnant(player)
+    })
+    return canContinue
+  }
+
+  // カードのドラッグとドロップを行う
+  private createDragAndDropEvent(): void {
+    this.createCardDragStart()
+    this.createCardDragEvent()
+    this.createCardDropEvent()
+    this.createCardDragEnd()
+  }
+
+  // カードのドラッグをしたときに呼び出し
+  private createCardDragStart(): void {
+    this.input.on(
+      'dragstart',
+      (pointer: Phaser.Input.Pointer, card: Card) => {
+        this.children.bringToTop(card) // ドラッグされているカードを他のカードの上に表示.
+      },
+      this,
+    )
+  }
+
+  // カードをドラッグしている最中
+  private createCardDragEvent(): void {
+    this.input.on(
+      'drag',
+      (pointer: Phaser.Input.Pointer, card: Card, dragX: number, dragY: number) => {
+        card.setPosition(dragX, dragY) // ドラッグした位置でカードの位置を更新
+      },
+      this,
+    )
+  }
+
+  // カードがドロップしたときの処理. dropZoneを使って判定.
+  private createCardDropEvent(): void {
+    this.input.on('drop', (pointer: Phaser.Input.Pointer, card: Card, dropZone: Zone) => {
+      // ドロップできない場合は元の位置にカードを戻す
+      if (!this.canDropCard(card, dropZone)) {
+        card.returnToOrigin()
+        return
+      }
+
+      // ドロップできる場合は固定
+      card.setPosition(dropZone.x, dropZone.y)
+      card.disableInteractive()
+
+      // ドロップゾーンのカードの数字を更新
+      this.dropZones.forEach((dropCardZone: Zone, index: number) => {
+        if (dropCardZone === dropZone) {
+          this.dropCardRanks[index] = card.getRankNumber('speed')
+        }
+      })
+
+      // 置いたカードを手札から抜き, 一枚配る
+      this.players.forEach((player) => {
+        if (player.playerType === 'player') {
+          player.removeCard(card)
+          this.handOutCard(
+            this.playerDeck as Deck,
+            player as SpeedPlayer,
+            card.input?.dragStartX ?? 0,
+            (this.playerHandZone as Zone).y ?? 0,
+            false,
+          )
+        }
+      })
+    })
+  }
+
+  // ドラッグが終了した（マウス離した）際の処理. カードがドロップゾーンにおかれなかった場合は元の位置に戻す.
+  private createCardDragEnd(): void {
+    this.input.on('dragend', (pointer: Phaser.Input.Pointer, card: Card, dropped: boolean) => {
+      if (!dropped) {
+        card.returnToOrigin()
+      }
+    })
+  }
+
+  // カードがドロップ可能か判定
+  private canDropCard(card: Card, dropZone: Zone): boolean {
+    let canDropCard = false
+
+    this.dropZones.forEach((cardDropZone: Zone, index: number) => {
+      if (dropZone === cardDropZone) {
+        canDropCard =
+          canDropCard || Speed.isNextRank(this.dropCardRanks[index], card.getRankNumber('speed'))
+      }
+    })
+    return canDropCard
+  }
+
+  // 置かれたカードの数字が隣り合うもしくは, AとKであればTrueを返す.
+  private static isNextRank(num1: number, num2: number): boolean {
+    const diff = Math.abs(num1 - num2)
+    return diff === 1 || diff === 12
+  }
+
+  private handOutCard(
+    deck: Deck,
+    player: SpeedPlayer,
+    x: number,
+    y: number,
+    faceDown: boolean,
+  ): void {
+    const card: Card | undefined = deck.drawOne()
+
+    if (!card) return
+    if (!faceDown) {
+      card.setFaceUp()
+    }
+    if (player.playerType === 'player') {
+      card.setDrag()
+    }
+    player.addHand(card)
+
+    this.children.bringToTop(card)
+    this.createCardTween(card, x, y)
+    this.setHouseDeckSizeText()
+    this.setPlayerDeckSizeText()
+  }
+
+  private dealInitialCards() {
+    this.putLeadCard()
+    this.dealInitialHandCard()
+  }
+
+  // 台札にカードを補充, 山札がからの場合は手札から補充
+  private putLeadCard(): void {
+    this.players.forEach((player, index) => {
+      let card: Card | undefined
+      if (player.playerType === 'player') {
+        if (this.playerDeck?.getDeckSize() === 0) {
+          card = player.hand.pop()
+        } else {
+          card = this.playerDeck?.drawOne()
+        }
+      }
+      if (player.playerType === 'house') {
+        if (this.houseDeck?.getDeckSize() === 0) {
+          card = player.hand.pop()
+        } else {
+          card = this.houseDeck?.drawOne()
+        }
+      }
+
+      if (!card) return
+
+      this.dropCardRanks[index] = card.getRankNumber('speed')
+      this.children.bringToTop(card)
+      this.createCardTween(
+        card,
+        (this.dropZones[index] as Zone).x,
+        (this.dropZones[index] as Zone).y,
+      )
+
+      if (card.faceDown) {
+        this.time.delayedCall(1500, () => {
+          this.flipOverCard(card as Image, card as Image)
+        })
+      }
+
+      this.setPlayerDeckSizeText()
+      this.setHouseDeckSizeText()
+    })
+  }
+
+  // それぞれの山札から4枚のカードを手札に加える
+  private dealInitialHandCard(): void {
+    let count = 0
+    this.timeEvent = this.time.addEvent({
+      delay: 200,
+      callback: () => {
+        const xOffset = {
+          player: -2 * (CARD_WIDTH + GUTTER_SIZE) + count * (CARD_WIDTH + GUTTER_SIZE),
+          house: 2 * (CARD_WIDTH + GUTTER_SIZE) - count * (CARD_WIDTH + GUTTER_SIZE),
+        }
+
+        this.players.forEach((player) => {
+          const playerTempDeck =
+            player.playerType === 'house' ? (this.houseDeck as Deck) : (this.playerDeck as Deck)
+          const handZone =
+            player.playerType === 'house'
+              ? (this.playerHandZone as Zone)
+              : (this.houseHandZone as Zone)
+          this.handOutCard(
+            playerTempDeck,
+            player as SpeedPlayer,
+            handZone.x + xOffset[player.playerType as 'player' | 'house'],
+            handZone.y,
+            true,
+          )
+        })
+        count += 1
+      },
+      callbackScope: this,
+      repeat: 3,
+    })
+
+    this.time.delayedCall(1500, () => {
+      this.players.forEach((player) => {
+        player.hand.forEach((card) => {
+          this.flipOverCard(card, card)
+        })
+      })
+      this.disableCardDraggable()
+    })
+  }
+
+  private disableCardDraggable(): void {
+    this.players.forEach((player) => {
+      if (player.playerType === 'player') {
+        player.hand.forEach((card) => card.disableInteractive())
+      }
+    })
+  }
+
+  private ableCardDraggable(): void {
+    this.players.forEach((player) => {
+      if (player.playerType === 'player') {
+        player.hand.forEach((card) => card.setInteractive())
+      }
+    })
+  }
+
+  private setUpNewGame() {
+    // dealerとplayersを使うために呼び出した
+    this.playerDeck = new Deck(
+      this,
+      (this.playerHandZone as Zone).x + CARD_WIDTH * 2 + GUTTER_SIZE * 2,
+      (this.playerHandZone as Zone).y,
+      'speed',
+      'player',
+    )
+    this.houseDeck = new Deck(
+      this,
+      (this.houseHandZone as Zone).x + CARD_WIDTH * 2 + GUTTER_SIZE * 2,
+      (this.houseHandZone as Zone).y,
+      'speed',
+      'house',
+    )
+    this.setUpHouseDeckSizeText()
+    this.setUpPlayerDeckSizeText()
+  }
+
+  private setUpHouseDeckSizeText(): void {
+    this.houseDeckSizeText = this.add.text(0, 200, '', textStyle)
+    this.setHouseDeckSizeText()
+    Phaser.Display.Align.In.TopCenter(this.houseDeckSizeText, this.gameZone as Zone, 0, -20)
+  }
+
+  private setUpPlayerDeckSizeText(): void {
+    this.playerDeckSizeText = this.add.text(0, 300, '', textStyle)
+    this.setPlayerDeckSizeText()
+    Phaser.Display.Align.In.BottomCenter(this.playerDeckSizeText, this.gameZone as Zone, 0, -20)
+  }
+
+  private setHouseDeckSizeText() {
+    ;(this.houseDeckSizeText as Text).setText(`House cards : ${this.houseDeck?.getDeckSize()}`)
+  }
+
+  private setPlayerDeckSizeText() {
+    ;(this.playerDeckSizeText as Text).setText(`Your Cards: ${this.playerDeck?.getDeckSize()}`)
+  }
+
+  // 状況を判断し, resultを返す関数
+  private judgeGameResult(): GameResult | undefined {
+    let result: GameResult | undefined
+    const player = this.players[0]
+    const house = this.players[1]
+    const playerHandScore = player.getHandScore()
+    const houseHandScore = house.getHandScore()
+
+    if (playerHandScore === 0 && houseHandScore === 0) {
+      result = GameResult.TIE
+      this.gamePhase = 'end'
+      return result
+    }
+
+    if (playerHandScore === 0) {
+      result = GameResult.WIN
+      this.gamePhase = 'end'
+      return result
+    }
+
+    if (houseHandScore === 0) {
+      result = GameResult.LOSS
+      this.gamePhase = 'end'
+      return result
+    }
+
+    result = undefined
+    this.gamePhase = 'acting'
+    return result
+  }
+
+  // ゲーム終了時
+  private endHand(result: GameResult) {
+    const resultObj = this.payout(result)
+    const graphics = this.add.graphics({
+      fillStyle: { color: 0x000000, alpha: 0.75 },
+    })
+    const { width, height } = this.sys.game.canvas
+    const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
+    graphics.fillRectShape(square)
+    const resultText: Text = this.add.text(
+      0,
+      0,
+      `${result} ${makeMoneyString(resultObj.winAmount)}`,
+      textStyle,
+    )
+    resultText.setColor('#ffde3d')
+    Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
+    this.input.once(
+      'pointerdown',
+      () => {
+        this.input.once(
+          'pointerdown',
+          () => {
+            this.scene.start('BetScene')
+          },
+          this,
+        )
+      },
+      this,
+    )
+  }
+
+  // 勝敗
+  private payout(result: GameResult): Result {
+    let winAmount = 0
+    if (result === GameResult.WIN) {
+      winAmount += (<BetScene>this.betScene).bet
+    } else {
+      winAmount -= (<BetScene>this.betScene).bet
+    }
+    ;(<BetScene>this.betScene).money += winAmount
+    this.betScene?.setUpText()
+    return {
+      gameResult: result,
+      winAmount,
+    }
+  }
+}

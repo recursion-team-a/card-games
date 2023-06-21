@@ -2,6 +2,7 @@ import BetScene from '../BetScene'
 import Text = Phaser.GameObjects.Text
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
+import GameObject = Phaser.GameObjects.GameObject
 import Deck from '@/model/common/Deck'
 import { textStyle } from '@/utility/constants'
 
@@ -12,11 +13,15 @@ export default class BaseScene extends Phaser.Scene {
 
   protected betText: Text | undefined
 
+  protected timerText: Text | undefined
+
   protected gameZone: Zone | undefined
 
   protected faceDownImage: Image | undefined
 
   protected CARD_FLIP_TIME = 600
+
+  protected INITIAL_TIME = 2
 
   public betScene: BetScene | undefined
 
@@ -82,5 +87,28 @@ export default class BaseScene extends Phaser.Scene {
       delay: this.CARD_FLIP_TIME / 2,
       ease: 'Linear',
     })
+  }
+
+  protected countDown(callback: () => void) {
+    this.INITIAL_TIME -= 1
+    if (this.INITIAL_TIME > 0) {
+      this.setTimerText(`${String(this.INITIAL_TIME)}`)
+    } else if (this.INITIAL_TIME === 0) {
+      this.setTimerText('START')
+      Phaser.Display.Align.In.Center(this.timerText as Text, this.gameZone as GameObject, 0, -20)
+    } else {
+      this.setTimerText('')
+      callback()
+    }
+  }
+
+  protected createTimerText(): void {
+    this.timerText = this.add.text(0, 0, '', textStyle)
+    this.setTimerText(`${String(this.INITIAL_TIME)}`)
+    Phaser.Display.Align.In.Center(this.timerText as Text, this.gameZone as GameObject, 0, -20)
+  }
+
+  protected setTimerText(time: string): void {
+    if (this.timerText) this.timerText.setText(`${time}`)
   }
 }

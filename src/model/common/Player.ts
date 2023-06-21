@@ -1,5 +1,4 @@
 import Card from './Card'
-import GameDecision from './GameDecision'
 
 export default abstract class Player {
   readonly p_name: string
@@ -72,8 +71,6 @@ export default abstract class Player {
   set gameStatus(gameStatus: string) {
     this.p_gameStatus = gameStatus
   }
-
-  abstract promptPlayer(): GameDecision
 
   abstract getHandScore(): number
 

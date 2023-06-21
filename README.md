@@ -390,6 +390,7 @@ WarPlayer ..> GameDecision
         +shuffle() void
         +drawOne() Card
         +resetDeck() void
+        +getDeckSize() number
     }
 
     %% どのようなベットやアクションを取るべきかというプレイヤーの決定を表すクラス
