@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { CARD_ATLAS_KEY } from '@/Factories/cardFactory'
 
 export default class Card extends Phaser.GameObjects.Image {
   readonly p_suit: string
@@ -16,7 +17,7 @@ export default class Card extends Phaser.GameObjects.Image {
     rank: string,
     faceDown: boolean,
   ) {
-    super(scene, x, y, 'cardback')
+    super(scene, x, y, 'cardBack')
     scene.add.existing(this)
     this.p_suit = suit
     this.p_rank = rank
@@ -48,6 +49,8 @@ export default class Card extends Phaser.GameObjects.Image {
 
   public setFaceUp(): void {
     this.p_faceDown = false
+    this.setTexture(CARD_ATLAS_KEY)
+    this.setFrame(this.getAtlasFrame())
   }
 
   // ドラッグ可能な状態にする
@@ -59,6 +62,26 @@ export default class Card extends Phaser.GameObjects.Image {
   // カードをもとの位置に戻す.
   public returnToOrigin(): void {
     this.setPosition(this.input?.dragStartX, this.input?.dragStartY)
+  }
+
+  playFlipOverTween(): void {
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: 0,
+      duration: 350,
+      ease: 'Linear',
+      onComplete: () => {
+        // アニメーション完了後に実行するコールバック関数を追加
+        this.setFaceUp()
+        this.scene.tweens.add({
+          targets: this,
+          scaleX: 1,
+          duration: 350,
+          delay: 350,
+          ease: 'Linear',
+        })
+      },
+    })
   }
 
   // カードのゲームごとの強さを整数で返す

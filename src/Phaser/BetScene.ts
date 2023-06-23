@@ -145,7 +145,7 @@ export default class BetScene extends PreloadScene {
     dealButton.on(
       'pointerdown',
       () => {
-        this.scene.start('Blackjack')
+        this.scene.start('Speed')
       },
       this,
     )

@@ -1,5 +1,4 @@
 import Text = Phaser.GameObjects.Text
-import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
@@ -12,6 +11,7 @@ import Card from '@/model/common/CardImage'
 import Deck from '@/model/common/DeckImage'
 import { Result } from '@/model/common/types/game'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
+import { HOUSE_SPEED, DEALER_SPEED } from '@/model/speed/const'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 import makeMoneyString from '@/utils/general'
 
@@ -53,7 +53,7 @@ export default class Speed extends BaseScene {
   }
 
   create(): void {
-    // betsceneに戻るためのボタン
+    // betSceneに戻るためのボタン
     this.createField()
 
     this.gamePhase = 'betting'
@@ -62,9 +62,9 @@ export default class Speed extends BaseScene {
 
     this.setUpMoneyText()
 
-    this.createHandZone()
-
     this.setUpNewGame()
+
+    this.createHandZone()
 
     this.createDropZones()
 
@@ -96,17 +96,15 @@ export default class Speed extends BaseScene {
   }
 
   createHandZone() {
-    this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH * 5 + GUTTER_SIZE * 4, CARD_HEIGHT)
-    Phaser.Display.Align.To.TopLeft(
-      this.playerHandZone,
+    Phaser.Display.Align.To.TopCenter(
+      this.playerHandZone as Zone,
       this.playerDeckSizeText as Text,
       0,
       GUTTER_SIZE,
     )
 
-    this.houseHandZone = this.add.zone(0, 0, CARD_WIDTH * 5, CARD_HEIGHT)
-    Phaser.Display.Align.To.BottomLeft(
-      this.houseHandZone,
+    Phaser.Display.Align.To.BottomCenter(
+      this.houseHandZone as Zone,
       this.houseDeckSizeText as Text,
       0,
       GUTTER_SIZE,
@@ -156,7 +154,7 @@ export default class Speed extends BaseScene {
   private startHousePlay(delay: number): void {
     this.time.delayedCall(delay, () => {
       this.houseTimeEvent = this.time.addEvent({
-        delay: 3600,
+        delay: HOUSE_SPEED,
         callback: this.playHouseTurn,
         callbackScope: this,
         loop: true,
@@ -168,7 +166,7 @@ export default class Speed extends BaseScene {
   private startDealer(): void {
     this.time.delayedCall(7000, () => {
       this.dealerTimeEvent = this.time.addEvent({
-        delay: 5000,
+        delay: DEALER_SPEED,
         callback: this.playHouse,
         callbackScope: this,
         loop: true,
@@ -399,13 +397,12 @@ export default class Speed extends BaseScene {
 
       if (card.faceDown) {
         this.time.delayedCall(1500, () => {
-          this.flipOverCard(card as Image, card as Image)
+          card?.playFlipOverTween()
         })
       }
-
-      this.setPlayerDeckSizeText()
-      this.setHouseDeckSizeText()
     })
+    this.setPlayerDeckSizeText()
+    this.setHouseDeckSizeText()
   }
 
   // それぞれの山札から4枚のカードを手札に加える
@@ -424,8 +421,8 @@ export default class Speed extends BaseScene {
             player.playerType === 'house' ? (this.houseDeck as Deck) : (this.playerDeck as Deck)
           const handZone =
             player.playerType === 'house'
-              ? (this.playerHandZone as Zone)
-              : (this.houseHandZone as Zone)
+              ? (this.houseHandZone as Zone)
+              : (this.playerHandZone as Zone)
           this.handOutCard(
             playerTempDeck,
             player as SpeedPlayer,
@@ -443,7 +440,7 @@ export default class Speed extends BaseScene {
     this.time.delayedCall(1500, () => {
       this.players.forEach((player) => {
         player.hand.forEach((card) => {
-          this.flipOverCard(card, card)
+          card.playFlipOverTween()
         })
       })
       this.disableCardDraggable()
@@ -467,18 +464,22 @@ export default class Speed extends BaseScene {
   }
 
   private setUpNewGame() {
+    this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH * 5 + GUTTER_SIZE * 4, CARD_HEIGHT)
+
+    this.houseHandZone = this.add.zone(0, 0, CARD_WIDTH * 5 + GUTTER_SIZE * 4, CARD_HEIGHT)
+
     // dealerとplayersを使うために呼び出した
     this.playerDeck = new Deck(
       this,
-      (this.playerHandZone as Zone).x + CARD_WIDTH * 2 + GUTTER_SIZE * 2,
-      (this.playerHandZone as Zone).y,
+      (this.playerHandZone as Zone).x + CARD_WIDTH * 6,
+      (this.playerHandZone as Zone).y + CARD_HEIGHT * 3 + GUTTER_SIZE * 1.4,
       'speed',
       'player',
     )
     this.houseDeck = new Deck(
       this,
-      (this.houseHandZone as Zone).x + CARD_WIDTH * 2 + GUTTER_SIZE * 2,
-      (this.houseHandZone as Zone).y,
+      (this.houseHandZone as Zone).x + CARD_WIDTH + GUTTER_SIZE * 2.5,
+      (this.houseHandZone as Zone).y + CARD_HEIGHT - GUTTER_SIZE,
       'speed',
       'house',
     )

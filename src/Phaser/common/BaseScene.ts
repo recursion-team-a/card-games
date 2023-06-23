@@ -39,6 +39,8 @@ export default class BaseScene extends Phaser.Scene {
 
     button.setInteractive()
 
+    this.INITIAL_TIME = 2
+
     button.on('pointerdown', () => {
       this.scene.start('BetScene')
     })
