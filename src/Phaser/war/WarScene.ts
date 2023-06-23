@@ -175,6 +175,21 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private showResult(result: GameResult) {
+    const resultText: Text = this.add.text(0, 0, <string>result, textStyle)
+    resultText.setColor('#ffde3d')
+    Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
+    setTimeout(() => {
+      resultText.destroy()
+      if (this.deck.getDeckSize() <= 0) this.handleEndOfGame()
+      this.haveTurn()
+    }, 1000)
+  }
+
+  private handleEndOfGame() {
+    let result: GameResult
+    if (this.playerScore < this.dealerScore) result = GameResult.WIN
+    else if (this.playerScore > this.dealerScore) result = GameResult.LOSS
+    else result = GameResult.TIE
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
     })
@@ -184,7 +199,11 @@ export default class MainScene extends Phaser.Scene {
     const resultText: Text = this.add.text(0, 0, <string>result, textStyle)
     resultText.setColor('#ffde3d')
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
-    this.haveTurn()
+    setTimeout(() => {
+      resultText.destroy()
+      graphics.destroy()
+      window.location.href = '/studio'
+    }, 5000)
   }
 
   private createCardTween(image: Image, x: number, y: number, duration: number = 500) {
