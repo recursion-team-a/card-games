@@ -4,9 +4,9 @@ import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
-import GameResult from '@/model/blackJack/gameResult'
 import Card from '@/model/common/CardImage'
 import Deck from '@/model/common/DeckImage'
+import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
 import { HOUSE_SPEED, DEALER_SPEED } from '@/model/speed/const'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
