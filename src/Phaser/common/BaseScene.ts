@@ -1,12 +1,13 @@
-import BetScene from '../BetScene'
 import Text = Phaser.GameObjects.Text
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
+import BetScene from '@/Phaser/BetScene'
+import PreloadScene from '@/Phaser/PreloadScene'
 import Deck from '@/model/common/Deck'
 import { textStyle } from '@/utility/constants'
 
-export default class BaseScene extends Phaser.Scene {
+export default class BaseScene extends PreloadScene {
   protected deck: Deck | undefined
 
   protected moneyText: Text | undefined
