@@ -145,7 +145,7 @@ export default class BetScene extends PreloadScene {
     dealButton.on(
       'pointerdown',
       () => {
-        this.scene.start('Speed')
+        this.scene.start('CpuLevelScene') // テスト用 hagimoto
       },
       this,
     )
