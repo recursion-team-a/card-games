@@ -1,5 +1,4 @@
 import Card from './Card'
-import GameDecision from './GameDesicion'
 
 export default abstract class Player {
   readonly p_name: string
@@ -14,8 +13,7 @@ export default abstract class Player {
 
   private p_gameStatus: string
 
-  // playerのカードの情報を取るためにpublicに変更
-  public p_hand: Array<Card> = []
+  public hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前
@@ -74,16 +72,14 @@ export default abstract class Player {
     this.p_gameStatus = gameStatus
   }
 
-  get hand(): Array<Card> {
-    return this.p_hand
-  }
-
-  abstract promptPlayer(): GameDecision
-
   abstract getHandScore(): number
 
   public initializeHandAndBet(): void {
     this.bet = 0
     this.hand = []
+  }
+
+  public addHand(card: Card | undefined): void {
+    if (card instanceof Card) this.hand.push(card)
   }
 }

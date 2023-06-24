@@ -1,5 +1,5 @@
 import Card from '../common/Card'
-import GameDecision from '../common/GameDesicion'
+import GameDecision from '../common/GameDecision'
 import Player from '../common/Player'
 
 export default class BlackjackPlayer extends Player {

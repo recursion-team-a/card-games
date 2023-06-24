@@ -1,17 +1,24 @@
-import Card from './Card'
+import Phaser from 'phaser'
+import Card from '@/model/common/CardImage'
 
 export default class Deck {
   private cards: Card[]
 
-  constructor(gameType?: string, playerType?: string) {
+  constructor(scene: Phaser.Scene, x: number, y: number, gameType?: string, playerType?: string) {
     // カードの配列
     this.cards = []
     // デッキの生成
-    this.generateDeck(gameType, playerType)
+    this.generateDeck(scene, x, y, gameType, playerType)
     this.shuffle()
   }
 
-  generateDeck(gameType?: string, playerType?: string): void {
+  generateDeck(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    gameType?: string,
+    playerType?: string,
+  ): void {
     const suits = ['♥︎', '♦', '♣', '♠']
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 
@@ -19,20 +26,20 @@ export default class Deck {
       if (playerType === 'house') {
         for (let i = 0; i < suits.length - 2; i += 1) {
           for (let j = 0; j < ranks.length; j += 1) {
-            this.cards.push(new Card(suits[i], ranks[j]))
+            this.cards.push(new Card(scene, x, y, suits[i], ranks[j], true))
           }
         }
       } else {
         for (let i = 2; i < suits.length; i += 1) {
           for (let j = 0; j < ranks.length; j += 1) {
-            this.cards.push(new Card(suits[i], ranks[j]))
+            this.cards.push(new Card(scene, x, y, suits[i], ranks[j], true))
           }
         }
       }
     } else {
       for (let i = 0; i < suits.length; i += 1) {
         for (let j = 0; j < ranks.length; j += 1) {
-          this.cards.push(new Card(suits[i], ranks[j]))
+          this.cards.push(new Card(scene, x, y, suits[i], ranks[j], true))
         }
       }
     }
@@ -55,15 +62,6 @@ export default class Deck {
      */
   drawOne(): Card | undefined {
     return this.cards.pop()
-  }
-
-  /*
-        return null: デッキをリセットする.
-     */
-  resetDeck(): void {
-    this.cards = []
-    this.generateDeck()
-    this.shuffle()
   }
 
   getDeckSize(): number {
