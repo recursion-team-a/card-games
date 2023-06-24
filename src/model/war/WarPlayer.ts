@@ -1,4 +1,4 @@
-import GameDecision from '../common/GameDesicion'
+import GameDecision from '../common/GameDecision'
 import Player from '../common/Player'
 
 export default class WarPlayer extends Player {

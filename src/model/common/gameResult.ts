@@ -1,6 +1,7 @@
 // gameの結果
 enum GameResult {
   WIN = 'WIN',
+  TIE = 'TIE',
   LOSS = 'LOSS',
   PUSH = 'PUSH',
   BLACKJACK = 'BLACKJACK',

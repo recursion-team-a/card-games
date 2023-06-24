@@ -99,7 +99,7 @@ export default class Blackjack extends BaseScene {
       this.faceDownImage = cardImage
     }
     // トランプの配置をずらす
-    const xOffset = (hand.p_hand.length - 1) * 50
+    const xOffset = (hand.hand.length - 1) * 50
     // playerかdealerか
     if (hand === this.playerHand) {
       this.createCardTween(
@@ -286,7 +286,7 @@ export default class Blackjack extends BaseScene {
 
   // cardflipする
   private handleFlipOver() {
-    ;(<BlackjackPlayer>this.dealerHand)?.p_hand.forEach((card) => {
+    ;(<BlackjackPlayer>this.dealerHand)?.hand.forEach((card) => {
       if (card.getFaceDown()) {
         card.setFaceDown(false)
         const cardFront = this.add.image(

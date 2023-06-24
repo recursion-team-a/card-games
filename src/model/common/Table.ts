@@ -41,14 +41,14 @@ export default abstract class Table {
 
   abstract clearPlayerHandsAndBet(): void
 
-  abstract evaluateMove(player: Player): void
+  // abstract evaluateMove(player: Player): void
 
-  abstract getTurnPlayer(): void
+  // abstract getTurnPlayer(): void
 
-  abstract haveTurn(): void
+  // abstract haveTurn(): void
 
   // 勝利したプレイヤーを判定する
-  abstract evaluateAndGetRoundResults(): Array<Player>
+  // abstract evaluateAndGetRoundResults(): Array<Player>
 
   public isLastPlayer(player: Player): boolean {
     return this.players.length > 0 && player === this.players[-1]
