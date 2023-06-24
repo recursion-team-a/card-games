@@ -2,18 +2,14 @@ import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
-
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
-import BetScene from '@/Phaser/BetScene'
 import BaseScene from '@/Phaser/common/BaseScene'
-import GameResult from '@/model/blackJack/gameResult'
 import Card from '@/model/common/CardImage'
 import Deck from '@/model/common/DeckImage'
-import { Result } from '@/model/common/types/game'
+import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
 import { houseSpeed, DEALER_SPEED } from '@/model/speed/const'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
-import makeMoneyString from '@/utils/general'
 
 export default class Speed extends BaseScene {
   constructor() {
@@ -48,10 +44,6 @@ export default class Speed extends BaseScene {
 
   protected dropCardRanks: number[] = [] // 台札のカード番号, 長さ2の配列
 
-  preload(): void {
-    this.betScene = this.scene.get('BetScene') as BetScene
-  }
-
   create(): void {
     // betSceneに戻るためのボタン
     this.createField()
@@ -59,8 +51,6 @@ export default class Speed extends BaseScene {
     this.gamePhase = 'betting'
 
     this.players = [new SpeedPlayer('A', 'player'), new SpeedPlayer('B', 'house')]
-
-    this.setUpMoneyText()
 
     this.setUpNewGame()
 
@@ -543,19 +533,13 @@ export default class Speed extends BaseScene {
 
   // ゲーム終了時
   private endHand(result: GameResult) {
-    const resultObj = this.payout(result)
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
     })
     const { width, height } = this.sys.game.canvas
     const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
     graphics.fillRectShape(square)
-    const resultText: Text = this.add.text(
-      0,
-      0,
-      `${result} ${makeMoneyString(resultObj.winAmount)}`,
-      textStyle,
-    )
+    const resultText: Text = this.add.text(0, 0, `${result}`, textStyle)
     resultText.setColor('#ffde3d')
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     this.input.once(
@@ -564,28 +548,12 @@ export default class Speed extends BaseScene {
         this.input.once(
           'pointerdown',
           () => {
-            this.scene.start('BetScene')
+            window.location.href = '/studio'
           },
           this,
         )
       },
       this,
     )
-  }
-
-  // 勝敗
-  private payout(result: GameResult): Result {
-    let winAmount = 0
-    if (result === GameResult.WIN) {
-      winAmount += (<BetScene>this.betScene).bet
-    } else {
-      winAmount -= (<BetScene>this.betScene).bet
-    }
-    ;(<BetScene>this.betScene).money += winAmount
-    this.betScene?.setUpText()
-    return {
-      gameResult: result,
-      winAmount,
-    }
   }
 }

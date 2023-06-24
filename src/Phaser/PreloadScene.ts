@@ -18,10 +18,4 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('chipBlue', path.join('/assets/Chips', 'chipBlue.png'))
     this.load.image('back', path.join('/assets', 'back.png'))
   }
-
-  create() {
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start('BetScene')
-    })
-  }
 }
