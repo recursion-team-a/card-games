@@ -3,7 +3,7 @@
 import Deck from '../common/Deck'
 import GameDecision from '../common/GameDecision'
 import Table from '../common/Table'
-import BlackjackPlayer from './BlackjackPlayer'
+import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
   // playするときに利用するため、publicに変更した
