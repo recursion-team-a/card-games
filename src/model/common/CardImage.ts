@@ -1,16 +1,33 @@
-/* eslint no-underscore-dangle:0 */
+import Phaser from 'phaser'
+import { CARD_ATLAS_KEY } from '@/Factories/cardFactory'
 
-export default class Card {
+export default class Card extends Phaser.GameObjects.Image {
   readonly p_suit: string
 
   readonly p_rank: string
 
   // カードが表か裏か
-  private faceDown: boolean = false
+  private p_faceDown: boolean
 
-  constructor(suit: string, rank: string) {
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    suit: string,
+    rank: string,
+    faceDown: boolean,
+  ) {
+    super(scene, x, y, 'cardBack')
+    scene.add.existing(this)
     this.p_suit = suit
     this.p_rank = rank
+    this.p_faceDown = faceDown
+
+    if (!faceDown) {
+      this.setFaceUp()
+    }
+
+    this.setInteractive()
   }
 
   get suit(): string {
@@ -21,17 +38,50 @@ export default class Card {
     return this.p_rank
   }
 
+  get faceDown(): boolean {
+    return this.p_faceDown
+  }
+
   // XMLの中のトランプの名前
   public getAtlasFrame(): string {
     return `card${this.p_suit}${this.p_rank}.png`
   }
 
-  public setFaceDown(faceDown: boolean) {
-    this.faceDown = faceDown
+  public setFaceUp(): void {
+    this.p_faceDown = false
+    this.setTexture(CARD_ATLAS_KEY)
+    this.setFrame(this.getAtlasFrame())
   }
 
-  public getFaceDown(): boolean {
-    return this.faceDown
+  // ドラッグ可能な状態にする
+  public setDrag(): void {
+    this.setInteractive()
+    this.scene.input.setDraggable(this)
+  }
+
+  // カードをもとの位置に戻す.
+  public returnToOrigin(): void {
+    this.setPosition(this.input?.dragStartX, this.input?.dragStartY)
+  }
+
+  playFlipOverTween(): void {
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: 0,
+      duration: 350,
+      ease: 'Linear',
+      onComplete: () => {
+        // アニメーション完了後に実行するコールバック関数を追加
+        this.setFaceUp()
+        this.scene.tweens.add({
+          targets: this,
+          scaleX: 1,
+          duration: 350,
+          delay: 350,
+          ease: 'Linear',
+        })
+      },
+    })
   }
 
   // カードのゲームごとの強さを整数で返す

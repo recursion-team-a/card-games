@@ -8,15 +8,14 @@ import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH, CardFactory } from '@/Factories/cardFactory'
 import Card from '@/model/common/Card'
 import Deck from '@/model/common/Deck'
-import warPlayer from '@/model/war/WarPlayer'
+import GameResult from '@/model/common/gameResult'
 import WarPlayer from '@/model/war/WarPlayer'
-import GameResult from '@/model/war/gameResult'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
-export default class MainScene extends Phaser.Scene {
-  private dealerHand: warPlayer
+export default class WarScene extends Phaser.Scene {
+  private dealerHand: WarPlayer
 
-  private playerHand: warPlayer
+  private playerHand: WarPlayer
 
   private dealerLead: Array<Card> = []
 
@@ -63,7 +62,7 @@ export default class MainScene extends Phaser.Scene {
   private cardFactory: CardFactory | undefined
 
   constructor() {
-    super({ key: 'MainScene', active: false })
+    super({ key: 'WarScene', active: false })
     this.playerScore = 0
     this.dealerScore = 0
     this.deck = new Deck('war')
@@ -131,7 +130,7 @@ export default class MainScene extends Phaser.Scene {
     })
   }
 
-  private handOutCard(hand: warPlayer, lead: Array<Card>, faceDownCard: boolean) {
+  private handOutCard(hand: WarPlayer, lead: Array<Card>, faceDownCard: boolean) {
     const card = this.deck.drawOne()
     lead.push(<any>card)
     let cardImage: Image
@@ -143,7 +142,7 @@ export default class MainScene extends Phaser.Scene {
       cardImage = this.add.image(0, 0, 'cardBack')
       this.faceDownImage = cardImage
     }
-    const xOffset = hand.p_hand.length - 1
+    const xOffset = hand.hand.length - 1
     if (hand === this.playerHand) {
       this.createCardTween(
         cardImage,
@@ -273,7 +272,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private handleFlipOver() {
-    ;(<warPlayer>this.dealerHand)?.p_hand.forEach((card) => {
+    ;(<WarPlayer>this.dealerHand)?.hand.forEach((card) => {
       if (card.getFaceDown()) {
         card.setFaceDown(false)
         const cardFront = this.add.image(

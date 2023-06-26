@@ -1,4 +1,4 @@
-import Scene = Phaser.Scene
+import { Scene } from 'phaser'
 
 export const CARD_ATLAS_KEY = 'cards'
 export const CARD_HEIGHT = 190

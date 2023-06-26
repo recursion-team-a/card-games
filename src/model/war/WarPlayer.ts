@@ -1,5 +1,4 @@
 import Card from '@/model/common/Card'
-import GameDecision from '@/model/common/GameDesicion'
 import Player from '@/model/common/Player'
 
 export default class WarPlayer extends Player {
@@ -21,7 +20,7 @@ export default class WarPlayer extends Player {
     this.obtainedCards = <any>[]
   }
 
-  promptPlayer(): GameDecision {
+  promptPlayer() {
     this.gameStatus = 'acting'
     throw new Error('Method not implemented!')
   }

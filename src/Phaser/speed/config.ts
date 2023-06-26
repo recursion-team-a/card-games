@@ -1,11 +1,9 @@
 import Phaser from 'phaser'
-import BetScene from './BetScene'
-import PreloadScene from './PreloadScene'
-import Blackjack from './blackjack/BlackjackScene'
+import Speed from './SpeedScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'phaser-game',
+  parent: 'phaser-speed-game',
   scale: {
     mode: Phaser.Scale.FIT,
     parent: 'game-content',
@@ -25,7 +23,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [PreloadScene, BetScene, Blackjack],
+  scene: [Speed],
 }
 
 export default gameConfig

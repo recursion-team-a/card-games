@@ -1,11 +1,12 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
 import Deck from '../common/Deck'
-import GameDescision from '../common/GameDesicion'
+import GameDecision from '../common/GameDecision'
 import Table from '../common/Table'
 import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
 
 export default class BlackJackTable extends Table {
+  // playするときに利用するため、publicに変更した
   public players: Array<BlackjackPlayer> = []
 
   protected deck: Deck = new Deck('Blackjack')
@@ -43,7 +44,7 @@ export default class BlackJackTable extends Table {
   }
 
   public evaluateMove(player: BlackjackPlayer): void {
-    const gameDescision: GameDescision = player.promptPlayer()
+    const gameDescision: GameDecision = player.promptPlayer()
     if (gameDescision.action === 'hit') {
       player.addHand(this.deck.drawOne())
       BlackJackTable.handlePlayerBust(player)
@@ -91,10 +92,6 @@ export default class BlackJackTable extends Table {
       if (this.players[i].getHandScore() === highestScore) winners.push(this.players[i])
     }
     return winners
-  }
-
-  public static isBlackJack(player: BlackjackPlayer): boolean {
-    return player.hand.length === 2 && player.getHandScore() === 21
   }
 
   public isAllPlayerActionResolved(): boolean {

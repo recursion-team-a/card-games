@@ -1,5 +1,4 @@
 import Card from './Card'
-import GameDecision from './GameDesicion'
 
 export default abstract class Player {
   readonly p_name: string
@@ -14,7 +13,7 @@ export default abstract class Player {
 
   private p_gameStatus: string
 
-  public p_hand: Array<Card> = []
+  private p_hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前
@@ -88,5 +87,9 @@ export default abstract class Player {
   public initializeHandAndBet(): void {
     this.bet = 0
     this.hand = <any>[]
+  }
+
+  public addHand(card: Card | undefined): void {
+    if (card instanceof Card) this.hand.push(card)
   }
 }

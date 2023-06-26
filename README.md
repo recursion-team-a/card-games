@@ -326,8 +326,7 @@ WarPlayer ..> GameDecision
     }
 
     class SpeedTable {
-        - List~Card~ LeadCards
-        - List~Deck~ PlayerDeck
+        +List~Card~ LeadCards
 
         -DealLeadCards() void
     }
@@ -344,7 +343,7 @@ WarPlayer ..> GameDecision
         -int bet
         -int winAmount
         -string gameStatus
-        -List~Card~ hand
+        +List~Card~ hand
 
         + Abstract promptPlayer(int nullable userData) GameDecision
         + Abstract getHandScore() int
@@ -358,19 +357,20 @@ WarPlayer ..> GameDecision
         -List~string~ suits
         -List~int~ ranks
         +getHandRank() number
-        +isStraightFlush() bool
-        +isFourOfAKind() bool
-        +isFullHouse() bool
-        +isFlush() bool
-        +isStraight() bool
-        +isThreeOfAKind() bool
-        +isTwoPair() bool
-        +isOnePair() bool
-        +countRanks() number[]
+        -isStraightFlush() bool
+        -isFourOfAKind() bool
+        -isFullHouse() bool
+        -isFlush() bool
+        -isStraight() bool
+        -isThreeOfAKind() bool
+        -isTwoPair() bool
+        -isOnePair() bool
+        -countRanks() number[]
     }
 
 
     class SpeedPlayer {
+        +Deck PlayerDeck
     }
 
     class WarPlayer {
@@ -384,13 +384,13 @@ WarPlayer ..> GameDecision
     }
 
     class Deck {
-        -string gameType
-        #List~Card~ Cards
+        +List~Card~ Cards
 
         +generateDeck() void
         +shuffle() void
         +drawOne() Card
         +resetDeck() void
+        +getDeckSize() number
     }
 
     %% どのようなベットやアクションを取るべきかというプレイヤーの決定を表すクラス
