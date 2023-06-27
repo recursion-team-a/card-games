@@ -1,8 +1,26 @@
-import GameDecision from '../common/GameDecision'
-import Player from '../common/Player'
+import Card from '@/model/common/Card'
+import Player from '@/model/common/Player'
 
 export default class WarPlayer extends Player {
-  promptPlayer(): GameDecision {
+  private p_obtainedCards: Array<Card> = []
+
+  set obtainedCards(obtainedCard: Card) {
+    this.p_obtainedCards.push(obtainedCard)
+  }
+
+  get obtainedCards(): Array<Card> {
+    return this.p_obtainedCards
+  }
+
+  public addHand(card: Card | undefined): void {
+    if (card instanceof Card) this.hand.push(card)
+  }
+
+  public clearObtainedCards() {
+    this.obtainedCards = <any>[]
+  }
+
+  promptPlayer() {
     this.gameStatus = 'acting'
     throw new Error('Method not implemented!')
   }
@@ -14,5 +32,10 @@ export default class WarPlayer extends Player {
     }
 
     return handScore
+  }
+
+  public receiveCardFaceDown(card: Card | undefined): void {
+    card?.setFaceDown(true)
+    if (card instanceof Card) this.hand.push(card)
   }
 }

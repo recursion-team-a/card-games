@@ -13,7 +13,7 @@ export default abstract class Player {
 
   private p_gameStatus: string
 
-  public hand: Array<Card> = []
+  private p_hand: Array<Card> = []
 
   /*
         String name : プレイヤーの名前
@@ -72,11 +72,21 @@ export default abstract class Player {
     this.p_gameStatus = gameStatus
   }
 
+  get hand(): Array<Card> {
+    return this.p_hand
+  }
+
+  set hand(card: Card) {
+    this.p_hand.push(card)
+  }
+
+  abstract promptPlayer(): GameDecision
+
   abstract getHandScore(): number
 
   public initializeHandAndBet(): void {
     this.bet = 0
-    this.hand = []
+    this.hand = <any>[]
   }
 
   public addHand(card: Card | undefined): void {
