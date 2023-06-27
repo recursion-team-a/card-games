@@ -1,16 +1,18 @@
 'use client'
 
-import Phaser from 'phaser'
 import React, { useEffect } from 'react'
-import gameConfig from '@/Phaser/speed/config'
 
 function GamePage() {
   useEffect(() => {
-    const game = new Phaser.Game(gameConfig)
+    ;(async () => {
+      const Phaser = await import('phaser')
+      const gameConfig = (await import('@/Phaser/speed/config')).default
+      const game = new Phaser.Game(gameConfig)
 
-    return () => {
-      game.destroy(true)
-    }
+      return () => {
+        game.destroy(true)
+      }
+    })()
   }, [])
 
   return <div id='phaser-speed-game' />

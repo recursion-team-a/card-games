@@ -80,7 +80,7 @@ export default abstract class Player {
     this.p_hand.push(card)
   }
 
-  abstract promptPlayer(): GameDecision
+  abstract promptPlayer(): any
 
   abstract getHandScore(): number
 

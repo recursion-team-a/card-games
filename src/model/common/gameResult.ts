@@ -7,7 +7,6 @@ enum GameResult {
   BLACKJACK = 'BLACKJACK',
   BUST = 'BUST',
   SURRENDER = 'SURRENDER',
-  TIE = 'TIE',
 }
 
 export default GameResult
