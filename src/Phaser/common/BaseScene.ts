@@ -4,7 +4,7 @@ import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import BetScene from '@/Phaser/BetScene'
 import PreloadScene from '@/Phaser/PreloadScene'
-import Deck from '@/model/common/Deck'
+import Deck from '@/model/common/DeckImage'
 import { textStyle } from '@/utility/constants'
 
 export default class BaseScene extends PreloadScene {

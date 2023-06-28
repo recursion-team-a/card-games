@@ -42,6 +42,10 @@ export default class Card extends Phaser.GameObjects.Image {
     return this.faceDown
   }
 
+  public setFaceDown(faceDown: boolean) {
+    this.p_faceDown = faceDown
+  }
+
   get rank(): string {
     return this.p_rank
   }
@@ -83,7 +87,7 @@ export default class Card extends Phaser.GameObjects.Image {
       targets: this,
       x: toX,
       y: toY,
-      duration: 200,
+      duration: 500,
       ease: 'Linear',
     })
   }

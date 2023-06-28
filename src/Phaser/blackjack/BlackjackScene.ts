@@ -3,12 +3,11 @@ import BetScene from '../BetScene'
 import BaseScene from '../common/BaseScene'
 import Button from '../common/button'
 import Text = Phaser.GameObjects.Text
-import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
-import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
+import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
-import BlackjackTable from '@/model/blackjack/BlackjackTable'
-import Deck from '@/model/common/Deck'
+import Card from '@/model/common/CardImage'
+import Deck from '@/model/common/DeckImage'
 import GameResult from '@/model/common/gameResult'
 import { Result } from '@/model/common/types/game'
 import ImageUtility from '@/utility/ImageUtility'
@@ -20,7 +19,7 @@ export default class Blackjack extends BaseScene {
     super({ key: 'Blackjack', active: false })
   }
 
-  protected blackjack: BlackjackTable | undefined
+  public players: Array<BlackjackPlayer> = []
 
   protected dealerHand: BlackjackPlayer | undefined
 
@@ -43,6 +42,10 @@ export default class Blackjack extends BaseScene {
   protected playerHandZone: Zone | undefined
 
   protected dealerHandZone: Zone | undefined
+
+  public width: number = 1024
+
+  public height: number = 768
 
   preload(): void {
     this.betScene = this.scene.get('BetScene') as BetScene
@@ -84,60 +87,95 @@ export default class Blackjack extends BaseScene {
     )
   }
 
-  private handOutCard(hand: BlackjackPlayer, faceDownCard: boolean) {
-    const card = this.deck?.drawOne()
-    let cardImage: Image
-    // falseの場合トランプをそのまま描画
-    if (!faceDownCard) {
-      hand.addHand(card)
-      cardImage = this.add.image(0, 0, CARD_ATLAS_KEY, card?.getAtlasFrame())
+  handOutCard(
+    deck: Deck,
+    player: BlackjackPlayer,
+    toX: number,
+    toY: number,
+    isFaceDown: boolean,
+  ): void {
+    const card: Card | undefined = deck.drawOne()
+
+    if (!card) return
+
+    if (!isFaceDown) {
+      card.setFaceUp()
     }
-    // trueの場合そのトランプを裏向きで描画
-    else {
-      hand.receiveCardFaceDown(card)
-      cardImage = this.add.image(0, 0, 'cardBack')
-      this.faceDownImage = cardImage
-    }
-    // トランプの配置をずらす
-    const xOffset = (hand.hand.length - 1) * 50
-    // playerかdealerか
-    if (hand === this.playerHand) {
-      this.createCardTween(
-        cardImage,
-        (this.playerHandZone as Zone).x + xOffset,
-        (this.playerHandZone as Zone).y,
-      )
+
+    player.addHand(card)
+    if (player === this.dealerHand) {
       this.setPlayerScoreText()
-    } else {
-      this.createCardTween(
-        cardImage,
-        (this.dealerHandZone as Zone).x + xOffset,
-        (this.dealerHandZone as Zone).y,
-        350,
-      )
-      this.setDealerScoreText()
     }
+    this.setDealerScoreText()
+    this.children.bringToTop(card)
+    card.playMoveTween(toX, toY)
   }
 
   // トランプを0.5秒おきに描画する
   private dealInitialCards() {
-    setTimeout(this.handOutCard.bind(this), 1, this.playerHand, false)
-    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, false)
-    setTimeout(this.handOutCard.bind(this), 1000, this.playerHand, false)
-    setTimeout(this.handOutCard.bind(this), 1500, this.dealerHand, true)
-    setTimeout(this.isBlackjack.bind(this), 1500)
+    const player = this.playerHand
+    const house = this.dealerHand
+
+    this.time.delayedCall(1, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          player as BlackjackPlayer,
+          (this.playerHandZone as Zone).x - CARD_WIDTH * 0.15,
+          (this.playerHandZone as Zone).y,
+          false,
+        )
+      }
+    })
+
+    this.time.delayedCall(500, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          house as BlackjackPlayer,
+          (this.dealerHandZone as Zone).x - CARD_WIDTH * 0.15,
+          (this.dealerHandZone as Zone).y,
+          false,
+        )
+      }
+    })
+
+    this.time.delayedCall(1000, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          player as BlackjackPlayer,
+          (this.playerHandZone as Zone).x + CARD_WIDTH * 0.15,
+          (this.playerHandZone as Zone).y,
+          false,
+        )
+      }
+    })
+
+    this.time.delayedCall(1500, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          house as BlackjackPlayer,
+          (this.dealerHandZone as Zone).x + CARD_WIDTH * 0.15,
+          (this.dealerHandZone as Zone).y,
+          true,
+        )
+      }
+    })
+    setTimeout(this.isBlackjack.bind(this), 2500)
   }
 
   // 21かどうか
   private isBlackjack() {
     if (this.playerHand?.getHandScore() === 21) {
-      this.fadeOutButton()
       this.endHand(GameResult.BLACKJACK)
     }
   }
 
   // ゲーム終了時
   private endHand(result: GameResult) {
+    this.players = []
     const resultObj = this.payout(result)
     const graphics = this.add.graphics({
       fillStyle: { color: 0x000000, alpha: 0.75 },
@@ -195,11 +233,12 @@ export default class Blackjack extends BaseScene {
 
   private setUpNewGame() {
     // カードをdrawするために呼び出した
-    this.deck = new Deck('blackjack')
+    this.deck = new Deck(this, -100, -100, 'blackjack')
     // dealerとplayersを使うために呼び出した
-    this.blackjack = new BlackjackTable('')
-    if (this.blackjack.players && this.blackjack.players.length >= 2) {
-      ;[this.dealerHand, this.playerHand] = this.blackjack.players
+    this.players.push(new BlackjackPlayer('A', 'Blackjack'))
+    this.players.push(new BlackjackPlayer('B', 'Blackjack'))
+    if (this.players.length >= 2) {
+      ;[this.dealerHand, this.playerHand] = this.players
     }
 
     this.setUpDealerScoreText()
@@ -231,20 +270,35 @@ export default class Blackjack extends BaseScene {
   }
 
   private handleHit(): void {
-    this.handOutCard(<BlackjackPlayer>this.playerHand, false)
+    const handleLen = (this.playerHand as BlackjackPlayer).hand.length
+    this.handOutCard(
+      this.deck as Deck,
+      this.playerHand as BlackjackPlayer,
+      (this.playerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
+      (this.playerHandZone as Zone).y,
+      false,
+    )
+    this.playerHand?.getHandScore()
     this.setPlayerScoreText()
-    if ((<BlackjackPlayer>this.playerHand).getHandScore() > 21) {
+    if ((this.playerHand as BlackjackPlayer).getHandScore() > 21) {
       this.endHand(GameResult.BUST)
     }
   }
 
   private handleStay(): void {
     this.handleFlipOver()
-    setTimeout(() => this.drawCardsUntil17(), this.CARD_FLIP_TIME)
+    setTimeout(() => this.drawCardsUntil17(), 1000)
   }
 
   private handleDouble(): void {
-    this.handOutCard(<BlackjackPlayer>this.playerHand, false)
+    const handleLen = (this.playerHand as BlackjackPlayer).hand.length
+    this.handOutCard(
+      this.deck as Deck,
+      this.playerHand as BlackjackPlayer,
+      (this.playerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
+      (this.playerHandZone as Zone).y,
+      false,
+    )
     this.setPlayerScoreText()
     ;(<BetScene>this.betScene).bet *= 2
     this.updateBetText()
@@ -268,8 +322,15 @@ export default class Blackjack extends BaseScene {
   private drawCardsUntil17(): void {
     const dealerScore: number = (<BlackjackPlayer>this.dealerHand).getHandScore()
     const playerScore: number = (<BlackjackPlayer>this.playerHand).getHandScore()
+    const handleLen = (this.dealerHand as BlackjackPlayer).hand.length
     if (dealerScore < 17) {
-      this.handOutCard(<BlackjackPlayer>this.dealerHand, false)
+      this.handOutCard(
+        this.deck as Deck,
+        this.dealerHand as BlackjackPlayer,
+        (this.dealerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
+        (this.dealerHandZone as Zone).y,
+        false,
+      )
       setTimeout(() => this.drawCardsUntil17(), 500)
       return
     }
@@ -281,7 +342,7 @@ export default class Blackjack extends BaseScene {
     } else {
       result = GameResult.LOSS
     }
-    setTimeout(() => this.endHand(result), 500)
+    setTimeout(() => this.endHand(result), 700)
   }
 
   // cardflipする
@@ -289,14 +350,7 @@ export default class Blackjack extends BaseScene {
     ;(<BlackjackPlayer>this.dealerHand)?.hand.forEach((card) => {
       if (card.getFaceDown()) {
         card.setFaceDown(false)
-        const cardFront = this.add.image(
-          (this.faceDownImage as Image).x,
-          (this.faceDownImage as Image).y,
-          CARD_ATLAS_KEY,
-          card.getAtlasFrame(),
-        )
-        cardFront.setScale(0, 1)
-        this.flipOverCard(this.faceDownImage as Image, cardFront)
+        card.playFlipOverTween()
       }
     })
     this.setDealerScoreText()

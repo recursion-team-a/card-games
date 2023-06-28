@@ -1,4 +1,4 @@
-import Card from '../common/Card'
+import Card from '../common/CardImage'
 import GameDecision from '../common/GameDecision'
 import Player from '../common/Player'
 
