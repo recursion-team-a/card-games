@@ -58,4 +58,34 @@ export default class Button extends Phaser.GameObjects.Image {
     this.text.destroy()
     super.destroy()
   }
+
+  setClickHandler(pushHandler: () => void): void {
+    this.on(
+      'pointerdown',
+      () => {
+        pushHandler()
+      },
+      this,
+    )
+  }
+
+  resizeButton(scale: number): void {
+    if (scale < 0) {
+      throw new Error('Scale value cannot be negative.')
+    }
+    this.setScale(this.initScale * scale)
+  }
+
+  playMoveAndDestroy(toX: number, toY: number): void {
+    this.scene.tweens.add({
+      targets: this,
+      x: toX,
+      y: toY,
+      duration: 200,
+      ease: 'Linear',
+      onComplete: () => {
+        this.destroy()
+      },
+    })
+  }
 }

@@ -1,4 +1,4 @@
-import Card from './Card'
+import Card from './CardImage'
 
 export default abstract class Player {
   readonly p_name: string
@@ -81,5 +81,21 @@ export default abstract class Player {
 
   public addHand(card: Card | undefined): void {
     if (card instanceof Card) this.hand.push(card)
+  }
+
+  public addBet(bet: number) {
+    this.bet += bet
+  }
+
+  clearBet() {
+    this.bet = 0
+  }
+
+  removeCardFromHand(card: Card): void {
+    for (let i = 0; i < this.hand.length; i += 1) {
+      if (this.hand[i].suit === card.suit && this.hand[i].rank === card.rank) {
+        this.hand.splice(i, 1)
+      }
+    }
   }
 }
