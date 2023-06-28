@@ -6,6 +6,7 @@ import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
 import Card from '@/model/common/CardImage'
 import Deck from '@/model/common/DeckImage'
+import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
 import { houseSpeed, DEALER_SPEED } from '@/model/speed/const'
@@ -142,8 +143,8 @@ export default class Speed extends BaseScene {
 
   // ハウスのプレイを一定間隔で行うための関数（playhouseTurn()を呼び出す）
   private startHousePlay(delay: number): void {
-    const cpuLevel = this.registry.get('cpuLevel') ?? 'normal'
-    const speed = houseSpeed[cpuLevel]
+    const level = this.registry.get('cpuLevel') ?? CpuLevel.NORMAL
+    const speed = houseSpeed[level]
 
     this.time.delayedCall(delay, () => {
       this.houseTimeEvent = this.time.addEvent({

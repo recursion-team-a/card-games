@@ -1,5 +1,6 @@
 import BaseScene from '@/Phaser/common/BaseScene'
 import Button from '@/Phaser/common/button'
+import CpuLevel from '@/model/common/cpuLevel'
 import ImageUtility from '@/utility/ImageUtility'
 
 export default class CpuLevelScene extends BaseScene {
@@ -43,17 +44,17 @@ export default class CpuLevelScene extends BaseScene {
   }
 
   private handleEasy(): void {
-    this.registry.set('cpuLevel', 'easy')
+    this.registry.set('cpuLevel', CpuLevel.EASY)
     this.scene.start('Speed') // 要変更
   }
 
   private handleNormal(): void {
-    this.registry.set('cpuLevel', 'normal')
+    this.registry.set('cpuLevel', CpuLevel.NORMAL)
     this.scene.start('Speed') // 要変更
   }
 
   private handleHard(): void {
-    this.registry.set('cpuLevel', 'hard')
+    this.registry.set('cpuLevel', CpuLevel.HARD)
     this.scene.start('Speed') // 要変更
   }
 }
