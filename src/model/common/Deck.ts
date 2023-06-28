@@ -11,6 +11,8 @@ export default class Deck {
     this.shuffle()
   }
 
+  // if(this.gameType == ??)等でゲームの種類に応じて変更可能
+  // 現時点では, どのゲームも52枚で<List>cardsを生成
   generateDeck(gameType?: string, playerType?: string): void {
     const suits = ['♥︎', '♦', '♣', '♠']
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']

@@ -1,9 +1,9 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 
-import Deck from '../common/Deck'
-import GameDecision from '../common/GameDecision'
-import Table from '../common/Table'
-import BlackjackPlayer from './BlackjackPlayer'
+import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
+import Deck from '@/model/common/Deck'
+import GameDecision from '@/model/common/GameDecision'
+import Table from '@/model/common/Table'
 
 export default class BlackJackTable extends Table {
   // playするときに利用するため、publicに変更した
