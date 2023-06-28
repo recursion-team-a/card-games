@@ -6,6 +6,11 @@ export const textStyle = {
   strokeThickness: 5,
 }
 
+export const loadText = {
+  font: '20px monospace',
+  fill: '#FFFFFF',
+}
+
 export const CARD_WIDTH = 140
 export const CARD_HEIGHT = 190
 
