@@ -6,8 +6,8 @@ import Text = Phaser.GameObjects.Text
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
-import BlackJackTable from '@/model/blackJack/BlackJackTable'
-import BlackjackPlayer from '@/model/blackJack/BlackjackPlayer'
+import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
+import BlackjackTable from '@/model/blackjack/BlackjackTable'
 import Deck from '@/model/common/Deck'
 import GameResult from '@/model/common/gameResult'
 import { Result } from '@/model/common/types/game'
@@ -20,7 +20,7 @@ export default class Blackjack extends BaseScene {
     super({ key: 'Blackjack', active: false })
   }
 
-  protected blackjack: BlackJackTable | undefined
+  protected blackjack: BlackjackTable | undefined
 
   protected dealerHand: BlackjackPlayer | undefined
 
@@ -197,7 +197,7 @@ export default class Blackjack extends BaseScene {
     // カードをdrawするために呼び出した
     this.deck = new Deck('blackjack')
     // dealerとplayersを使うために呼び出した
-    this.blackjack = new BlackJackTable('')
+    this.blackjack = new BlackjackTable('')
     if (this.blackjack.players && this.blackjack.players.length >= 2) {
       ;[this.dealerHand, this.playerHand] = this.blackjack.players
     }
