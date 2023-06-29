@@ -1,18 +1,16 @@
-import * as path from 'path'
 import Phaser from 'phaser'
+import BaseScene from '../common/BaseScene'
+import Button from '../common/button'
 import Text = Phaser.GameObjects.Text
-import Texture = Phaser.Textures.Texture
-import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
-import TimeEvent = Phaser.Time.TimerEvent
-import { CARD_ATLAS_KEY, CARD_HEIGHT, CARD_WIDTH, CardFactory } from '@/Factories/cardFactory'
-import Card from '@/model/common/Card'
-import Deck from '@/model/common/Deck'
+import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
+import Card from '@/model/common/CardImage'
+import Deck from '@/model/common/DeckImage'
 import GameResult from '@/model/common/gameResult'
 import WarPlayer from '@/model/war/WarPlayer'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
-export default class WarScene extends Phaser.Scene {
+export default class WarScene extends BaseScene {
   private dealerHand: WarPlayer
 
   private playerHand: WarPlayer
@@ -21,29 +19,11 @@ export default class WarScene extends Phaser.Scene {
 
   private playerLead: Array<Card> = []
 
-  private deck: Deck
-
-  private atlasTexture: Texture | undefined
-
-  private CARD_MARGIN = 10
-
   private dealerScoreText: Text | undefined
 
   private playerScoreText: Text | undefined
 
-  private textHit: Text | undefined
-
-  private textStay: Text | undefined
-
-  private moneyText: Text | undefined
-
-  private cardImages: Image[] | undefined
-
-  private gameZone: Zone | undefined
-
-  private stayButton: Image | undefined
-
-  private hitButton: Image | undefined
+  private stayButton: Button | undefined
 
   private playerHandZone: Zone | undefined
 
@@ -53,74 +33,46 @@ export default class WarScene extends Phaser.Scene {
 
   private dealerScore: number
 
-  private faceDownImage: Image | undefined
+  public width: number = 1024
 
-  private CARD_FLIP_TIME = 600
+  public height: number = 768
 
-  private timeEvent: TimeEvent | undefined
-
-  private cardFactory: CardFactory | undefined
+  public players: Array<WarPlayer>
 
   constructor() {
     super({ key: 'WarScene', active: false })
     this.playerScore = 0
     this.dealerScore = 0
-    this.deck = new Deck('war')
+    this.players = [new WarPlayer('Player', 'Player'), new WarPlayer('Dealer', 'Dealer')]
     this.dealerHand = new WarPlayer('Dealer', 'Dealer')
     this.playerHand = new WarPlayer('Player', 'Player')
   }
 
-  preload(): void {
-    this.cardFactory = new CardFactory(
-      this,
-      path.join('/assets/Cards', 'playingCards.png'),
-      path.join('/assets/Cards/', 'playingCards.xml'),
-    )
-    this.load.image('table', path.join('/assets', 'table.jpg'))
-    this.atlasTexture = this.textures.get(CARD_ATLAS_KEY)
-    this.load.image('back', path.join('/assets', 'back.png'))
-    this.load.image('cardBack', path.join('/assets/Cards', 'cardBack.png'))
-    this.load.image('chipYellow', path.join('/assets/Chips', 'chipYellow.png'))
-    this.load.image('chipOrange', path.join('/assets/Chips', 'chipOrange.png'))
+  create(): void {
+    this.deck = new Deck(this, -100, -100, 'war')
+    super.createField()
+    this.createHandZone()
+    this.haveTurn()
   }
 
-  create(): void {
-    const { width, height } = this.sys.game.canvas
-    this.add.image(100, 300, 'table')
-    const table = this.add.image(width / 2, height / 2, 'table')
-    const scaleX = width / table.width
-    const scaleY = height / table.height
-    const scale = Math.max(scaleX, scaleY)
-    table.setScale(scale).setScrollFactor(0)
-
-    const button = this.add.image(100, 100, 'back')
-    const buttonScale = Math.min(width / 1920, height / 1080) * 1.5
-    button.setScale(buttonScale)
-
-    button.setInteractive()
-
-    button.on('pointerdown', () => {
-      window.location.href = '/studio'
-    })
-
-    this.gameZone = this.add.zone(width * 0.5, height * 0.5, width, height)
-    this.setUpNewGame()
+  createHandZone() {
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
-    Phaser.Display.Align.To.TopLeft(
-      this.playerHandZone,
+    this.setUpPlayerScoreText()
+    Phaser.Display.Align.To.TopCenter(
+      this.playerHandZone as Zone,
       this.playerScoreText as Text,
       0,
       GUTTER_SIZE,
     )
 
     this.dealerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
-    Phaser.Display.Align.To.BottomLeft(
-      this.dealerHandZone,
+    this.setUpDealerScoreText()
+    Phaser.Display.Align.To.BottomCenter(
+      this.dealerHandZone as Zone,
       this.dealerScoreText as Text,
       0,
       GUTTER_SIZE,
     )
-    this.haveTurn()
   }
 
   private haveTurn() {
@@ -130,46 +82,59 @@ export default class WarScene extends Phaser.Scene {
     })
   }
 
-  private handOutCard(hand: WarPlayer, lead: Array<Card>, faceDownCard: boolean) {
-    const card = this.deck.drawOne()
-    lead.push(<any>card)
-    let cardImage: Image
-    if (!faceDownCard) {
-      hand.addHand(card)
-      cardImage = this.add.image(0, 0, CARD_ATLAS_KEY, card?.getAtlasFrame())
-    } else {
-      hand.receiveCardFaceDown(card)
-      cardImage = this.add.image(0, 0, 'cardBack')
-      this.faceDownImage = cardImage
+  handOutCard(deck: Deck, player: WarPlayer, toX: number, toY: number, isFaceDown: boolean): void {
+    const card: Card | undefined = deck.drawOne()
+
+    if (!card) return
+
+    if (!isFaceDown) {
+      card.setFaceUp()
     }
-    const xOffset = hand.hand.length - 1
-    if (hand === this.playerHand) {
-      this.createCardTween(
-        cardImage,
-        (this.playerHandZone as Zone).x + xOffset,
-        (this.playerHandZone as Zone).y,
-      )
-      this.setPlayerScoreText()
-    } else {
-      this.createCardTween(
-        cardImage,
-        (this.dealerHandZone as Zone).x + xOffset,
-        (this.dealerHandZone as Zone).y,
-        350,
-      )
+
+    player.addHand(card)
+    if (player === this.dealerHand) {
+      this.dealerLead.push(card)
       this.setDealerScoreText()
+    } else {
+      this.playerLead.push(card)
+      this.setPlayerScoreText()
     }
+    this.children.bringToTop(card)
+    card.playMoveTween(toX, toY)
   }
 
-  // プレイヤーに手札を配る
+  //   // プレイヤーに手札を配る
   private assignPlayerCards() {
-    setTimeout(this.handOutCard.bind(this), 1, this.playerHand, this.playerLead, false)
-    setTimeout(this.handOutCard.bind(this), 500, this.dealerHand, this.dealerLead, true)
+    const player = this.playerHand
+    const house = this.dealerHand
+    this.time.delayedCall(1, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          player as WarPlayer,
+          (this.playerHandZone as Zone).x,
+          (this.playerHandZone as Zone).y,
+          false,
+        )
+      }
+    })
+
+    this.time.delayedCall(500, () => {
+      if (this.deck) {
+        this.handOutCard(
+          this.deck,
+          house as WarPlayer,
+          (this.dealerHandZone as Zone).x,
+          (this.dealerHandZone as Zone).y,
+          true,
+        )
+      }
+    })
   }
 
   private handleBattle(): void {
-    ;(this.textStay as Text).destroy()
-    this.handleFlipOver()
+    this.stayButton?.destroy()
+    this.dealerLead[this.dealerLead.length - 1].playFlipOverTween()
     setTimeout(() => this.evaluateWinner(), this.CARD_FLIP_TIME)
   }
 
@@ -179,7 +144,7 @@ export default class WarScene extends Phaser.Scene {
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     setTimeout(() => {
       resultText.destroy()
-      if (this.deck.getDeckSize() <= 0) this.handleEndOfGame()
+      if ((this.deck as Deck).getDeckSize() <= 0) this.handleEndOfGame()
       this.haveTurn()
     }, 1000)
   }
@@ -205,50 +170,11 @@ export default class WarScene extends Phaser.Scene {
     }, 5000)
   }
 
-  private createCardTween(image: Image, x: number, y: number, duration: number = 500) {
-    this.tweens.add({
-      targets: image,
-      x,
-      y,
-      duration,
-      ease: 'Linear',
-    })
-  }
-
-  private setUpNewGame() {
-    this.setUpDealerScoreText()
-    this.setUpPlayerScoreText()
-  }
-
-  private setUpClickHandler(image: Image, handlerFunction: Function) {
-    image.on('pointerdown', () => {
-      handlerFunction.call(this)
-    })
-  }
-
-  private setUpHoverStyles(image: Image) {
-    image.on('pointerover', () => {}, this)
-    image.on('pointerout', () => {}, this)
-  }
-
   private setUpBattleButton(): void {
-    this.stayButton = this.add
-      .image(
-        (this.gameZone as Zone).width * 0.66,
-        (this.gameZone as Zone).height * 0.5,
-        'chipOrange',
-      )
-      .setScale(1.4)
-    this.textStay = this.add.text(
-      (this.gameZone as Zone).width * 0.66,
-      (this.gameZone as Zone).height * 0.5,
-      'Battle',
-      textStyle,
-    )
-    Phaser.Display.Align.In.Center(this.textStay, this.stayButton)
-    this.stayButton.setInteractive()
-    this.setUpHoverStyles(this.stayButton)
-    this.setUpClickHandler(this.stayButton, this.handleBattle.bind(this))
+    this.stayButton = new Button(this, this.width / 2, this.height / 2, 'chipOrange', 'battle')
+    this.stayButton.setClickHandler(() => {
+      this.handleBattle()
+    })
   }
 
   private evaluateWinner(): void {
@@ -269,39 +195,6 @@ export default class WarScene extends Phaser.Scene {
       result = GameResult.TIE
     }
     setTimeout(() => this.showResult(result), 500)
-  }
-
-  private handleFlipOver() {
-    ;(<WarPlayer>this.dealerHand)?.hand.forEach((card) => {
-      if (card.getFaceDown()) {
-        card.setFaceDown(false)
-        const cardFront = this.add.image(
-          (this.faceDownImage as Image).x,
-          (this.faceDownImage as Image).y,
-          CARD_ATLAS_KEY,
-          card.getAtlasFrame(),
-        )
-        cardFront.setScale(0, 1)
-        this.flipOverCard(this.faceDownImage as Image, cardFront)
-      }
-    })
-    this.setDealerScoreText()
-  }
-
-  private flipOverCard(cardBack: Image, cardFront: Image) {
-    this.tweens.add({
-      targets: cardBack,
-      scaleX: 0,
-      duration: this.CARD_FLIP_TIME / 2,
-      ease: 'Linear',
-    })
-    this.tweens.add({
-      targets: cardFront,
-      scaleX: 1,
-      duration: this.CARD_FLIP_TIME / 2,
-      delay: this.CARD_FLIP_TIME / 2,
-      ease: 'Linear',
-    })
   }
 
   private setUpDealerScoreText(): void {

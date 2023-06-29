@@ -1,4 +1,4 @@
-import Card from '@/model/common/Card'
+import Card from '@/model/common/CardImage'
 import Player from '@/model/common/Player'
 
 export default class WarPlayer extends Player {

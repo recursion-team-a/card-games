@@ -9,6 +9,10 @@ export default class Card extends Phaser.GameObjects.Image {
   // カードが表か裏か
   private p_faceDown: boolean
 
+  public originalPositionX: number | undefined
+
+  public originalPositionY: number | undefined
+
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -34,6 +38,14 @@ export default class Card extends Phaser.GameObjects.Image {
     return this.p_suit
   }
 
+  public getFaceDown(): boolean {
+    return this.faceDown
+  }
+
+  public setFaceDown(faceDown: boolean) {
+    this.p_faceDown = faceDown
+  }
+
   get rank(): string {
     return this.p_rank
   }
@@ -51,6 +63,33 @@ export default class Card extends Phaser.GameObjects.Image {
     this.p_faceDown = false
     this.setTexture(CARD_ATLAS_KEY)
     this.setFrame(this.getAtlasFrame())
+  }
+
+  enableClick(): void {
+    this.on('pointerdown', this.onClick, this)
+    this.setOriginalPosition()
+  }
+
+  disableClick(): void {
+    this.off('pointerdown', this.onClick, this)
+  }
+
+  private onClick(): void {
+    if (this.y === this.originalPositionY) {
+      this.y -= 20
+    } else {
+      this.y = this.originalPositionY as number
+    }
+  }
+
+  playMoveTween(toX: number, toY: number): void {
+    this.scene.tweens.add({
+      targets: this,
+      x: toX,
+      y: toY,
+      duration: 500,
+      ease: 'Linear',
+    })
   }
 
   // ドラッグ可能な状態にする
@@ -82,6 +121,15 @@ export default class Card extends Phaser.GameObjects.Image {
         })
       },
     })
+  }
+
+  isMoveUp(): boolean {
+    return this.y !== this.originalPositionY
+  }
+
+  setOriginalPosition(): void {
+    this.originalPositionX = this.x
+    this.originalPositionY = this.y
   }
 
   // カードのゲームごとの強さを整数で返す
