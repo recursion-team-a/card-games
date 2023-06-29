@@ -681,7 +681,6 @@ export default class Poker extends BaseScene {
     })
 
     return Object.keys(suitCountMap).some((suit) => suitCountMap[suit] >= 4 && suit === cardSuit)
-    return false
   }
 
   private static isCardPartOfStraight(cardRank: number, ranks: number[]): boolean {
