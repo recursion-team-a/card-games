@@ -24,4 +24,6 @@ const HAND_RANK_MAP = new Map([
   ['ROYAL_STRAIGHT_FLUSH', 10],
 ])
 
-export { HAND_RANK, HAND_RANK_MAP }
+const RANK_CHOICES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+
+export { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES }

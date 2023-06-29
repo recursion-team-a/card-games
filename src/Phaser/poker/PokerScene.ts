@@ -3,7 +3,7 @@ import BaseScene from '../common/BaseScene'
 import Button from '../common/button'
 import GameResult from './constants/gameResult'
 import GameStatus from './constants/gameStatus'
-import { HAND_RANK_MAP } from './constants/handRank'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from './constants/handRank'
 import PlayerAction from './constants/playAction'
 import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
@@ -578,10 +578,14 @@ export default class Poker extends BaseScene {
   private cpuChangeHand(playerIndex: number): void {
     const selectedCards: Card[] = []
     this.players[1].gameStatus = GameStatus.SECOND_BETTING
-    // カードをランダムに選ぶ処理
+    const handStrength = this.players[playerIndex].getHandRank()
+    const ranks = this.players[playerIndex].getRanks()
+    const playerHand = this.players[playerIndex].hand
+
     this.players[playerIndex].hand.forEach((card) => {
-      const randamNum = Math.random()
-      if (randamNum > 0.5) selectedCards.push(card)
+      if (Poker.shouldDiscardCard(card, handStrength, ranks, playerHand)) {
+        selectedCards.push(card)
+      }
     })
 
     if (selectedCards.length === 0) return
@@ -605,6 +609,108 @@ export default class Poker extends BaseScene {
 
       this.nextPlayerTurnOnChangeHandRound(0)
     })
+  }
+
+  private static shouldDiscardCard(
+    card: Card,
+    handRank: number,
+    ranks: number[],
+    hand: Card[],
+  ): boolean {
+    // 5枚で, スコアの高い役がすでにできている場合は交換しない
+    if (handRank === HAND_RANK_MAP.get(HAND_RANK.ROYAL_STRAIGHT_FLUSH)) {
+      return false
+    }
+
+    if (handRank === HAND_RANK_MAP.get(HAND_RANK.STRAIGHT_FLUSH)) {
+      return false
+    }
+
+    if (handRank === HAND_RANK_MAP.get(HAND_RANK.FULL_HOUSE)) {
+      return false
+    }
+
+    if (handRank === HAND_RANK_MAP.get(HAND_RANK.FLUSH)) {
+      return false
+    }
+
+    if (handRank === HAND_RANK_MAP.get(HAND_RANK.STRAIGHT)) {
+      return false
+    }
+
+    // ペアやスリーオブアカインド等が既に存在する場合にはそれらを構成するカードを保持
+    const cardRank = RANK_CHOICES.indexOf(card.rank)
+    const count = ranks.filter((rank) => rank === cardRank).length
+    if (count >= 2) {
+      return false
+    }
+
+    // フラッシュにあと一枚でなる場合, フラッシュになっている4枚に含まれているかをチェックする
+    if (Poker.isCardPartOfFlush(card, hand)) {
+      return false
+    }
+
+    // あと一枚でストレートになる場合, ストレートになっている4枚に含まれるかどうかをチェックする
+    if (Poker.isCardPartOfStraight(cardRank, ranks)) {
+      return false
+    }
+
+    // 役がなにもない場合, もしくはワンペアの場合は, 高ランクカードは保持
+    if (
+      (handRank === HAND_RANK_MAP.get(HAND_RANK.FULL_HOUSE) ||
+        handRank === HAND_RANK_MAP.get(HAND_RANK.ONE_PAIR)) &&
+      (card.rank === 'A' || card.rank === 'K' || card.rank === 'Q')
+    ) {
+      return false
+    }
+
+    return true
+  }
+
+  private static isCardPartOfFlush({ suit: cardSuit }: Card, hand: Card[]): boolean {
+    const suitCountMap = { [cardSuit]: 1 }
+
+    hand.forEach(({ suit }) => {
+      if (suit !== cardSuit) {
+        if (suitCountMap[suit]) {
+          suitCountMap[suit] += 1
+        } else {
+          suitCountMap[suit] = 1
+        }
+      }
+    })
+
+    return Object.keys(suitCountMap).some((suit) => suitCountMap[suit] >= 4 && suit === cardSuit)
+    return false
+  }
+
+  private static isCardPartOfStraight(cardRank: number, ranks: number[]): boolean {
+    const sortedRanks = [...ranks].sort((a, b) => a - b)
+    const cardRankSortedIndex = sortedRanks.indexOf(cardRank)
+    if (sortedRanks[3] - sortedRanks[0] === 3) {
+      if (
+        cardRankSortedIndex >= 3 &&
+        sortedRanks[cardRankSortedIndex] - sortedRanks[cardRankSortedIndex - 1] === 1
+      ) {
+        return true
+      }
+      if (sortedRanks[cardRankSortedIndex + 1] - sortedRanks[cardRankSortedIndex] === 1) {
+        return true
+      }
+    }
+
+    if (sortedRanks[4] - sortedRanks[1] === 3) {
+      if (
+        cardRankSortedIndex <= 2 &&
+        sortedRanks[cardRankSortedIndex + 1] - sortedRanks[cardRankSortedIndex] === 1
+      ) {
+        return true
+      }
+      if (sortedRanks[cardRankSortedIndex] - sortedRanks[cardRankSortedIndex - 1] === 1) {
+        return true
+      }
+    }
+    return false
   }
 
   private enableHandSelection(): void {
