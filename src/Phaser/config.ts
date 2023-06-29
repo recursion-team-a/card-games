@@ -1,6 +1,5 @@
 import Phaser from 'phaser'
 import BetScene from './BetScene'
-import PreloadScene from './PreloadScene'
 import Blackjack from './blackjack/BlackjackScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -25,7 +24,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [PreloadScene, BetScene, Blackjack],
+  scene: [BetScene, Blackjack],
 }
 
 export default gameConfig

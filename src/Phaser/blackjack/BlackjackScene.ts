@@ -198,7 +198,7 @@ export default class Blackjack extends BaseScene {
         this.input.once(
           'pointerdown',
           () => {
-            this.scene.start('BetScene')
+            window.location.href = '/studio'
           },
           this,
         )
