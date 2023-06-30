@@ -1,11 +1,11 @@
-import Player from '../common/Player'
+import Player from '@/model/common/Player'
 
 export default class BlackjackPlayer extends Player {
   /*
       return Number : 手札の合計
       合計が21を超える場合、手札の各エースについて、合計が21以下になるまで10を引きます。
     */
-  getHandScore(): number {
+  public getHandScore(): number {
     let handScore = 0
     let numbersOfAces = 0
 

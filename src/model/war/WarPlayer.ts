@@ -1,8 +1,8 @@
-import Card from '@/model/common/CardImage'
+import Card from '@/Phaser/common/CardImage'
 import Player from '@/model/common/Player'
 
 export default class WarPlayer extends Player {
-  getHandScore(): number {
+  public getHandScore(): number {
     let handScore = 0
     for (let i = 0; i < this.hand.length; i += 1) {
       handScore += this.hand[i].getRankNumber('war')

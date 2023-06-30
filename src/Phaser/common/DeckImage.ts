@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Card from '@/model/common/CardImage'
+import Card from '@/Phaser/common/CardImage'
 
 export default class Deck {
   private cards: Card[]

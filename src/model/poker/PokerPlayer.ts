@@ -1,4 +1,4 @@
-import Card from '../common/CardImage'
+import Card from '../../Phaser/common/CardImage'
 import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/Phaser/poker/constants/handRank'
 
 export default class PokerPlayer {

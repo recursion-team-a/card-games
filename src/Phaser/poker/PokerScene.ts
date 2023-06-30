@@ -8,8 +8,8 @@ import PlayerAction from './constants/playAction'
 import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
 import { Result } from '@/model/common/types/game'
 import PokerPlayer from '@/model/poker/PokerPlayer'
 import Pot from '@/model/poker/Pot'

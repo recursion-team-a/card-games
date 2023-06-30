@@ -1,4 +1,4 @@
-import Card from '@/model/common/CardImage'
+import Card from '@/Phaser/common/CardImage'
 
 export default abstract class Player {
   private p_name: string
@@ -95,11 +95,11 @@ export default abstract class Player {
     this.bet += bet
   }
 
-  clearBet() {
+  public clearBet() {
     this.bet = 0
   }
 
-  removeCardFromHand(card: Card): void {
+  public removeCardFromHand(card: Card): void {
     for (let i = 0; i < this.hand.length; i += 1) {
       if (this.hand[i].suit === card.suit && this.hand[i].rank === card.rank) {
         this.hand.splice(i, 1)

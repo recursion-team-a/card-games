@@ -4,8 +4,8 @@ import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
 import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
@@ -208,7 +208,7 @@ export default class Speed extends BaseScene {
       const card = player.hand[i]
       for (let index = 0; index < this.dropCardRanks.length; index += 1) {
         if (Speed.isNextRank(card.getRankNumber('speed'), this.dropCardRanks[index])) {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           return { card, index }
         }
       }
@@ -290,7 +290,7 @@ export default class Speed extends BaseScene {
       // 置いたカードを手札から抜き, 一枚配る
       this.players.forEach((player) => {
         if (player.playerType === 'player') {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           this.handOutCard(
             this.playerDeck as Deck,
             player as SpeedPlayer,
