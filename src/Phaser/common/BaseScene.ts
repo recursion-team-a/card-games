@@ -43,7 +43,7 @@ export default class BaseScene extends PreloadScene {
     this.INITIAL_TIME = 2
 
     button.on('pointerdown', () => {
-      this.scene.start('BetScene')
+      window.location.href = '/studio'
     })
     this.gameZone = this.add.zone(width * 0.5, height * 0.5, width, height)
   }

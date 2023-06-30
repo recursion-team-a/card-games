@@ -1,7 +1,5 @@
 import Card from '../common/CardImage'
-import { HAND_RANK, HAND_RANK_MAP } from '@/Phaser/poker/constants/handRank'
-
-const RANK_CHOICES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/Phaser/poker/constants/handRank'
 
 export default class PokerPlayer {
   private suits: string[]
@@ -50,7 +48,7 @@ export default class PokerPlayer {
     return this.hand.length
   }
 
-  getHandRank(): number {
+  getRanks(): number[] {
     const ranks: number[] = this.hand
       .map((card) =>
         RANK_CHOICES.indexOf(
@@ -58,6 +56,12 @@ export default class PokerPlayer {
         ),
       )
       .sort((a, b) => a - b)
+
+    return ranks
+  }
+
+  getHandRank(): number {
+    const ranks = this.getRanks()
 
     // フラッシュ
     const isFlush = this.hand.every((card) => card.suit === this.hand[0].suit)
