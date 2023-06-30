@@ -250,7 +250,7 @@ export default class Poker extends BaseScene {
       noContestText.destroy()
       this.players.forEach((player) => {
         // eslint-disable-next-line no-param-reassign
-        player.hand = []
+        player.clearBet()
       })
       this.dealInitialCards()
       this.PlayAnte()

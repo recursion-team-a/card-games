@@ -1,54 +1,24 @@
+import Player from '../common/Player'
 import Card from '@/Phaser/common/CardImage'
 import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
 
-export default class PokerPlayer {
+export default class PokerPlayer extends Player {
   private suits: string[]
 
   private ranks: number[]
 
-  public hand: Array<Card> = []
-
-  private p_gameStatus: string
-
-  public name: string
-
-  public playerType: string
-
-  public p_bet: number = 0
-
   constructor(name: string, playerType: string, gameStatus: string) {
-    this.name = name
-    this.playerType = playerType
+    super(name, playerType)
     this.suits = this.hand.map((card) => card.suit)
     this.ranks = this.hand.map((card) => card.getRankNumber('poker')).sort((a, b) => a - b)
-    this.p_gameStatus = gameStatus
+    this.gameStatus = gameStatus
   }
 
-  get gameStatus(): string {
-    return this.p_gameStatus
-  }
-
-  set gameStatus(gameStatus: string) {
-    this.p_gameStatus = gameStatus
-  }
-
-  get bet(): number {
-    return this.p_bet
-  }
-
-  set bet(bet: number) {
-    this.p_bet = bet
-  }
-
-  clearHand() {
-    this.hand = []
-  }
-
-  getHandScore(): number {
+  public getHandScore(): number {
     return this.hand.length
   }
 
-  getRanks(): number[] {
+  public getRanks(): number[] {
     const ranks: number[] = this.hand
       .map((card) =>
         RANK_CHOICES.indexOf(
@@ -60,7 +30,7 @@ export default class PokerPlayer {
     return ranks
   }
 
-  getHandRank(): number {
+  public getHandRank(): number {
     const ranks = this.getRanks()
 
     // フラッシュ
@@ -116,16 +86,8 @@ export default class PokerPlayer {
 
   // 各役の判定メソッド
   // ロイヤルストレートフラッシュ(10, 11, 12, 13, 1の5枚でsuitが同じ)
-  isRoyalFlush(): boolean {
+  public isRoyalFlush(): boolean {
     return this.isFlush() && this.isStraight() && this.ranks[0] === 10
-  }
-
-  public addHand(card: Card | undefined): void {
-    if (card instanceof Card) this.hand.push(card)
-  }
-
-  public addBet(bet: number) {
-    this.bet += bet
   }
 
   public receiveCardFaceDown(card: Card | undefined): void {
@@ -133,42 +95,30 @@ export default class PokerPlayer {
     if (card instanceof Card) this.hand.push(card)
   }
 
-  removeCardFromHand(card: Card): void {
-    for (let i = 0; i < this.hand.length; i += 1) {
-      if (this.hand[i].suit === card.suit && this.hand[i].rank === card.rank) {
-        this.hand.splice(i, 1)
-      }
-    }
-  }
-
-  clearBet() {
-    this.bet = 0
-  }
-
   // ストレートフラッシュ
-  isStraightFlush(): boolean {
+  public isStraightFlush(): boolean {
     return this.isFlush() && this.isStraight()
   }
 
   // フォーカード
-  isFourOfAKind(): boolean {
+  public isFourOfAKind(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(4)
   }
 
   // フルハウス（同数位のカード3枚とペア）
-  isFullHouse(): boolean {
+  public isFullHouse(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(3) && rankCounts.includes(2)
   }
 
   // フラッシュ(一種類のsuit)
-  isFlush(): boolean {
+  public isFlush(): boolean {
     return new Set(this.suits).size === 1
   }
 
   // ストレート（5枚のカードの数位が連続・10JQKAはストレート・KA2などは×）
-  isStraight(): boolean {
+  public isStraight(): boolean {
     if (
       this.ranks[0] === 0 &&
       this.ranks[1] === 9 &&
@@ -187,25 +137,25 @@ export default class PokerPlayer {
   }
 
   // スリーカード
-  isThreeOfAKind(): boolean {
+  public isThreeOfAKind(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(3)
   }
 
   // ツーペア
-  isTwoPair(): boolean {
+  public isTwoPair(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.filter((count) => count === 2).length === 2
   }
 
   // ワンペア
-  isOnePair(): boolean {
+  public isOnePair(): boolean {
     const rankCounts = this.countRanks()
     return rankCounts.includes(2)
   }
 
   // 各ランクの数を数えます
-  countRanks(): number[] {
+  public countRanks(): number[] {
     const counts: number[] = Array(13).fill(0)
     for (let i = 0; i < this.ranks.length; i += 1) {
       counts[this.ranks[i]] += 1

@@ -99,6 +99,10 @@ export default abstract class Player {
     this.bet = 0
   }
 
+  public clearHand() {
+    this.hand.length = 0
+  }
+
   public removeCardFromHand(card: Card): void {
     for (let i = 0; i < this.hand.length; i += 1) {
       if (this.hand[i].suit === card.suit && this.hand[i].rank === card.rank) {
