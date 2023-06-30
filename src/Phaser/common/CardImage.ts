@@ -65,12 +65,12 @@ export default class Card extends Phaser.GameObjects.Image {
     this.setFrame(this.getAtlasFrame())
   }
 
-  enableClick(): void {
+  public enableClick(): void {
     this.on('pointerdown', this.onClick, this)
     this.setOriginalPosition()
   }
 
-  disableClick(): void {
+  public disableClick(): void {
     this.off('pointerdown', this.onClick, this)
   }
 
@@ -82,7 +82,7 @@ export default class Card extends Phaser.GameObjects.Image {
     }
   }
 
-  playMoveTween(toX: number, toY: number): void {
+  public playMoveTween(toX: number, toY: number): void {
     this.scene.tweens.add({
       targets: this,
       x: toX,
@@ -103,7 +103,7 @@ export default class Card extends Phaser.GameObjects.Image {
     this.setPosition(this.input?.dragStartX, this.input?.dragStartY)
   }
 
-  playFlipOverTween(): void {
+  public playFlipOverTween(): void {
     this.scene.tweens.add({
       targets: this,
       scaleX: 0,
@@ -123,17 +123,17 @@ export default class Card extends Phaser.GameObjects.Image {
     })
   }
 
-  isMoveUp(): boolean {
+  public isMoveUp(): boolean {
     return this.y !== this.originalPositionY
   }
 
-  setOriginalPosition(): void {
+  public setOriginalPosition(): void {
     this.originalPositionX = this.x
     this.originalPositionY = this.y
   }
 
   // カードのゲームごとの強さを整数で返す
-  getRankNumber(gameType: string): number {
+  public getRankNumber(gameType: string): number {
     let rankToNumber
     switch (gameType) {
       case 'blackjack':

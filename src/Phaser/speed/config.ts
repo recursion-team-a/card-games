@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
-import CpuLevelScene from '../CpuLevelScene'
-import Speed from './SpeedScene'
+import CpuLevelScene from '@/Phaser/common/CpuLevelScene'
+import Speed from '@/Phaser/speed/SpeedScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

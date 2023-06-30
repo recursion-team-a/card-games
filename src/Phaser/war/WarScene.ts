@@ -1,11 +1,11 @@
 import Phaser from 'phaser'
-import BaseScene from '../common/BaseScene'
-import Button from '../common/button'
 import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
+import BaseScene from '@/Phaser/common/BaseScene'
 import Card from '@/Phaser/common/CardImage'
 import Deck from '@/Phaser/common/DeckImage'
+import Button from '@/Phaser/common/button'
 import GameResult from '@/model/common/gameResult'
 import WarPlayer from '@/model/war/WarPlayer'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
@@ -48,14 +48,14 @@ export default class WarScene extends BaseScene {
     this.playerHand = new WarPlayer('Player', 'Player')
   }
 
-  create(): void {
+  public create(): void {
     this.deck = new Deck(this, -100, -100, 'war')
     super.createField()
     this.createHandZone()
     this.haveTurn()
   }
 
-  createHandZone() {
+  public createHandZone() {
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
     this.setUpPlayerScoreText()
     Phaser.Display.Align.To.TopCenter(
@@ -82,7 +82,13 @@ export default class WarScene extends BaseScene {
     })
   }
 
-  handOutCard(deck: Deck, player: WarPlayer, toX: number, toY: number, isFaceDown: boolean): void {
+  public handOutCard(
+    deck: Deck,
+    player: WarPlayer,
+    toX: number,
+    toY: number,
+    isFaceDown: boolean,
+  ): void {
     const card: Card | undefined = deck.drawOne()
 
     if (!card) return

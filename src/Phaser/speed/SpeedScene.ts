@@ -45,7 +45,7 @@ export default class Speed extends BaseScene {
 
   protected dropCardRanks: number[] = [] // 台札のカード番号, 長さ2の配列
 
-  create(): void {
+  public create(): void {
     // betSceneに戻るためのボタン
     this.createField()
 
@@ -70,7 +70,7 @@ export default class Speed extends BaseScene {
     this.startDealer()
   }
 
-  update(): void {
+  public update(): void {
     let result: GameResult | undefined
 
     if (this.gamePhase === 'acting') {
@@ -86,7 +86,7 @@ export default class Speed extends BaseScene {
     }
   }
 
-  createHandZone() {
+  public createHandZone() {
     Phaser.Display.Align.To.TopCenter(
       this.playerHandZone as Zone,
       this.playerDeckSizeText as Text,

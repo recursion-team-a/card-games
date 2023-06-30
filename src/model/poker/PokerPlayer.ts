@@ -1,5 +1,5 @@
 import Card from '@/Phaser/common/CardImage'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/Phaser/poker/constants/handRank'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
 
 export default class PokerPlayer {
   private suits: string[]

@@ -2,9 +2,9 @@ import Text = Phaser.GameObjects.Text
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
-import BetScene from '@/Phaser/BetScene'
-import PreloadScene from '@/Phaser/PreloadScene'
+import BetScene from '@/Phaser/common/BetScene'
 import Deck from '@/Phaser/common/DeckImage'
+import PreloadScene from '@/Phaser/common/PreloadScene'
 import { textStyle } from '@/utility/constants'
 
 export default class BaseScene extends PreloadScene {
@@ -26,7 +26,7 @@ export default class BaseScene extends PreloadScene {
 
   public betScene: BetScene | undefined
 
-  createField() {
+  public createField() {
     const { width, height } = this.sys.game.canvas
     this.add.image(100, 300, 'table')
     const table = this.add.image(width / 2, height / 2, 'table')

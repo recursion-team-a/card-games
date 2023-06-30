@@ -1,11 +1,11 @@
 import Phaser from 'phaser'
-import ImageUtility from '../utility/ImageUtility'
-import { textStyle } from '../utility/constants'
-import PreloadScene from './PreloadScene'
-import Button from './common/button'
 import Zone = Phaser.GameObjects.Zone
 import Image = Phaser.GameObjects.Image
 import Text = Phaser.GameObjects.Text
+import PreloadScene from '@/Phaser/common/PreloadScene'
+import Button from '@/Phaser/common/button'
+import ImageUtility from '@/utility/ImageUtility'
+import { textStyle } from '@/utility/constants'
 
 export default class BetScene extends PreloadScene {
   public gameZone?: Zone
@@ -30,7 +30,7 @@ export default class BetScene extends PreloadScene {
     super({ key: 'BetScene', active: true })
   }
 
-  create(): void {
+  public create(): void {
     const { width, height } = this.sys.game.canvas
     this.height = height
     this.width = width
@@ -131,7 +131,7 @@ export default class BetScene extends PreloadScene {
   }
 
   // clearボタンとdealボタン
-  setUpButtons(): void {
+  public setUpButtons(): void {
     const clearButton = new Button(this, 0, this.height * 0.75, 'chipBlue', 'clear')
     const dealButton = new Button(this, 200, this.height * 0.75, 'chipBlue', 'Deal')
     clearButton.on(

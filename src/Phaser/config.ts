@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
-import BetScene from './BetScene'
-import Blackjack from './blackjack/BlackjackScene'
+import Blackjack from '@/Phaser/blackjack/BlackjackScene'
+import BetScene from '@/Phaser/common/BetScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

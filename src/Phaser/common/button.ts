@@ -3,11 +3,11 @@ import { textStyle } from '../../utility/constants'
 import Text = Phaser.GameObjects.Text
 
 export default class Button extends Phaser.GameObjects.Image {
-  key: string
+  public key: string
 
-  initScale: number
+  public initScale: number
 
-  text: Text
+  public text: Text
 
   constructor(
     scene: Phaser.Scene,
@@ -32,7 +32,7 @@ export default class Button extends Phaser.GameObjects.Image {
     this.setUpHoverButtons()
   }
 
-  setUpHoverButtons(): void {
+  public setUpHoverButtons(): void {
     this.on(
       'pointerover',
       () => {
@@ -49,17 +49,17 @@ export default class Button extends Phaser.GameObjects.Image {
     )
   }
 
-  setX(x: number): any {
+  public setX(x: number): any {
     super.setX(x)
     Phaser.Display.Align.In.Center(this.text, this)
   }
 
-  destroy(): void {
+  public destroy(): void {
     this.text.destroy()
     super.destroy()
   }
 
-  setClickHandler(pushHandler: () => void): void {
+  public setClickHandler(pushHandler: () => void): void {
     this.on(
       'pointerdown',
       () => {
@@ -69,14 +69,14 @@ export default class Button extends Phaser.GameObjects.Image {
     )
   }
 
-  resizeButton(scale: number): void {
+  public resizeButton(scale: number): void {
     if (scale < 0) {
       throw new Error('Scale value cannot be negative.')
     }
     this.setScale(this.initScale * scale)
   }
 
-  playMoveAndDestroy(toX: number, toY: number): void {
+  public playMoveAndDestroy(toX: number, toY: number): void {
     this.scene.tweens.add({
       targets: this,
       x: toX,

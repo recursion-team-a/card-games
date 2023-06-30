@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "lint": "yarn eslint . --ext .ts,.tsx",
+    "lint": "yarn eslint --fix . --ext .ts,.tsx",
     "format": "prettier --write .",
     "prepare": "husky install"
   },

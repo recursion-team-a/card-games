@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
-import { textStyle } from '../../utility/constants'
 import Text = Phaser.GameObjects.Text
+import { textStyle } from '@/utility/constants'
 
 const MOVE_TIME = 200
 
@@ -39,25 +39,25 @@ export default class Pot extends Phaser.GameObjects.Image {
     this.setDataEnabled()
   }
 
-  destroy(): void {
+  public destroy(): void {
     if (this.text !== undefined) this.text.destroy()
     super.destroy()
   }
 
-  setAmount(amount: number): void {
+  public setAmount(amount: number): void {
     if (this.potAmount !== undefined) this.potAmount += amount
     if (this.text !== undefined) this.text.setText(`POT: ${this.potAmount}`)
   }
 
-  getAmount(): number | undefined {
+  public getAmount(): number | undefined {
     return this.potAmount
   }
 
-  clear(): void {
+  public clear(): void {
     this.potAmount = 0
   }
 
-  playMoveTween(toX: number, toY: number): void {
+  public playMoveTween(toX: number, toY: number): void {
     this.scene.tweens.add({
       targets: this,
       x: toX,
