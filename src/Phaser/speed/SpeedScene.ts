@@ -9,7 +9,7 @@ import Deck from '@/Phaser/common/DeckImage'
 import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
-import { houseSpeed, DEALER_SPEED } from '@/model/speed/const'
+import { houseSpeed, DEALER_SPEED } from '@/model/speed/speedCpuConfig'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
 export default class Speed extends BaseScene {

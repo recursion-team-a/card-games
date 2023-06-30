@@ -10,9 +10,9 @@ import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import Card from '@/Phaser/common/CardImage'
 import Deck from '@/Phaser/common/DeckImage'
+import Pot from '@/Phaser/poker/Pot'
 import { Result } from '@/model/common/types/game'
 import PokerPlayer from '@/model/poker/PokerPlayer'
-import Pot from '@/model/poker/Pot'
 import { textStyle, GUTTER_SIZE } from '@/utility/constants'
 
 const ANTE_AMOUNT = 20
