@@ -1,9 +1,9 @@
-import Card from './CardImage'
+import Card from '@/model/common/CardImage'
 
 export default abstract class Player {
-  readonly p_name: string
+  private p_name: string
 
-  readonly p_playerType: string
+  private p_playerType: string
 
   private p_chips: number
 
@@ -79,8 +79,6 @@ export default abstract class Player {
   set hand(card: Card) {
     this.p_hand.push(card)
   }
-
-  abstract promptPlayer(): any
 
   abstract getHandScore(): number
 
