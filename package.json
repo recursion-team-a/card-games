@@ -9,9 +9,13 @@
     "test": "jest",
     "lint": "yarn eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "static": "next build && next export"
   },
   "dependencies": {
+    "@capacitor/cli": "^5.1.0",
+    "@capacitor/core": "^5.1.0",
+    "@capacitor/ios": "^5.1.0",
     "@types/node": "20.2.5",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
