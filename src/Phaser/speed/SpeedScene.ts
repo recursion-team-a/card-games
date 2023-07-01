@@ -195,7 +195,7 @@ export default class Speed extends BaseScene {
 
     this.children.bringToTop(card)
     this.dropCardRanks[index] = card.getRankNumber('speed')
-    this.createCardTween(card, (this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
+    card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
     this.handOutCard(this.houseDeck as Deck, house as SpeedPlayer, card.x, card.y, false)
   }
 
@@ -350,7 +350,7 @@ export default class Speed extends BaseScene {
     player.addHand(card)
 
     this.children.bringToTop(card)
-    this.createCardTween(card, x, y)
+    card.playMoveTween(x, y)
     this.setHouseDeckSizeText()
     this.setPlayerDeckSizeText()
   }
@@ -383,11 +383,7 @@ export default class Speed extends BaseScene {
 
       this.dropCardRanks[index] = card.getRankNumber('speed')
       this.children.bringToTop(card)
-      this.createCardTween(
-        card,
-        (this.dropZones[index] as Zone).x,
-        (this.dropZones[index] as Zone).y,
-      )
+      card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
 
       if (card.faceDown) {
         this.time.delayedCall(1500, () => {
