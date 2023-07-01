@@ -93,6 +93,7 @@ export default class Blackjack extends BaseScene {
     toX: number,
     toY: number,
     isFaceDown: boolean,
+    isEnd?: boolean | undefined,
   ): void {
     const card: Card | undefined = deck.drawOne()
 
@@ -103,10 +104,12 @@ export default class Blackjack extends BaseScene {
     }
 
     player.addHand(card)
-    if (player === this.dealerHand) {
+    if (player === this.dealerHand && isEnd) {
+      this.setDealerScoreText()
+    }
+    if (player === this.playerHand) {
       this.setPlayerScoreText()
     }
-    this.setDealerScoreText()
     this.children.bringToTop(card)
     card.playMoveTween(toX, toY)
   }
@@ -330,6 +333,7 @@ export default class Blackjack extends BaseScene {
         (this.dealerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
         (this.dealerHandZone as Zone).y,
         false,
+        true,
       )
       setTimeout(() => this.drawCardsUntil17(), 500)
       return
@@ -358,7 +362,7 @@ export default class Blackjack extends BaseScene {
 
   private setUpDealerScoreText(): void {
     this.dealerScoreText = this.add.text(0, 200, '', textStyle)
-    this.setDealerScoreText()
+    this.setDealerScoreText(true)
     Phaser.Display.Align.In.TopCenter(this.dealerScoreText, this.gameZone as Zone, 0, -20)
   }
 
@@ -368,8 +372,12 @@ export default class Blackjack extends BaseScene {
     Phaser.Display.Align.In.BottomCenter(this.playerScoreText, this.gameZone as Zone, 0, -20)
   }
 
-  private setDealerScoreText() {
-    ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.dealerHand?.getHandScore()}`)
+  private setDealerScoreText(isStart?: boolean | undefined) {
+    if (isStart) {
+      ;(this.dealerScoreText as Text).setText('Dealer Score: ??')
+    } else {
+      ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.dealerHand?.getHandScore()}`)
+    }
   }
 
   private setPlayerScoreText() {
