@@ -1,5 +1,4 @@
 import Player from '../common/Player'
-import Card from '@/Phaser/common/CardImage'
 import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
 
 export default class PokerPlayer extends Player {
@@ -82,84 +81,5 @@ export default class PokerPlayer extends Player {
       return HAND_RANK_MAP.get(HAND_RANK.STRAIGHT) as number
     }
     return HAND_RANK_MAP.get(HAND_RANK.HIGH_CARD) as number
-  }
-
-  // 各役の判定メソッド
-  // ロイヤルストレートフラッシュ(10, 11, 12, 13, 1の5枚でsuitが同じ)
-  public isRoyalFlush(): boolean {
-    return this.isFlush() && this.isStraight() && this.ranks[0] === 10
-  }
-
-  public receiveCardFaceDown(card: Card | undefined): void {
-    card?.setFaceUp()
-    if (card instanceof Card) this.hand.push(card)
-  }
-
-  // ストレートフラッシュ
-  public isStraightFlush(): boolean {
-    return this.isFlush() && this.isStraight()
-  }
-
-  // フォーカード
-  public isFourOfAKind(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(4)
-  }
-
-  // フルハウス（同数位のカード3枚とペア）
-  public isFullHouse(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(3) && rankCounts.includes(2)
-  }
-
-  // フラッシュ(一種類のsuit)
-  public isFlush(): boolean {
-    return new Set(this.suits).size === 1
-  }
-
-  // ストレート（5枚のカードの数位が連続・10JQKAはストレート・KA2などは×）
-  public isStraight(): boolean {
-    if (
-      this.ranks[0] === 0 &&
-      this.ranks[1] === 9 &&
-      this.ranks[2] === 10 &&
-      this.ranks[3] === 11 &&
-      this.ranks[4] === 12
-    ) {
-      return true
-    }
-    for (let i = 0; i < 4; i += 1) {
-      if (this.ranks[i + 1] - this.ranks[i] !== 1) {
-        return false
-      }
-    }
-    return true
-  }
-
-  // スリーカード
-  public isThreeOfAKind(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(3)
-  }
-
-  // ツーペア
-  public isTwoPair(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.filter((count) => count === 2).length === 2
-  }
-
-  // ワンペア
-  public isOnePair(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(2)
-  }
-
-  // 各ランクの数を数えます
-  public countRanks(): number[] {
-    const counts: number[] = Array(13).fill(0)
-    for (let i = 0; i < this.ranks.length; i += 1) {
-      counts[this.ranks[i]] += 1
-    }
-    return counts
   }
 }
