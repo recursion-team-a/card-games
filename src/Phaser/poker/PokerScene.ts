@@ -110,8 +110,13 @@ export default class Poker extends BaseScene {
     this.callButton = new Button(this, this.width * 0.85, this.height * 0.8, 'chipBlue', 'CALL')
 
     this.callButton.setClickHandler(() => {
-      this.playerBet += this.currentBetAmount
-      this.playerMoney -= this.playerBet
+      if (this.playerMoney < this.currentBetAmount) {
+        this.playerBet += this.playerMoney
+        this.playerMoney = 0
+      } else {
+        this.playerBet += this.currentBetAmount
+        this.playerMoney -= this.playerBet
+      }
       this.player.gameStatus = PlayerAction.CALL
 
       // TODO: チップアニメーション追加
@@ -138,6 +143,9 @@ export default class Poker extends BaseScene {
     }
     this.playerMoney += winAmount
     this.updateMText(this.playerMoney)
+    if (this.playerMoney <= 0) {
+      this.gameOver()
+    }
 
     return {
       gameResult: result,
@@ -244,6 +252,7 @@ export default class Poker extends BaseScene {
       .setDepth(10)
 
     // 初期化
+    this.scene.start('ContinueScene', { nextScene: 'Poker' })
     this.resetRound()
 
     this.time.delayedCall(3000, () => {
@@ -293,8 +302,13 @@ export default class Poker extends BaseScene {
 
     this.raiseButton.setClickHandler(() => {
       this.addRaiseAmount()
-      this.playerBet += this.currentBetAmount
-      this.playerMoney -= this.playerBet
+      if (this.playerMoney < this.currentBetAmount) {
+        this.playerBet += this.playerMoney
+        this.playerMoney = 0
+      } else {
+        this.playerBet += this.currentBetAmount
+        this.playerMoney -= this.playerBet
+      }
       this.player.addBet(this.currentBetAmount)
       this.animateChipToTableCenter(0)
 
@@ -844,6 +858,7 @@ export default class Poker extends BaseScene {
       .text(this.width / 2, this.height / 2, result, textStyle)
       .setOrigin(0.5)
       .setDepth(10)
+    resultText.setColor('#ffde3d')
 
     this.time.delayedCall(4000, () => {
       handRanks.forEach((handRank) => {
@@ -851,6 +866,7 @@ export default class Poker extends BaseScene {
       })
       resultText.destroy()
       this.resetRound()
+      this.scene.start('ContinueScene', { nextScene: 'Poker' })
       this.dealInitialCards()
       this.PlayAnte()
     })

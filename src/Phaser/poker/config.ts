@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import ContinueScene from '@/Phaser/common/ContinueScene'
+import GameOverScene from '@/Phaser/common/GameOverScene'
 import Poker from '@/Phaser/poker/PokerScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -23,7 +25,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [Poker],
+  scene: [Poker, ContinueScene, GameOverScene],
 }
 
 export default gameConfig

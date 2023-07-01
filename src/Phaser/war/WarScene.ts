@@ -150,8 +150,11 @@ export default class WarScene extends BaseScene {
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     setTimeout(() => {
       resultText.destroy()
-      if ((this.deck as Deck).getDeckSize() <= 0) this.handleEndOfGame()
-      this.haveTurn()
+      if ((this.deck as Deck).getDeckSize() <= 0) {
+        this.handleEndOfGame()
+      } else {
+        this.haveTurn()
+      }
     }, 1000)
   }
 
@@ -172,7 +175,7 @@ export default class WarScene extends BaseScene {
     setTimeout(() => {
       resultText.destroy()
       graphics.destroy()
-      window.location.href = '/studio'
+      this.scene.start('ContinueScene', { nextScene: 'WarScene' })
     }, 5000)
   }
 

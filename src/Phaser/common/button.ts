@@ -60,7 +60,7 @@ export default class Button extends Phaser.GameObjects.Image {
   }
 
   public setClickHandler(pushHandler: () => void): void {
-    this.on(
+    this.once(
       'pointerdown',
       () => {
         pushHandler()

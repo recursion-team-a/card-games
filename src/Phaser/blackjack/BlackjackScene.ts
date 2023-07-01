@@ -180,34 +180,41 @@ export default class Blackjack extends BaseScene {
   private endHand(result: GameResult) {
     this.players = []
     const resultObj = this.payout(result)
-    const graphics = this.add.graphics({
-      fillStyle: { color: 0x000000, alpha: 0.75 },
-    })
-    const { width, height } = this.sys.game.canvas
-    const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
-    graphics.fillRectShape(square)
-    const resultText: Text = this.add.text(
-      0,
-      0,
-      `${result} ${makeMoneyString(resultObj.winAmount)}`,
-      textStyle,
-    )
-    resultText.setColor('#ffde3d')
-    Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
-    this.fadeOutButton()
-    this.input.once(
-      'pointerdown',
-      () => {
-        this.input.once(
-          'pointerdown',
-          () => {
-            window.location.href = '/studio'
-          },
-          this,
-        )
-      },
-      this,
-    )
+    if (!this.betScene?.money || this.betScene.money <= 0) {
+      this.gameOver()
+    } else {
+      const graphics = this.add.graphics({
+        fillStyle: { color: 0x000000, alpha: 0.75 },
+      })
+      const { width, height } = this.sys.game.canvas
+      const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
+      graphics.fillRectShape(square)
+      const resultText: Text = this.add.text(
+        0,
+        0,
+        `${result} ${makeMoneyString(resultObj.winAmount)}`,
+        textStyle,
+      )
+      resultText.setColor('#ffde3d')
+      Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
+      this.fadeOutButton()
+      if (this.betScene) {
+        this.betScene.bet = 0
+      }
+      this.input.once(
+        'pointerdown',
+        () => {
+          this.input.once(
+            'pointerdown',
+            () => {
+              this.scene.start('ContinueScene', { nextScene: 'BetScene' })
+            },
+            this,
+          )
+        },
+        this,
+      )
+    }
   }
 
   // 勝敗

@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import ContinueScene from '@/Phaser/common/ContinueScene'
 import CpuLevelScene from '@/Phaser/common/CpuLevelScene'
 import Speed from '@/Phaser/speed/SpeedScene'
 
@@ -24,7 +25,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [CpuLevelScene, Speed],
+  scene: [CpuLevelScene, Speed, ContinueScene],
 }
 
 export default gameConfig
