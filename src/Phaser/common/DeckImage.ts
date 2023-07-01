@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Card from '@/model/common/CardImage'
+import Card from '@/Phaser/common/CardImage'
 
 export default class Deck {
   private cards: Card[]
@@ -12,7 +12,7 @@ export default class Deck {
     this.shuffle()
   }
 
-  generateDeck(
+  public generateDeck(
     scene: Phaser.Scene,
     x: number,
     y: number,
@@ -48,7 +48,7 @@ export default class Deck {
   /*
         return null : デッキの状態を更新（ランダムに順番を入れ替える）
      */
-  shuffle(): void {
+  public shuffle(): void {
     for (let i = this.cards.length - 1; i >= 0; i -= 1) {
       const randomIndex = Math.floor(Math.random() * (i + 1))
       const temp = this.cards[i]
@@ -60,11 +60,11 @@ export default class Deck {
   /*
         return Card: ポップされたカードを返す.
      */
-  drawOne(): Card | undefined {
+  public drawOne(): Card | undefined {
     return this.cards.pop()
   }
 
-  getDeckSize(): number {
+  public getDeckSize(): number {
     return this.cards.length
   }
 }

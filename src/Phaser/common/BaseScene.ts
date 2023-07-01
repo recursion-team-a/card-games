@@ -2,9 +2,9 @@ import Text = Phaser.GameObjects.Text
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
-import BetScene from '@/Phaser/BetScene'
-import PreloadScene from '@/Phaser/PreloadScene'
-import Deck from '@/model/common/DeckImage'
+import BetScene from '@/Phaser/common/BetScene'
+import Deck from '@/Phaser/common/DeckImage'
+import PreloadScene from '@/Phaser/common/PreloadScene'
 import { textStyle } from '@/utility/constants'
 
 export default class BaseScene extends PreloadScene {
@@ -26,7 +26,7 @@ export default class BaseScene extends PreloadScene {
 
   public betScene: BetScene | undefined
 
-  createField() {
+  public createField() {
     const { width, height } = this.sys.game.canvas
     this.add.image(100, 300, 'table')
     const table = this.add.image(width / 2, height / 2, 'table')
@@ -58,38 +58,12 @@ export default class BaseScene extends PreloadScene {
     Phaser.Display.Align.To.BottomLeft(this.betText as Text, this.moneyText as Text)
   }
 
-  public createCardTween(image: Image, x: number, y: number, duration: number = 500) {
-    this.tweens.add({
-      targets: image,
-      x,
-      y,
-      duration,
-      ease: 'Linear',
-    })
-  }
-
   public setUpMoneyText(): void {
     this.moneyText = this.add.text(0, 0, '', textStyle)
     this.betText = this.add.text(0, 0, '', textStyle)
 
     this.updateMoneyText()
     this.updateBetText()
-  }
-
-  public flipOverCard(cardBack: Image, cardFront: Image) {
-    this.tweens.add({
-      targets: cardBack,
-      scaleX: 0,
-      duration: this.CARD_FLIP_TIME / 2,
-      ease: 'Linear',
-    })
-    this.tweens.add({
-      targets: cardFront,
-      scaleX: 1,
-      duration: this.CARD_FLIP_TIME / 2,
-      delay: this.CARD_FLIP_TIME / 2,
-      ease: 'Linear',
-    })
   }
 
   protected countDown(callback: () => void) {

@@ -4,12 +4,12 @@ import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
 import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
-import { houseSpeed, DEALER_SPEED } from '@/model/speed/const'
+import { houseSpeed, DEALER_SPEED } from '@/model/speed/speedCpuConfig'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
 
 export default class Speed extends BaseScene {
@@ -45,7 +45,7 @@ export default class Speed extends BaseScene {
 
   protected dropCardRanks: number[] = [] // 台札のカード番号, 長さ2の配列
 
-  create(): void {
+  public create(): void {
     // betSceneに戻るためのボタン
     this.createField()
 
@@ -70,7 +70,7 @@ export default class Speed extends BaseScene {
     this.startDealer()
   }
 
-  update(): void {
+  public update(): void {
     let result: GameResult | undefined
 
     if (this.gamePhase === 'acting') {
@@ -86,7 +86,7 @@ export default class Speed extends BaseScene {
     }
   }
 
-  createHandZone() {
+  public createHandZone() {
     Phaser.Display.Align.To.TopCenter(
       this.playerHandZone as Zone,
       this.playerDeckSizeText as Text,
@@ -195,7 +195,7 @@ export default class Speed extends BaseScene {
 
     this.children.bringToTop(card)
     this.dropCardRanks[index] = card.getRankNumber('speed')
-    this.createCardTween(card, (this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
+    card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
     this.handOutCard(this.houseDeck as Deck, house as SpeedPlayer, card.x, card.y, false)
   }
 
@@ -208,7 +208,7 @@ export default class Speed extends BaseScene {
       const card = player.hand[i]
       for (let index = 0; index < this.dropCardRanks.length; index += 1) {
         if (Speed.isNextRank(card.getRankNumber('speed'), this.dropCardRanks[index])) {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           return { card, index }
         }
       }
@@ -290,7 +290,7 @@ export default class Speed extends BaseScene {
       // 置いたカードを手札から抜き, 一枚配る
       this.players.forEach((player) => {
         if (player.playerType === 'player') {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           this.handOutCard(
             this.playerDeck as Deck,
             player as SpeedPlayer,
@@ -350,7 +350,7 @@ export default class Speed extends BaseScene {
     player.addHand(card)
 
     this.children.bringToTop(card)
-    this.createCardTween(card, x, y)
+    card.playMoveTween(x, y)
     this.setHouseDeckSizeText()
     this.setPlayerDeckSizeText()
   }
@@ -383,11 +383,7 @@ export default class Speed extends BaseScene {
 
       this.dropCardRanks[index] = card.getRankNumber('speed')
       this.children.bringToTop(card)
-      this.createCardTween(
-        card,
-        (this.dropZones[index] as Zone).x,
-        (this.dropZones[index] as Zone).y,
-      )
+      card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
 
       if (card.faceDown) {
         this.time.delayedCall(1500, () => {

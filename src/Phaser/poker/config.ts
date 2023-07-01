@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Poker from './PokerScene'
+import Poker from '@/Phaser/poker/PokerScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

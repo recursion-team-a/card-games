@@ -1,56 +1,59 @@
 import Phaser from 'phaser'
-import BaseScene from '../common/BaseScene'
-import Button from '../common/button'
-import GameResult from './constants/gameResult'
-import GameStatus from './constants/gameStatus'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from './constants/handRank'
-import PlayerAction from './constants/playAction'
 import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
+import BaseScene from '@/Phaser/common/BaseScene'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
+import Button from '@/Phaser/common/button'
+import Pot from '@/Phaser/poker/Pot'
+import GameResult from '@/model/common/gameResult'
+import GameStatus from '@/model/common/gameStatus'
 import { Result } from '@/model/common/types/game'
 import PokerPlayer from '@/model/poker/PokerPlayer'
-import Pot from '@/model/poker/Pot'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
+import PlayerAction from '@/model/poker/playAction'
 import { textStyle, GUTTER_SIZE } from '@/utility/constants'
 
 const ANTE_AMOUNT = 20
 
 export default class Poker extends BaseScene {
-  protected playerHandZones: Array<Zone> = []
+  public playerHandZones: Array<Zone> = []
 
-  protected playerNameTexts: Array<Text> = []
+  public playerNameTexts: Array<Text> = []
 
-  private pot: Pot | undefined
+  public pot: Pot | undefined
 
-  private raiseButton: Button | undefined
+  public raiseButton: Button | undefined
 
-  private callButton: Button | undefined
+  public callButton: Button | undefined
 
-  private foldButton: Button | undefined
+  public foldButton: Button | undefined
 
-  private checkButton: Button | undefined
+  public checkButton: Button | undefined
 
-  private changeHandButton: Button | undefined
+  public changeHandButton: Button | undefined
 
-  private player: PokerPlayer
+  public player: PokerPlayer
 
-  private playerDeck: Deck | undefined
+  public playerDeck: Deck | undefined
 
-  protected playerHandZone: Zone | undefined
+  public playerHandZone: Zone | undefined
 
-  protected cpuHandZone: Zone | undefined
+  public cpuHandZone: Zone | undefined
 
-  private playerMoney: number = 1000
+  public playerMoney: number = 1000
 
-  protected players: Array<PokerPlayer> = []
+  public players: Array<PokerPlayer> = [
+    new PokerPlayer('PLAYER', 'player', GameStatus.FIRST_BETTING),
+    new PokerPlayer('CPU', 'cpu', GameStatus.FIRST_BETTING),
+  ]
 
-  private playerBet: number = 0
+  public playerBet: number = 0
 
-  private currentBetAmount: number = 0
+  public currentBetAmount: number = 0
 
-  private cpuBettingStatus: Text | undefined
+  public cpuBettingStatus: Text | undefined
 
   public width: number = 1024
 
@@ -58,15 +61,10 @@ export default class Poker extends BaseScene {
 
   constructor() {
     super({ key: 'Poker', active: false })
-
-    this.players = [
-      new PokerPlayer('PLAYER', 'player', GameStatus.FIRST_BETTING),
-      new PokerPlayer('CPU', 'cpu', GameStatus.FIRST_BETTING),
-    ]
     this.player = this.players[0] as PokerPlayer
   }
 
-  create(): void {
+  public create(): void {
     super.createField()
     this.createPot()
     this.setUpNewGame()
@@ -80,11 +78,11 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private setUpNewGame() {
+  public setUpNewGame() {
     this.playerDeck = new Deck(this, this.width / 2, -140, 'poker')
   }
 
-  private createActionPanel(): void {
+  public createActionPanel(): void {
     this.createRaiseButton()
 
     if (this.currentBetAmount === 0) {
@@ -94,7 +92,7 @@ export default class Poker extends BaseScene {
     this.createFoldButton()
   }
 
-  private createFoldButton(): void {
+  public createFoldButton(): void {
     this.foldButton = new Button(this, this.width * 0.85, this.height * 0.9, 'chipBlue', 'FOLD')
 
     this.foldButton.setClickHandler(() => {
@@ -108,7 +106,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private createCallButton(): void {
+  public createCallButton(): void {
     this.callButton = new Button(this, this.width * 0.85, this.height * 0.8, 'chipBlue', 'CALL')
 
     this.callButton.setClickHandler(() => {
@@ -128,7 +126,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  payOut(result: GameResult): Result {
+  public payOut(result: GameResult): Result {
     let winAmount = 0
     if (result === GameResult.WIN) {
       winAmount = this.pot?.getAmount() as number
@@ -147,7 +145,7 @@ export default class Poker extends BaseScene {
     }
   }
 
-  private compareAllHands(): PokerPlayer[] {
+  public compareAllHands(): PokerPlayer[] {
     const players = (this.players as PokerPlayer[]).filter(
       (player) => player.gameStatus !== PlayerAction.FOLD,
     )
@@ -177,7 +175,7 @@ export default class Poker extends BaseScene {
     return winners
   }
 
-  private isSecondBettingEnd(): boolean {
+  public isSecondBettingEnd(): boolean {
     let isEnd = true
     this.players.forEach((player) => {
       if (player.gameStatus === GameStatus.SECOND_BETTING) {
@@ -208,7 +206,7 @@ export default class Poker extends BaseScene {
     return isEnd
   }
 
-  private isFirstBettingEnd(): boolean {
+  public isFirstBettingEnd(): boolean {
     let isEnd = true
     // eslint-disable-next-line consistent-return
     this.players.forEach((player) => {
@@ -237,7 +235,7 @@ export default class Poker extends BaseScene {
     return isEnd
   }
 
-  private noContest(result: GameResult): void {
+  public noContest(result: GameResult): void {
     this.destroyActionPanel()
     this.payOut(result)
     const noContestText = this.add
@@ -252,7 +250,7 @@ export default class Poker extends BaseScene {
       noContestText.destroy()
       this.players.forEach((player) => {
         // eslint-disable-next-line no-param-reassign
-        player.hand = []
+        player.clearBet()
       })
       this.dealInitialCards()
       this.PlayAnte()
@@ -263,24 +261,24 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private hasEnoughPlayers(): boolean {
+  public hasEnoughPlayers(): boolean {
     return this.players.filter((player) => player.gameStatus !== PlayerAction.FOLD).length >= 2
   }
 
-  private clearPlayersBet(): void {
+  public clearPlayersBet(): void {
     this.players.forEach((player) => {
       player.clearBet()
     })
   }
 
-  private destroyActionPanel(): void {
+  public destroyActionPanel(): void {
     this.raiseButton?.destroy()
     this.callButton?.destroy()
     this.checkButton?.destroy()
     this.foldButton?.destroy()
   }
 
-  private isChangeHandRoundEnd(): boolean {
+  public isChangeHandRoundEnd(): boolean {
     let isEnd = true
     this.players.forEach((player) => {
       if (player.gameStatus === GameStatus.CHANGE_CARD) {
@@ -290,7 +288,7 @@ export default class Poker extends BaseScene {
     return isEnd
   }
 
-  private createRaiseButton(): void {
+  public createRaiseButton(): void {
     this.raiseButton = new Button(this, this.width * 0.85, this.height * 0.7, 'chipBlue', 'RAISE')
 
     this.raiseButton.setClickHandler(() => {
@@ -315,7 +313,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private createCheckButton(): void {
+  public createCheckButton(): void {
     this.checkButton = new Button(this, this.width * 0.85, this.height * 0.8, 'chipBlue', 'CHECK')
 
     this.checkButton.setClickHandler(() => {
@@ -333,16 +331,16 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private addRaiseAmount(): void {
+  public addRaiseAmount(): void {
     const raiseAmount = this.currentBetAmount + 100
     this.currentBetAmount = raiseAmount
   }
 
-  private createPot(): void {
+  public createPot(): void {
     this.pot = new Pot(this, this.width / 2, this.height / 2, 'chipRed', 0)
   }
 
-  private PlayAnte(): void {
+  public PlayAnte(): void {
     this.players.forEach((player, index) => {
       if (player.playerType === 'player') {
         this.playerMoney -= ANTE_AMOUNT
@@ -373,7 +371,7 @@ export default class Poker extends BaseScene {
     Phaser.Display.Align.To.BottomLeft(this.betText as Text, this.moneyText as Text)
   }
 
-  private animateChipToTableCenter(index: number) {
+  public animateChipToTableCenter(index: number) {
     const tempChip = new Button(
       this,
       this.playerHandZones[index].x,
@@ -385,7 +383,7 @@ export default class Poker extends BaseScene {
     tempChip.playMoveAndDestroy(this.width / 2, this.height / 2)
   }
 
-  private dealInitialCards(): void {
+  public dealInitialCards(): void {
     this.time.delayedCall(500, () => {
       this.players.forEach((player, index) => {
         if (player.playerType === 'player') {
@@ -421,7 +419,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private handOutCard(
+  public handOutCard(
     deck: Deck,
     player: PokerPlayer,
     toX: number,
@@ -439,7 +437,7 @@ export default class Poker extends BaseScene {
     }
   }
 
-  protected createPlayerHandZones(width: number, height: number): void {
+  public createPlayerHandZones(width: number, height: number): void {
     this.playerHandZones = []
     this.players.forEach((player, index) => {
       const playerHandZone = this.add.zone(0, 0, width, height)
@@ -463,7 +461,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  protected createPlayerNameTexts(): void {
+  public createPlayerNameTexts(): void {
     this.playerNameTexts = [] // 前回のゲームで作成したものが残っている可能性があるので、初期化する
     this.players.forEach((player) => {
       const playerNameText = this.add.text(0, 300, player.name, textStyle)
@@ -477,7 +475,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private nextPlayerTurnOnFirstBettingRound(playerIndex: number): void {
+  public nextPlayerTurnOnFirstBettingRound(playerIndex: number): void {
     if (!this.hasEnoughPlayers()) {
       this.clearPlayersBet()
       this.cpuBettingStatus?.destroy()
@@ -514,7 +512,7 @@ export default class Poker extends BaseScene {
     }
   }
 
-  private cpuFirstBettingAction(index: number): void {
+  public cpuFirstBettingAction(index: number): void {
     const decisionValues = Object.values(PlayerAction)
     const decisionIndex = Math.floor(Math.random() * decisionValues.length)
     let decisionValue = decisionValues[decisionIndex]
@@ -541,7 +539,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private createCpuBettingStatus(status: string): void {
+  public createCpuBettingStatus(status: string): void {
     let tmpStr = ''
     if (status === PlayerAction.RAISE) tmpStr = `RAISE: ${this.currentBetAmount}`
     else if (status === PlayerAction.CALL) tmpStr = `CALL: ${this.currentBetAmount}`
@@ -554,7 +552,7 @@ export default class Poker extends BaseScene {
       .setDepth(10)
   }
 
-  private nextPlayerTurnOnChangeHandRound(playerIndex: number): void {
+  public nextPlayerTurnOnChangeHandRound(playerIndex: number): void {
     let currentPlayerIndex = playerIndex
     if (playerIndex > this.players.length - 1) currentPlayerIndex = 0
 
@@ -575,7 +573,7 @@ export default class Poker extends BaseScene {
     }
   }
 
-  private cpuChangeHand(playerIndex: number): void {
+  public cpuChangeHand(playerIndex: number): void {
     const selectedCards: Card[] = []
     this.players[1].gameStatus = GameStatus.SECOND_BETTING
     const handStrength = this.players[playerIndex].getHandRank()
@@ -611,7 +609,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private static shouldDiscardCard(
+  public static shouldDiscardCard(
     card: Card,
     handRank: number,
     ranks: number[],
@@ -667,7 +665,7 @@ export default class Poker extends BaseScene {
     return true
   }
 
-  private static isCardPartOfFlush({ suit: cardSuit }: Card, hand: Card[]): boolean {
+  public static isCardPartOfFlush({ suit: cardSuit }: Card, hand: Card[]): boolean {
     const suitCountMap = { [cardSuit]: 1 }
 
     hand.forEach(({ suit }) => {
@@ -683,7 +681,7 @@ export default class Poker extends BaseScene {
     return Object.keys(suitCountMap).some((suit) => suitCountMap[suit] >= 4 && suit === cardSuit)
   }
 
-  private static isCardPartOfStraight(cardRank: number, ranks: number[]): boolean {
+  public static isCardPartOfStraight(cardRank: number, ranks: number[]): boolean {
     const sortedRanks = [...ranks].sort((a, b) => a - b)
     const cardRankSortedIndex = sortedRanks.indexOf(cardRank)
     if (sortedRanks[3] - sortedRanks[0] === 3) {
@@ -712,13 +710,13 @@ export default class Poker extends BaseScene {
     return false
   }
 
-  private enableHandSelection(): void {
+  public enableHandSelection(): void {
     this.player.hand.forEach((card) => {
       card.enableClick()
     })
   }
 
-  private createChageHandButton(): void {
+  public createChageHandButton(): void {
     this.changeHandButton = new Button(
       this,
       this.width * 0.1,
@@ -768,13 +766,13 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private disableHandSelection(): void {
+  public disableHandSelection(): void {
     this.player.hand.forEach((card) => {
       card.disableClick()
     })
   }
 
-  private nextPlayerTurnOnSecondBettingRound(playerIndex: number): void {
+  public nextPlayerTurnOnSecondBettingRound(playerIndex: number): void {
     if (this.isSecondBettingEnd()) {
       // TODO: 役名を表示する
 
@@ -800,7 +798,7 @@ export default class Poker extends BaseScene {
     }
   }
 
-  private cpuSecondBettingAction(index: number): void {
+  public cpuSecondBettingAction(index: number): void {
     const decisionValue = PlayerAction.CALL
     this.cpuBettingStatus?.destroy()
 
@@ -821,7 +819,7 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private showdown(result: GameResult): void {
+  public showdown(result: GameResult): void {
     this.destroyActionPanel()
     this.payOut(result)
     const handRanks: Text[] = []
@@ -862,12 +860,12 @@ export default class Poker extends BaseScene {
     })
   }
 
-  private static getKeyByValue(map: Map<string, number>, value: number): string {
+  public static getKeyByValue(map: Map<string, number>, value: number): string {
     const entry = Array.from(map.entries()).find(([, val]) => val === value)
     return entry ? entry[0] : ''
   }
 
-  private resetRound(): void {
+  public resetRound(): void {
     this.pot?.clear()
     this.currentBetAmount = 0
     this.playerBet = 0
@@ -886,7 +884,7 @@ export default class Poker extends BaseScene {
     this.playerDeck = new Deck(this, this.width / 2, -140, 'poker')
   }
 
-  private showdownCpuHand(): void {
+  public showdownCpuHand(): void {
     this.players[1].hand.forEach((card) => {
       if (card.faceDown) {
         card.playFlipOverTween()

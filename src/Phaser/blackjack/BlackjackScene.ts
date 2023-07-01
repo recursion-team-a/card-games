@@ -1,18 +1,18 @@
 import Phaser from 'phaser'
-import BetScene from '../BetScene'
-import BaseScene from '../common/BaseScene'
-import Button from '../common/button'
 import Text = Phaser.GameObjects.Text
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
+import BaseScene from '@/Phaser/common/BaseScene'
+import BetScene from '@/Phaser/common/BetScene'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
+import Button from '@/Phaser/common/button'
 import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
 import GameResult from '@/model/common/gameResult'
 import { Result } from '@/model/common/types/game'
 import ImageUtility from '@/utility/ImageUtility'
 import { GUTTER_SIZE, textStyle } from '@/utility/constants'
-import makeMoneyString from '@/utils/general'
+import makeMoneyString from '@/utility/general'
 
 export default class Blackjack extends BaseScene {
   constructor() {
@@ -47,11 +47,11 @@ export default class Blackjack extends BaseScene {
 
   public height: number = 768
 
-  preload(): void {
+  public preload(): void {
     this.betScene = this.scene.get('BetScene') as BetScene
   }
 
-  create(): void {
+  public create(): void {
     // betsceneに戻るためのボタン
     this.createField()
 
@@ -69,7 +69,7 @@ export default class Blackjack extends BaseScene {
     })
   }
 
-  createHandZone() {
+  public createHandZone() {
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
     Phaser.Display.Align.To.TopLeft(
       this.playerHandZone,
@@ -87,7 +87,7 @@ export default class Blackjack extends BaseScene {
     )
   }
 
-  handOutCard(
+  public handOutCard(
     deck: Deck,
     player: BlackjackPlayer,
     toX: number,

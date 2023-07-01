@@ -14,7 +14,7 @@ export default class CpuLevelScene extends BaseScene {
 
   protected hardButton: Button | undefined
 
-  create() {
+  public create() {
     this.createField()
 
     this.createButton()

@@ -3,7 +3,7 @@ import { CARD_ATLAS_KEY } from '@/Factories/cardFactory'
 import { loadText } from '@/utility/constants'
 
 export default class PreloadScene extends Phaser.Scene {
-  preload() {
+  public preload() {
     const { width, height } = this.cameras.main
     // ロードバーの背景
     const progressBox = this.add.graphics()

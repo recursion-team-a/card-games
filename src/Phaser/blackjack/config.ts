@@ -1,10 +1,10 @@
 import Phaser from 'phaser'
-import BetScene from './BetScene'
-import Blackjack from './blackjack/BlackjackScene'
+import Blackjack from '@/Phaser/blackjack/BlackjackScene'
+import BetScene from '@/Phaser/common/BetScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'phaser-game',
+  parent: 'phaser-blackjack-game',
   scale: {
     mode: Phaser.Scale.FIT,
     parent: 'game-content',

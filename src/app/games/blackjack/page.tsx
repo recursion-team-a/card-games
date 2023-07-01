@@ -6,7 +6,7 @@ function GamePage() {
   useEffect(() => {
     ;(async () => {
       const Phaser = await import('phaser')
-      const gameConfig = (await import('@/Phaser/config')).default
+      const gameConfig = (await import('@/Phaser/blackjack/config')).default
       const game = new Phaser.Game(gameConfig)
 
       return () => {
@@ -15,7 +15,7 @@ function GamePage() {
     })()
   }, [])
 
-  return <div id='phaser-game' />
+  return <div id='phaser-blackjack-game' />
 }
 
 export default GamePage
