@@ -57,7 +57,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('chipYellow', path.join('/assets/Chips', 'chipYellow.png'))
     this.load.image('chipOrange', path.join('/assets/Chips', 'chipOrange.png'))
     this.load.image('chipRed', path.join('/assets/Chips', 'chipRed.png'))
-    this.load.image('chipWhite', path.join('/assets/Chips', 'chipWhite.png'))
+    this.load.image('chipGray', path.join('/assets/Chips', 'chipGray.png'))
     this.load.image('chipBlue', path.join('/assets/Chips', 'chipBlue.png'))
     this.load.image('back', path.join('/assets', 'back.png'))
   }
