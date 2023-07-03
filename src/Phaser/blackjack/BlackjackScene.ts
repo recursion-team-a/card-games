@@ -252,7 +252,7 @@ export default class Blackjack extends BaseScene {
     const { height } = this.sys.game.canvas
     this.hitButton = new Button(this, 0, height / 2, 'chipOrange', 'hit')
     this.stayButton = new Button(this, 0, height / 2, 'chipYellow', 'stay')
-    this.doubleButton = new Button(this, 0, height / 2, 'chipWhite', 'double')
+    this.doubleButton = new Button(this, 0, height / 2, 'chipGray', 'double')
     this.surrenderButton = new Button(this, 0, height / 2, 'chipRed', 'surrender')
     const buttons: Button[] = new Array<Button>()
     buttons.push(this.hitButton)
