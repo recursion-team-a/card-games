@@ -545,7 +545,7 @@ export default class Speed extends BaseScene {
         this.input.once(
           'pointerdown',
           () => {
-            window.location.href = '/studio'
+            this.scene.start('ContinueScene', { nextScene: 'CpuLevelScene' })
           },
           this,
         )

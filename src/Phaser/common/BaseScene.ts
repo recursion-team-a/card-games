@@ -88,4 +88,8 @@ export default class BaseScene extends PreloadScene {
   protected setTimerText(time: string): void {
     if (this.timerText) this.timerText.setText(`${time}`)
   }
+
+  protected gameOver() {
+    this.scene.start('GameOverScene')
+  }
 }
