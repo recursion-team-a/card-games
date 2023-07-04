@@ -28,4 +28,15 @@ const RANK_CHOICES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q
 
 const RANK_CHOICES_TEXAS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
-export { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES, RANK_CHOICES_TEXAS }
+const STRONG_HAND_RANK = 4
+
+const MINIMUM_HAND_RANK = 2
+
+export {
+  HAND_RANK,
+  HAND_RANK_MAP,
+  RANK_CHOICES,
+  RANK_CHOICES_TEXAS,
+  STRONG_HAND_RANK,
+  MINIMUM_HAND_RANK,
+}

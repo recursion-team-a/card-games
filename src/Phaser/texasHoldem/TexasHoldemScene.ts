@@ -10,7 +10,12 @@ import Pot from '@/Phaser/poker/Pot'
 import GameResult from '@/model/common/gameResult'
 import GameStatus from '@/model/common/gameStatus'
 import { Result } from '@/model/common/types/game'
-import { HAND_RANK_MAP, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
+import {
+  HAND_RANK_MAP,
+  RANK_CHOICES_TEXAS,
+  STRONG_HAND_RANK,
+  MINIMUM_HAND_RANK,
+} from '@/model/poker/handRank'
 import PlayerAction from '@/model/poker/playAction'
 import TexasHoldemPlayer from '@/model/texasHoldem/TexasHoldemPlayer'
 import { textStyle, GUTTER_SIZE } from '@/utility/constants'
@@ -102,12 +107,7 @@ export default class TexasHoldem extends BaseScene {
 
     this.foldButton.setClickHandler(() => {
       this.player.gameStatus = PlayerAction.FOLD
-      this.players.forEach((player) => {
-        player.hand.forEach((card) => {
-          card.playMoveTween(this.width / 2, -600)
-        })
-      })
-      this.nextPlayerTurnOnFirstBettingRound(1)
+      this.noContest(GameResult.LOSS)
     })
   }
 
@@ -119,7 +119,7 @@ export default class TexasHoldem extends BaseScene {
         this.playerBet += this.playerMoney
         this.playerMoney = 0
       } else {
-        this.playerBet += this.currentBetAmount
+        this.playerBet += this.currentBetAmount - this.playerBet
         this.playerMoney -= this.playerBet
       }
 
@@ -362,16 +362,32 @@ export default class TexasHoldem extends BaseScene {
   public noContest(result: GameResult): void {
     this.destroyActionPanel()
     this.payOut(result)
+    const foldTexts: Text[] = []
+
+    this.playerHandZones.forEach((handZone, index) => {
+      if (this.players[index].gameStatus === PlayerAction.FOLD) {
+        const foldText = this.add
+          .text(handZone.x, handZone.y, PlayerAction.FOLD, textStyle)
+          .setOrigin(0.5)
+          .setDepth(10)
+
+        foldTexts.push(foldText)
+      }
+    })
+
     const noContestText = this.add
       .text(this.width / 2, this.height / 2, result, textStyle)
       .setOrigin(0.5)
       .setDepth(10)
+      .setColor('#ffde3d')
 
     // 初期化
-    this.scene.start('ContinueScene', { nextScene: 'TexasHoldem' })
-    this.resetRound()
-
-    this.time.delayedCall(3000, () => {
+    this.time.delayedCall(1000, () => {
+      this.scene.start('ContinueScene', { nextScene: 'TexasHoldem' })
+      this.resetRound()
+      foldTexts.forEach((foldText) => {
+        foldText.destroy()
+      })
       noContestText.destroy()
       this.players.forEach((player) => {
         // eslint-disable-next-line no-param-reassign
@@ -380,7 +396,6 @@ export default class TexasHoldem extends BaseScene {
       this.dealInitialCards()
       this.PlayAnte()
     })
-
     this.time.delayedCall(4000, () => {
       this.createActionPanel()
     })
@@ -813,8 +828,27 @@ export default class TexasHoldem extends BaseScene {
     })
   }
 
+  public makeDecision(index: number): string {
+    const handRank = TexasHoldemPlayer.getCardsRank(
+      this.players[index].findBestHand(this.communityCards),
+    )
+    const randomNumber = Math.random()
+
+    // レイズする確率を50%とし、さらに手札の強さが一定のランク以上である場合にレイズします
+    if (randomNumber < 0.5 && handRank >= STRONG_HAND_RANK) {
+      return PlayerAction.RAISE
+    }
+    // コールする確率を90%とし、さらに手札の強さが一定のランク以上である場合にコールします
+    if (randomNumber < 0.9 || handRank >= MINIMUM_HAND_RANK) {
+      return PlayerAction.CALL
+    }
+    // 上記のいずれも選ばれなかった場合、または手札の強さが低い場合にはフォールドします
+
+    return PlayerAction.FOLD
+  }
+
   public cpuSecondBettingAction(index: number): void {
-    const decisionValue = PlayerAction.CALL
+    const decisionValue = this.makeDecision(index)
     this.cpuBettingStatus?.destroy()
 
     if (decisionValue === PlayerAction.CALL) {
@@ -827,6 +861,21 @@ export default class TexasHoldem extends BaseScene {
         this.animateChipToTableCenter(index)
         this.pot?.setAmount(betAmount)
       })
+    }
+    if (decisionValue === PlayerAction.RAISE) {
+      const betAmount = this.currentBetAmount
+      this.players[index].addBet(betAmount)
+      this.players[index].gameStatus = PlayerAction.RAISE
+
+      this.time.delayedCall(1000, () => {
+        this.createCpuBettingStatus(PlayerAction.RAISE)
+        this.animateChipToTableCenter(index)
+        this.pot?.setAmount(betAmount)
+      })
+    }
+    if (decisionValue === PlayerAction.FOLD) {
+      this.players[index].gameStatus = PlayerAction.FOLD
+      this.noContest(GameResult.WIN)
     }
 
     this.time.delayedCall(2500, () => {
@@ -835,7 +884,7 @@ export default class TexasHoldem extends BaseScene {
   }
 
   public cpuThirdBettingAction(index: number): void {
-    const decisionValue = PlayerAction.CALL
+    const decisionValue = this.makeDecision(index)
     this.cpuBettingStatus?.destroy()
 
     if (decisionValue === PlayerAction.CALL) {
@@ -849,6 +898,21 @@ export default class TexasHoldem extends BaseScene {
         this.pot?.setAmount(betAmount)
       })
     }
+    if (decisionValue === PlayerAction.RAISE) {
+      const betAmount = this.currentBetAmount
+      this.players[index].addBet(betAmount)
+      this.players[index].gameStatus = PlayerAction.RAISE
+
+      this.time.delayedCall(1000, () => {
+        this.createCpuBettingStatus(PlayerAction.RAISE)
+        this.animateChipToTableCenter(index)
+        this.pot?.setAmount(betAmount)
+      })
+    }
+    if (decisionValue === PlayerAction.FOLD) {
+      this.players[index].gameStatus = PlayerAction.FOLD
+      this.noContest(GameResult.WIN)
+    }
 
     this.time.delayedCall(2500, () => {
       this.nextPlayerTurnOnThirdBettingRound(0)
@@ -856,7 +920,7 @@ export default class TexasHoldem extends BaseScene {
   }
 
   public cpuFinalBettingAction(index: number): void {
-    const decisionValue = PlayerAction.CALL
+    const decisionValue = this.makeDecision(index)
     this.cpuBettingStatus?.destroy()
 
     if (decisionValue === PlayerAction.CALL) {
@@ -869,6 +933,21 @@ export default class TexasHoldem extends BaseScene {
         this.animateChipToTableCenter(index)
         this.pot?.setAmount(betAmount)
       })
+    }
+    if (decisionValue === PlayerAction.RAISE) {
+      const betAmount = this.currentBetAmount
+      this.players[index].addBet(betAmount)
+      this.players[index].gameStatus = PlayerAction.RAISE
+
+      this.time.delayedCall(1000, () => {
+        this.createCpuBettingStatus(PlayerAction.RAISE)
+        this.animateChipToTableCenter(index)
+        this.pot?.setAmount(betAmount)
+      })
+    }
+    if (decisionValue === PlayerAction.FOLD) {
+      this.players[index].gameStatus = PlayerAction.FOLD
+      this.noContest(GameResult.WIN)
     }
 
     this.time.delayedCall(2500, () => {
