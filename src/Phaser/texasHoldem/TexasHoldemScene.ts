@@ -166,74 +166,75 @@ export default class TexasHoldem extends BaseScene {
   }
 
   public compareAllHands(): TexasHoldemPlayer[] {
-    const players = (this.players as TexasHoldemPlayer[]).filter(
-      (player) => player.gameStatus !== PlayerAction.FOLD,
-    )
-    const sortedPlayers = players.sort((a, b) => {
-      const aBestCards = a.findBestHand(this.communityCards)
-      const bBestCards = b.findBestHand(this.communityCards)
-      const aRank = TexasHoldemPlayer.getCardsRank(aBestCards)
-      const bRank = TexasHoldemPlayer.getCardsRank(bBestCards)
-      if (aRank > bRank) {
-        return -1
+    const winPlayer: Array<TexasHoldemPlayer> = []
+
+    const player = this.players[0]
+    const house = this.players[1]
+    const playerBestCards = player.findBestHand(this.communityCards)
+    const houseBestCards = house.findBestHand(this.communityCards)
+    const playerRank = TexasHoldemPlayer.getCardsRank(playerBestCards)
+    const houseRank = TexasHoldemPlayer.getCardsRank(houseBestCards)
+    if (playerRank > houseRank) {
+      winPlayer.push(player)
+      return winPlayer
+    }
+    if (houseRank > playerRank) {
+      winPlayer.push(house)
+      return winPlayer
+    }
+    // 役同じ
+    let playerRanks = TexasHoldemPlayer.getRanks(playerBestCards, RANK_CHOICES_TEXAS)
+    let houseRanks = TexasHoldemPlayer.getRanks(houseBestCards, RANK_CHOICES_TEXAS)
+
+    // 1つ目のペア
+    let playerPair
+    let housePair
+    ;[playerPair, playerRanks] = TexasHoldemPlayer.findPair(playerRanks)
+    ;[housePair, houseRanks] = TexasHoldemPlayer.findPair(houseRanks)
+
+    if (playerPair && housePair) {
+      if (playerPair > housePair) {
+        winPlayer.push(player)
+        return winPlayer
       }
-      if (aRank < bRank) {
-        return 1
+      if (playerPair < housePair) {
+        winPlayer.push(house)
+        return winPlayer
       }
-      let aRanks = TexasHoldemPlayer.getRanks(aBestCards, RANK_CHOICES_TEXAS)
-      let bRanks = TexasHoldemPlayer.getRanks(bBestCards, RANK_CHOICES_TEXAS)
+    }
 
-      // 1つ目のペアを見つけます
-      let aPair
-      let bPair
-      ;[aPair, aRanks] = TexasHoldemPlayer.findPair(aRanks)
-      ;[bPair, bRanks] = TexasHoldemPlayer.findPair(bRanks)
+    // 2つ目のペア
+    ;[playerPair, playerRanks] = TexasHoldemPlayer.findPair(playerRanks)
+    ;[housePair, houseRanks] = TexasHoldemPlayer.findPair(houseRanks)
 
-      if (aPair && bPair) {
-        if (aPair > bPair) {
-          return -1
-        }
-        if (aPair < bPair) {
-          return 1
-        }
+    if (playerPair && housePair) {
+      if (playerPair > housePair) {
+        winPlayer.push(player)
+        return winPlayer
       }
-
-      // 2つ目のペアを見つけます
-      ;[aPair, aRanks] = TexasHoldemPlayer.findPair(aRanks)
-      ;[bPair, bRanks] = TexasHoldemPlayer.findPair(bRanks)
-
-      // 次に2つ目のペアのランクを比較します
-      if (aPair && bPair) {
-        if (aPair > bPair) {
-          return -1
-        }
-        if (aPair < bPair) {
-          return 1
-        }
+      if (playerPair < housePair) {
+        winPlayer.push(house)
+        return winPlayer
       }
+    }
 
-      // ランクの配列を降順にソートします（ランクが高いものが先頭に来るように）
-      aRanks.sort((c, d) => d - c)
-      bRanks.sort((d, c) => d - c)
+    // ランクの配列を降順にソートします（ランクが高いものが先頭に来るように）
+    playerRanks.sort((a, b) => b - a)
+    houseRanks.sort((a, b) => b - a)
 
-      for (let i = 0; i < aRanks.length; i += 1) {
-        if (aRanks[i] > bRanks[i]) {
-          return -1
-        }
-        if (aRanks[i] < bRanks[i]) {
-          return 1
-        }
+    for (let i = 0; i < playerRanks.length; i += 1) {
+      if (playerRanks[i] > houseRanks[i]) {
+        winPlayer.push(player)
+        return winPlayer
       }
-      return 0
-    })
-
-    const bestCards = sortedPlayers[0].findBestHand(this.communityCards)
-    const maxRank = TexasHoldemPlayer.getCardsRank(bestCards)
-    const winners = sortedPlayers.filter(
-      (player) =>
-        TexasHoldemPlayer.getCardsRank(player.findBestHand(this.communityCards)) === maxRank,
-    )
-    return winners
+      if (playerRanks[i] < houseRanks[i]) {
+        winPlayer.push(house)
+        return winPlayer
+      }
+    }
+    winPlayer.push(player)
+    winPlayer.push(house)
+    return winPlayer
   }
 
   public isFinalBettingEnd(): boolean {
@@ -832,18 +833,6 @@ export default class TexasHoldem extends BaseScene {
       }
     }
     return false
-  }
-
-  public enableHandSelection(): void {
-    this.player.hand.forEach((card) => {
-      card.enableClick()
-    })
-  }
-
-  public disableHandSelection(): void {
-    this.player.hand.forEach((card) => {
-      card.disableClick()
-    })
   }
 
   public nextPlayerTurnOnSecondBettingRound(playerIndex: number): void {
