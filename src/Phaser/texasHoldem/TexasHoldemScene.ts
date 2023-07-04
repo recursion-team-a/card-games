@@ -921,6 +921,25 @@ export default class TexasHoldem extends BaseScene {
 
       handRanks.push(handRank)
     })
+    const allCards: Card[] = [
+      ...this.communityCards,
+      ...this.players.flatMap((player) => player.hand),
+    ]
+    let winCards: Card[] = []
+    if (result === GameResult.WIN) {
+      winCards = this.players[0].findBestHand(this.communityCards)
+    } else if (result === GameResult.LOSS) {
+      winCards = this.players[1].findBestHand(this.communityCards)
+    }
+    if (winCards) {
+      allCards.forEach((card) => {
+        card.setTint(0x888888)
+      })
+
+      winCards.forEach((card) => {
+        card.clearTint()
+      })
+    }
 
     this.showdownCpuHand()
     this.cpuBettingStatus?.destroy()

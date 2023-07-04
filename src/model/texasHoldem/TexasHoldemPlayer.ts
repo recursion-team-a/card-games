@@ -29,12 +29,18 @@ export default class TexasHoldemPlayer extends Player {
     const allCombinations = this.getAllCombinations(cards, 5)
     let bestCards = cards.slice(0, 4)
     let bestStrength = -1
-    let bestHighRank = Math.max(...TexasHoldemPlayer.getRanks(bestCards, RANK_CHOICES_TEXAS))
+    let bestHighRank = TexasHoldemPlayer.getRanks(bestCards, RANK_CHOICES_TEXAS).reduce(
+      (a, b) => a + b,
+      0,
+    )
 
     allCombinations.forEach((combination) => {
       const tempCards = combination
       const strength = TexasHoldemPlayer.getCardsRank(tempCards)
-      const highRank = Math.max(...TexasHoldemPlayer.getRanks(tempCards, RANK_CHOICES_TEXAS))
+      const highRank = TexasHoldemPlayer.getRanks(tempCards, RANK_CHOICES_TEXAS).reduce(
+        (a, b) => a + b,
+        0,
+      )
       if (strength > bestStrength || (strength === bestStrength && highRank > bestHighRank)) {
         bestStrength = strength
         bestCards = tempCards
