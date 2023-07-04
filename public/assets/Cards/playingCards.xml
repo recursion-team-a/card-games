@@ -8,6 +8,7 @@
 	<SubTexture name="card♣8.png" x="266" y="2535" width="133" height="195"/>
 	<SubTexture name="card♣9.png" x="266" y="2925" width="133" height="195"/>
 	<SubTexture name="card♣10.png" x="266" y="3315" width="133" height="195"/>
+	<SubTexture name="card♣A.png" x="266" y="3705" width="133" height="195"/>
 	<SubTexture name="card♣J.png" x="266" y="4095" width="133" height="195"/>
 	<SubTexture name="card♣K.png" x="266" y="4485" width="133" height="195"/>
 	<SubTexture name="card♣Q.png" x="266" y="4875" width="133" height="195"/>
@@ -53,6 +54,4 @@
 	<SubTexture name="card♠J.png" x="0" y="4095" width="133" height="195"/>
 	<SubTexture name="card♠K.png" x="0" y="4485" width="133" height="195"/>
 	<SubTexture name="card♠Q.png" x="0" y="4875" width="133" height="195"/>
-
-	<SubTexture name="cardJoker.png" x="133" y="570" width="133" height="195"/>
 </TextureAtlas>
