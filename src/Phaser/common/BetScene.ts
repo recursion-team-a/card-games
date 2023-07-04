@@ -83,7 +83,7 @@ export default class BetScene extends PreloadScene {
   private createChips(): void {
     const chipHeight: number = Number(this.height) / 2
     const whiteChip = new Button(this, 0, chipHeight, 'chipYellow', '1', 1)
-    const yellowChip = new Button(this, 0, chipHeight, 'chipWhite', '10', 10)
+    const yellowChip = new Button(this, 0, chipHeight, 'chipGray', '10', 10)
     const redChip = new Button(this, 0, chipHeight, 'chipRed', '50', 50)
     const orangeChip = new Button(this, 0, chipHeight, 'chipOrange', '100', 100)
     // リファクタリングしたい
