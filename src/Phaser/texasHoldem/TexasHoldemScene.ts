@@ -10,7 +10,7 @@ import Pot from '@/Phaser/poker/Pot'
 import GameResult from '@/model/common/gameResult'
 import GameStatus from '@/model/common/gameStatus'
 import { Result } from '@/model/common/types/game'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
+import { HAND_RANK_MAP, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
 import PlayerAction from '@/model/poker/playAction'
 import TexasHoldemPlayer from '@/model/texasHoldem/TexasHoldemPlayer'
 import { textStyle, GUTTER_SIZE } from '@/utility/constants'
@@ -403,16 +403,6 @@ export default class TexasHoldem extends BaseScene {
     this.foldButton?.destroy()
   }
 
-  public isChangeHandRoundEnd(): boolean {
-    let isEnd = true
-    this.players.forEach((player) => {
-      if (player.gameStatus === GameStatus.CHANGE_CARD) {
-        isEnd = false
-      }
-    })
-    return isEnd
-  }
-
   public createRaiseButton(): void {
     this.raiseButton = new Button(this, this.width * 0.85, this.height * 0.7, 'chipBlue', 'RAISE')
 
@@ -732,107 +722,6 @@ export default class TexasHoldem extends BaseScene {
       .text(this.playerHandZones[1].x, this.playerHandZones[1].y, tmpStr, textStyle)
       .setOrigin(0.5)
       .setDepth(10)
-  }
-
-  public static shouldDiscardCard(
-    card: Card,
-    handRank: number,
-    ranks: number[],
-    hand: Card[],
-  ): boolean {
-    // 5枚で, スコアの高い役がすでにできている場合は交換しない
-    if (handRank === HAND_RANK_MAP.get(HAND_RANK.ROYAL_STRAIGHT_FLUSH)) {
-      return false
-    }
-
-    if (handRank === HAND_RANK_MAP.get(HAND_RANK.STRAIGHT_FLUSH)) {
-      return false
-    }
-
-    if (handRank === HAND_RANK_MAP.get(HAND_RANK.FULL_HOUSE)) {
-      return false
-    }
-
-    if (handRank === HAND_RANK_MAP.get(HAND_RANK.FLUSH)) {
-      return false
-    }
-
-    if (handRank === HAND_RANK_MAP.get(HAND_RANK.STRAIGHT)) {
-      return false
-    }
-
-    // ペアやスリーオブアカインド等が既に存在する場合にはそれらを構成するカードを保持
-    const cardRank = RANK_CHOICES.indexOf(card.rank)
-    const count = ranks.filter((rank) => rank === cardRank).length
-    if (count >= 2) {
-      return false
-    }
-
-    // フラッシュにあと一枚でなる場合, フラッシュになっている4枚に含まれているかをチェックする
-    if (TexasHoldem.isCardPartOfFlush(card, hand)) {
-      return false
-    }
-
-    // あと一枚でストレートになる場合, ストレートになっている4枚に含まれるかどうかをチェックする
-    if (TexasHoldem.isCardPartOfStraight(cardRank, ranks)) {
-      return false
-    }
-
-    // 役がなにもない場合, もしくはワンペアの場合は, 高ランクカードは保持
-    if (
-      (handRank === HAND_RANK_MAP.get(HAND_RANK.FULL_HOUSE) ||
-        handRank === HAND_RANK_MAP.get(HAND_RANK.ONE_PAIR)) &&
-      (card.rank === 'A' || card.rank === 'K' || card.rank === 'Q')
-    ) {
-      return false
-    }
-
-    return true
-  }
-
-  public static isCardPartOfFlush({ suit: cardSuit }: Card, hand: Card[]): boolean {
-    const suitCountMap = { [cardSuit]: 1 }
-
-    hand.forEach(({ suit }) => {
-      if (suit !== cardSuit) {
-        if (suitCountMap[suit]) {
-          suitCountMap[suit] += 1
-        } else {
-          suitCountMap[suit] = 1
-        }
-      }
-    })
-
-    return Object.keys(suitCountMap).some((suit) => suitCountMap[suit] >= 4 && suit === cardSuit)
-  }
-
-  public static isCardPartOfStraight(cardRank: number, ranks: number[]): boolean {
-    const sortedRanks = [...ranks].sort((a, b) => a - b)
-    const cardRankSortedIndex = sortedRanks.indexOf(cardRank)
-    if (sortedRanks[3] - sortedRanks[0] === 3) {
-      if (
-        cardRankSortedIndex >= 3 &&
-        sortedRanks[cardRankSortedIndex] - sortedRanks[cardRankSortedIndex - 1] === 1
-      ) {
-        return true
-      }
-      if (sortedRanks[cardRankSortedIndex + 1] - sortedRanks[cardRankSortedIndex] === 1) {
-        return true
-      }
-    }
-
-    if (sortedRanks[4] - sortedRanks[1] === 3) {
-      if (
-        cardRankSortedIndex <= 2 &&
-        sortedRanks[cardRankSortedIndex + 1] - sortedRanks[cardRankSortedIndex] === 1
-      ) {
-        return true
-      }
-      if (sortedRanks[cardRankSortedIndex] - sortedRanks[cardRankSortedIndex - 1] === 1) {
-        return true
-      }
-    }
-    return false
   }
 
   public nextPlayerTurnOnSecondBettingRound(playerIndex: number): void {
