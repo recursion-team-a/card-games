@@ -1,16 +1,10 @@
 import Card from '@/Phaser/common/CardImage'
 import Player from '@/model/common/Player'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
 
 export default class TexasHoldemPlayer extends Player {
-  private suits: string[]
-
-  private ranks: number[]
-
   constructor(name: string, playerType: string, gameStatus: string) {
     super(name, playerType)
-    this.suits = this.hand.map((card) => card.suit)
-    this.ranks = this.hand.map((card) => card.getRankNumber('poker')).sort((a, b) => a - b)
     this.gameStatus = gameStatus
   }
 
@@ -18,10 +12,10 @@ export default class TexasHoldemPlayer extends Player {
     return this.hand.length
   }
 
-  public static getRanks(cards: Card[]): number[] {
+  public static getRanks(cards: Card[], rankChoices: string[]): number[] {
     const ranks: number[] = cards
       .map((card) =>
-        RANK_CHOICES.indexOf(
+        rankChoices.indexOf(
           card.rank as 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K',
         ),
       )
@@ -35,13 +29,16 @@ export default class TexasHoldemPlayer extends Player {
     const allCombinations = this.getAllCombinations(cards, 5)
     let bestCards = cards.slice(0, 4)
     let bestStrength = -1
+    let bestHighRank = Math.max(...TexasHoldemPlayer.getRanks(bestCards, RANK_CHOICES_TEXAS))
 
     allCombinations.forEach((combination) => {
       const tempCards = combination
       const strength = TexasHoldemPlayer.getCardsRank(tempCards)
-      if (strength > bestStrength) {
+      const highRank = Math.max(...TexasHoldemPlayer.getRanks(tempCards, RANK_CHOICES_TEXAS))
+      if (strength > bestStrength || (strength === bestStrength && highRank > bestHighRank)) {
         bestStrength = strength
         bestCards = tempCards
+        bestHighRank = highRank
       }
     })
 
@@ -67,8 +64,25 @@ export default class TexasHoldemPlayer extends Player {
     return [...withoutFirst, ...withFirst]
   }
 
+  public static findPair(ranks: number[]): [number | null, number[]] {
+    const sortedRanks = [...ranks].sort((a, b) => a - b) // sort the ranks
+    let pair: number | null = null
+    const newRanks: number[] = []
+
+    for (let i = 0; i < sortedRanks.length; i += 1) {
+      if (sortedRanks[i] === sortedRanks[i + 1]) {
+        pair = sortedRanks[i]
+        i += 1 // skip the next rank
+      } else {
+        newRanks.push(sortedRanks[i])
+      }
+    }
+
+    return [pair, newRanks]
+  }
+
   public static getCardsRank(cards: Card[]): number {
-    const ranks = TexasHoldemPlayer.getRanks(cards)
+    const ranks = TexasHoldemPlayer.getRanks(cards, RANK_CHOICES)
 
     // フラッシュ
     const isFlush = cards.every((card) => card.suit === cards[0].suit)

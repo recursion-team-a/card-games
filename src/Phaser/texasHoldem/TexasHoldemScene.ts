@@ -10,7 +10,7 @@ import Pot from '@/Phaser/poker/Pot'
 import GameResult from '@/model/common/gameResult'
 import GameStatus from '@/model/common/gameStatus'
 import { Result } from '@/model/common/types/game'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
 import PlayerAction from '@/model/poker/playAction'
 import TexasHoldemPlayer from '@/model/texasHoldem/TexasHoldemPlayer'
 import { textStyle, GUTTER_SIZE } from '@/utility/constants'
@@ -122,7 +122,6 @@ export default class TexasHoldem extends BaseScene {
         this.playerBet += this.currentBetAmount
         this.playerMoney -= this.playerBet
       }
-      this.player.gameStatus = PlayerAction.CALL
 
       // TODO: チップアニメーション追加
       this.time.delayedCall(500, () => {
@@ -130,8 +129,16 @@ export default class TexasHoldem extends BaseScene {
         this.updateBText(this.playerBet)
         this.pot?.setAmount(this.currentBetAmount)
         this.destroyActionPanel()
-
-        this.nextPlayerTurnOnFirstBettingRound(1)
+        if (this.player.gameStatus === GameStatus.SECOND_BETTING) {
+          this.nextPlayerTurnOnSecondBettingRound(1)
+        } else if (this.player.gameStatus === GameStatus.THIRD_BETTING) {
+          this.nextPlayerTurnOnThirdBettingRound(1)
+        } else if (this.player.gameStatus === GameStatus.FINAL_BETTING) {
+          this.nextPlayerTurnOnFinalBettingRound(1)
+        } else {
+          this.nextPlayerTurnOnFirstBettingRound(1)
+        }
+        this.player.gameStatus = PlayerAction.CALL
       })
     })
   }
@@ -173,14 +180,49 @@ export default class TexasHoldem extends BaseScene {
       if (aRank < bRank) {
         return 1
       }
-      const aHighCard = TexasHoldemPlayer.getCardsRank(aBestCards)
-      const bHighCard = TexasHoldemPlayer.getCardsRank(bBestCards)
+      let aRanks = TexasHoldemPlayer.getRanks(aBestCards, RANK_CHOICES_TEXAS)
+      let bRanks = TexasHoldemPlayer.getRanks(bBestCards, RANK_CHOICES_TEXAS)
 
-      if (aHighCard > bHighCard) {
-        return -1
+      // 1つ目のペアを見つけます
+      let aPair
+      let bPair
+      ;[aPair, aRanks] = TexasHoldemPlayer.findPair(aRanks)
+      ;[bPair, bRanks] = TexasHoldemPlayer.findPair(bRanks)
+
+      if (aPair && bPair) {
+        if (aPair > bPair) {
+          return -1
+        }
+        if (aPair < bPair) {
+          return 1
+        }
       }
-      if (aHighCard < bHighCard) {
-        return 1
+
+      // 2つ目のペアを見つけます
+      ;[aPair, aRanks] = TexasHoldemPlayer.findPair(aRanks)
+      ;[bPair, bRanks] = TexasHoldemPlayer.findPair(bRanks)
+
+      // 次に2つ目のペアのランクを比較します
+      if (aPair && bPair) {
+        if (aPair > bPair) {
+          return -1
+        }
+        if (aPair < bPair) {
+          return 1
+        }
+      }
+
+      // ランクの配列を降順にソートします（ランクが高いものが先頭に来るように）
+      aRanks.sort((c, d) => d - c)
+      bRanks.sort((d, c) => d - c)
+
+      for (let i = 0; i < aRanks.length; i += 1) {
+        if (aRanks[i] > bRanks[i]) {
+          return -1
+        }
+        if (aRanks[i] < bRanks[i]) {
+          return 1
+        }
       }
       return 0
     })
@@ -325,7 +367,7 @@ export default class TexasHoldem extends BaseScene {
       .setDepth(10)
 
     // 初期化
-    this.scene.start('ContinueScene', { nextScene: 'Poker' })
+    this.scene.start('ContinueScene', { nextScene: 'TexasHoldem' })
     this.resetRound()
 
     this.time.delayedCall(3000, () => {
@@ -434,7 +476,7 @@ export default class TexasHoldem extends BaseScene {
   }
 
   public createPot(): void {
-    this.pot = new Pot(this, this.width * 0.75, this.height * 0.75, 'chipRed', 0)
+    this.pot = new Pot(this, this.width * 0.9, this.height * 0.5, 'chipRed', 0)
   }
 
   public PlayAnte(): void {
@@ -477,7 +519,7 @@ export default class TexasHoldem extends BaseScene {
     )
     tempChip.resizeButton(0.6)
 
-    tempChip.playMoveAndDestroy(this.width * 0.75, this.height * 0.75)
+    tempChip.playMoveAndDestroy(this.width * 0.9, this.height * 0.5)
   }
 
   public dealInitialCards(): void {
@@ -1021,9 +1063,6 @@ export default class TexasHoldem extends BaseScene {
       this.scene.start('ContinueScene', { nextScene: 'TexasHoldem' })
       this.dealInitialCards()
       this.PlayAnte()
-    })
-
-    this.time.delayedCall(5000, () => {
       this.createActionPanel()
     })
   }
