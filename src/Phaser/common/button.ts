@@ -1,13 +1,12 @@
 import Phaser from 'phaser'
-import { textStyle } from '../../utility/constants'
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 
 export default class Button extends Phaser.GameObjects.Image {
   public key: string
 
   public initScale: number
 
-  public text: Text
+  public text: BitmapText
 
   constructor(
     scene: Phaser.Scene,
@@ -22,7 +21,7 @@ export default class Button extends Phaser.GameObjects.Image {
 
     this.key = key
     this.initScale = 0.7
-    this.text = this.scene.add.text(0, 0, this.key, textStyle)
+    this.text = this.scene.add.bitmapText(0, 0, 'arcade', this.key, 20)
     Phaser.Display.Align.In.Center(this.text, this)
 
     this.setScale(this.initScale)
@@ -63,6 +62,7 @@ export default class Button extends Phaser.GameObjects.Image {
     this.once(
       'pointerdown',
       () => {
+        this.scene.sound.play('click')
         pushHandler()
       },
       this,

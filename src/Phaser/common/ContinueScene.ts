@@ -1,7 +1,6 @@
 import BaseScene from '@/Phaser/common/BaseScene'
 import Button from '@/Phaser/common/button'
 import ImageUtility from '@/utility/ImageUtility'
-import { textStyle } from '@/utility/constants'
 
 export default class ContinueScene extends BaseScene {
   constructor() {
@@ -26,8 +25,7 @@ export default class ContinueScene extends BaseScene {
 
   private createButton() {
     const { width, height } = this.scale
-    this.add.text(width * 0.5, height * 0.5, 'Continue?', textStyle).setOrigin(0.5)
-
+    this.add.bitmapText(width * 0.5, height * 0.5, 'arcade', 'Continue?', 25).setOrigin(0.5)
     this.YesButton = new Button(this, 0, height / 2, 'chipOrange', 'Yes')
     this.NoButton = new Button(this, 0, height / 2, 'chipYellow', 'No')
 
@@ -42,6 +40,7 @@ export default class ContinueScene extends BaseScene {
 
   private setUpClickHandler(button: Button, handlerFunction: Function) {
     button.on('pointerdown', () => {
+      this.sound.play('click')
       handlerFunction.call(this)
     })
   }

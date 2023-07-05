@@ -1,10 +1,10 @@
 // テキストのフォント
-export const textStyle = {
-  font: 'normal 30px Impact',
-  fill: '#FFFFFF',
-  stroke: '#000000',
-  strokeThickness: 5,
-}
+// export const textStyle = {
+//   font: '30px arcade',
+//   fill: '#FFFFFF',
+//   stroke: '#000000',
+//   strokeThickness: 5,
+// }
 
 export const loadText = {
   font: '20px monospace',

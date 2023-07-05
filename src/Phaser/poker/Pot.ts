@@ -1,6 +1,5 @@
 import Phaser from 'phaser'
-import Text = Phaser.GameObjects.Text
-import { textStyle } from '@/utility/constants'
+import BitmapText = Phaser.GameObjects.BitmapText
 
 const MOVE_TIME = 200
 
@@ -9,7 +8,7 @@ export default class Pot extends Phaser.GameObjects.Image {
 
   public initScale: number | undefined
 
-  public text: Text | undefined
+  public text: BitmapText | undefined
 
   public potAmount: number | undefined
 
@@ -30,10 +29,10 @@ export default class Pot extends Phaser.GameObjects.Image {
       Number(scene.scene.manager.game.config.height) / 1100 >= 1
         ? Number(scene.scene.manager.game.config.height) / 1100
         : 1
-    this.text = this.scene.add.text(0, 0, this.key, textStyle)
+    this.text = this.scene.add.bitmapText(0, 0, 'arcade', this.key, 15)
 
     this.key = `POT: ${potAmount}`
-    this.text.setFontSize(30)
+    this.text.setFontSize(20)
     Phaser.Display.Align.In.BottomCenter(this.text, this)
     this.setScale(this.initScale * 0.6)
     this.setDataEnabled()

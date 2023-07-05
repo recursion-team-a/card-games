@@ -1,4 +1,4 @@
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
@@ -10,7 +10,7 @@ import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
 import { houseSpeed, DEALER_SPEED } from '@/model/speed/speedCpuConfig'
-import { GUTTER_SIZE, textStyle } from '@/utility/constants'
+import { GUTTER_SIZE } from '@/utility/constants'
 
 export default class Speed extends BaseScene {
   constructor() {
@@ -25,9 +25,9 @@ export default class Speed extends BaseScene {
 
   protected houseDeck: Deck | undefined
 
-  protected playerDeckSizeText: Text | undefined
+  protected playerDeckSizeText: BitmapText | undefined
 
-  protected houseDeckSizeText: Text | undefined
+  protected houseDeckSizeText: BitmapText | undefined
 
   protected gameZone: Zone | undefined
 
@@ -89,14 +89,14 @@ export default class Speed extends BaseScene {
   public createHandZone() {
     Phaser.Display.Align.To.TopCenter(
       this.playerHandZone as Zone,
-      this.playerDeckSizeText as Text,
+      this.playerDeckSizeText as BitmapText,
       0,
       GUTTER_SIZE,
     )
 
     Phaser.Display.Align.To.BottomCenter(
       this.houseHandZone as Zone,
-      this.houseDeckSizeText as Text,
+      this.houseDeckSizeText as BitmapText,
       0,
       GUTTER_SIZE,
     )
@@ -125,6 +125,7 @@ export default class Speed extends BaseScene {
 
   private startCountDown(): void {
     this.time.delayedCall(3000, () => {
+      this.sound.play('countDown')
       this.createTimerText()
       this.timeEvent = this.time.addEvent({
         delay: 1000,
@@ -478,23 +479,27 @@ export default class Speed extends BaseScene {
   }
 
   private setUpHouseDeckSizeText(): void {
-    this.houseDeckSizeText = this.add.text(0, 200, '', textStyle)
+    this.houseDeckSizeText = this.add.bitmapText(0, 200, 'arcade', '', 30)
     this.setHouseDeckSizeText()
     Phaser.Display.Align.In.TopCenter(this.houseDeckSizeText, this.gameZone as Zone, 0, -20)
   }
 
   private setUpPlayerDeckSizeText(): void {
-    this.playerDeckSizeText = this.add.text(0, 300, '', textStyle)
+    this.playerDeckSizeText = this.add.bitmapText(0, 300, 'arcade', '', 30)
     this.setPlayerDeckSizeText()
     Phaser.Display.Align.In.BottomCenter(this.playerDeckSizeText, this.gameZone as Zone, 0, -20)
   }
 
   private setHouseDeckSizeText() {
-    ;(this.houseDeckSizeText as Text).setText(`House cards : ${this.houseDeck?.getDeckSize()}`)
+    ;(this.houseDeckSizeText as BitmapText).setText(
+      `House cards : ${this.houseDeck?.getDeckSize()}`,
+    )
   }
 
   private setPlayerDeckSizeText() {
-    ;(this.playerDeckSizeText as Text).setText(`Your Cards: ${this.playerDeck?.getDeckSize()}`)
+    ;(this.playerDeckSizeText as BitmapText).setText(
+      `Your Cards: ${this.playerDeck?.getDeckSize()}`,
+    )
   }
 
   // 状況を判断し, resultを返す関数
@@ -536,8 +541,15 @@ export default class Speed extends BaseScene {
     const { width, height } = this.sys.game.canvas
     const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
     graphics.fillRectShape(square)
-    const resultText: Text = this.add.text(0, 0, `${result}`, textStyle)
-    resultText.setColor('#ffde3d')
+    const resultText: BitmapText = this.add.bitmapText(0, 0, 'arcade', `${result}`, 30)
+    resultText.setTint(0xffde3d)
+    if (result === 'WIN') {
+      this.sound.play('win')
+      resultText.setTint(0xffde3d)
+    } else {
+      this.sound.play('negative')
+      resultText.setTint(0xff0000)
+    }
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     this.input.once(
       'pointerdown',
@@ -545,6 +557,7 @@ export default class Speed extends BaseScene {
         this.input.once(
           'pointerdown',
           () => {
+            this.sound.play('click')
             this.scene.start('ContinueScene', { nextScene: 'CpuLevelScene' })
           },
           this,

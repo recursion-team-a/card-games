@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
@@ -8,7 +8,7 @@ import Deck from '@/Phaser/common/DeckImage'
 import Button from '@/Phaser/common/button'
 import GameResult from '@/model/common/gameResult'
 import WarPlayer from '@/model/war/WarPlayer'
-import { GUTTER_SIZE, textStyle } from '@/utility/constants'
+import { GUTTER_SIZE } from '@/utility/constants'
 
 export default class WarScene extends BaseScene {
   private dealerHand: WarPlayer
@@ -19,9 +19,9 @@ export default class WarScene extends BaseScene {
 
   private playerLead: Array<Card> = []
 
-  private dealerScoreText: Text | undefined
+  private dealerScoreText: BitmapText | undefined
 
-  private playerScoreText: Text | undefined
+  private playerScoreText: BitmapText | undefined
 
   private stayButton: Button | undefined
 
@@ -60,7 +60,7 @@ export default class WarScene extends BaseScene {
     this.setUpPlayerScoreText()
     Phaser.Display.Align.To.TopCenter(
       this.playerHandZone as Zone,
-      this.playerScoreText as Text,
+      this.playerScoreText as BitmapText,
       0,
       GUTTER_SIZE,
     )
@@ -69,7 +69,7 @@ export default class WarScene extends BaseScene {
     this.setUpDealerScoreText()
     Phaser.Display.Align.To.BottomCenter(
       this.dealerHandZone as Zone,
-      this.dealerScoreText as Text,
+      this.dealerScoreText as BitmapText,
       0,
       GUTTER_SIZE,
     )
@@ -145,8 +145,14 @@ export default class WarScene extends BaseScene {
   }
 
   private showResult(result: GameResult) {
-    const resultText: Text = this.add.text(0, 0, <string>result, textStyle)
-    resultText.setColor('#ffde3d')
+    const resultText: BitmapText = this.add.bitmapText(0, 0, 'arcade', <string>result, 30)
+    if (result === 'WIN') {
+      this.sound.play('win')
+      resultText.setTint(0xffde3d)
+    } else {
+      this.sound.play('negative')
+      resultText.setTint(0xff0000)
+    }
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     setTimeout(() => {
       resultText.destroy()
@@ -169,8 +175,14 @@ export default class WarScene extends BaseScene {
     const { width, height } = this.sys.game.canvas
     const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
     graphics.fillRectShape(square)
-    const resultText: Text = this.add.text(0, 0, <string>result, textStyle)
-    resultText.setColor('#ffde3d')
+    const resultText: BitmapText = this.add.bitmapText(0, 0, 'arcade', <string>result, 30)
+    if (result === 'WIN') {
+      this.sound.play('win')
+      resultText.setTint(0xffde3d)
+    } else {
+      this.sound.play('negative')
+      resultText.setTint(0xff0000)
+    }
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     setTimeout(() => {
       resultText.destroy()
@@ -207,22 +219,22 @@ export default class WarScene extends BaseScene {
   }
 
   private setUpDealerScoreText(): void {
-    this.dealerScoreText = this.add.text(0, 200, '', textStyle)
+    this.dealerScoreText = this.add.bitmapText(0, 200, 'arcade', '', 30)
     this.setDealerScoreText()
     Phaser.Display.Align.In.TopCenter(this.dealerScoreText, this.gameZone as Zone, 0, -20)
   }
 
   private setUpPlayerScoreText(): void {
-    this.playerScoreText = this.add.text(0, 300, '', textStyle)
+    this.playerScoreText = this.add.bitmapText(0, 300, 'arcade', '', 30)
     this.setPlayerScoreText()
     Phaser.Display.Align.In.BottomCenter(this.playerScoreText, this.gameZone as Zone, 0, -20)
   }
 
   private setDealerScoreText() {
-    ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.playerScore}`)
+    ;(this.dealerScoreText as BitmapText).setText(`Dealer Score: ${this.playerScore}`)
   }
 
   private setPlayerScoreText() {
-    ;(this.playerScoreText as Text).setText(`Your Score: ${this.dealerScore}`)
+    ;(this.playerScoreText as BitmapText).setText(`Your Score: ${this.dealerScore}`)
   }
 }

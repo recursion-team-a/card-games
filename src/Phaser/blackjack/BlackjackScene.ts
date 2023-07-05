@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
@@ -11,7 +11,7 @@ import BlackjackPlayer from '@/model/blackjack/BlackjackPlayer'
 import GameResult from '@/model/common/gameResult'
 import { Result } from '@/model/common/types/game'
 import ImageUtility from '@/utility/ImageUtility'
-import { GUTTER_SIZE, textStyle } from '@/utility/constants'
+import { GUTTER_SIZE } from '@/utility/constants'
 import makeMoneyString from '@/utility/general'
 
 export default class Blackjack extends BaseScene {
@@ -25,9 +25,9 @@ export default class Blackjack extends BaseScene {
 
   protected playerHand: BlackjackPlayer | undefined
 
-  protected playerScoreText: Text | undefined
+  protected playerScoreText: BitmapText | undefined
 
-  protected dealerScoreText: Text | undefined
+  protected dealerScoreText: BitmapText | undefined
 
   protected gameZone: Zone | undefined
 
@@ -71,17 +71,17 @@ export default class Blackjack extends BaseScene {
 
   public createHandZone() {
     this.playerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
-    Phaser.Display.Align.To.TopLeft(
+    Phaser.Display.Align.To.TopCenter(
       this.playerHandZone,
-      this.playerScoreText as Text,
+      this.playerScoreText as Phaser.GameObjects.BitmapText,
       0,
       GUTTER_SIZE,
     )
 
     this.dealerHandZone = this.add.zone(0, 0, CARD_WIDTH, CARD_HEIGHT)
-    Phaser.Display.Align.To.BottomLeft(
+    Phaser.Display.Align.To.BottomCenter(
       this.dealerHandZone,
-      this.dealerScoreText as Text,
+      this.dealerScoreText as Phaser.GameObjects.BitmapText,
       0,
       GUTTER_SIZE,
     )
@@ -189,13 +189,23 @@ export default class Blackjack extends BaseScene {
       const { width, height } = this.sys.game.canvas
       const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
       graphics.fillRectShape(square)
-      const resultText: Text = this.add.text(
+      const resultText: BitmapText = this.add.bitmapText(
         0,
         0,
+        'arcade',
         `${result} ${makeMoneyString(resultObj.winAmount)}`,
-        textStyle,
+        30,
       )
-      resultText.setColor('#ffde3d')
+      if (result === 'WIN' || result === 'BLACKJACK') {
+        this.sound.play('win')
+        resultText.setTint(0xffde3d)
+      } else if (result === 'PUSH') {
+        this.sound.play('win')
+        resultText.setTint(0x0000ff)
+      } else {
+        this.sound.play('negative')
+        resultText.setTint(0xff0000)
+      }
       Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
       this.fadeOutButton()
       if (this.betScene) {
@@ -275,6 +285,7 @@ export default class Blackjack extends BaseScene {
 
   private setUpClickHandler(button: Button, handlerFunction: Function) {
     button.on('pointerdown', () => {
+      this.sound.play('click')
       handlerFunction.call(this)
     })
   }
@@ -297,6 +308,7 @@ export default class Blackjack extends BaseScene {
 
   private handleStay(): void {
     this.handleFlipOver()
+    this.fadeOutButton()
     setTimeout(() => this.drawCardsUntil17(), 1000)
   }
 
@@ -368,26 +380,30 @@ export default class Blackjack extends BaseScene {
   }
 
   private setUpDealerScoreText(): void {
-    this.dealerScoreText = this.add.text(0, 200, '', textStyle)
+    this.dealerScoreText = this.add.bitmapText(0, 400, 'arcade', '', 30)
     this.setDealerScoreText(true)
     Phaser.Display.Align.In.TopCenter(this.dealerScoreText, this.gameZone as Zone, 0, -20)
   }
 
   private setUpPlayerScoreText(): void {
-    this.playerScoreText = this.add.text(0, 300, '', textStyle)
+    this.playerScoreText = this.add.bitmapText(0, 400, 'arcade', '', 30)
     this.setPlayerScoreText()
-    Phaser.Display.Align.In.BottomCenter(this.playerScoreText, this.gameZone as Zone, 0, -20)
+    Phaser.Display.Align.In.BottomCenter(this.playerScoreText, this.gameZone as Zone, 0, -50)
   }
 
   private setDealerScoreText(isStart?: boolean | undefined) {
     if (isStart) {
-      ;(this.dealerScoreText as Text).setText('Dealer Score: ??')
+      ;(this.dealerScoreText as Phaser.GameObjects.BitmapText).setText('Dealer Score: ??')
     } else {
-      ;(this.dealerScoreText as Text).setText(`Dealer Score: ${this.dealerHand?.getHandScore()}`)
+      ;(this.dealerScoreText as Phaser.GameObjects.BitmapText).setText(
+        `Dealer Score: ${this.dealerHand?.getHandScore()}`,
+      )
     }
   }
 
   private setPlayerScoreText() {
-    ;(this.playerScoreText as Text).setText(`Your Score: ${this.playerHand?.getHandScore()}`)
+    ;(this.playerScoreText as Phaser.GameObjects.BitmapText).setText(
+      `Your Score: ${this.playerHand?.getHandScore()}`,
+    )
   }
 }
