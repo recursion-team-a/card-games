@@ -1,11 +1,10 @@
 import Phaser from 'phaser'
 import Zone = Phaser.GameObjects.Zone
 import Image = Phaser.GameObjects.Image
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import PreloadScene from '@/Phaser/common/PreloadScene'
 import Button from '@/Phaser/common/button'
 import ImageUtility from '@/utility/ImageUtility'
-import { textStyle } from '@/utility/constants'
 
 export default class BetScene extends PreloadScene {
   public gameZone?: Zone
@@ -16,11 +15,11 @@ export default class BetScene extends PreloadScene {
 
   public bet: number = 0
 
-  public moneyText: Text | undefined
+  public moneyText: BitmapText | undefined
 
-  public betText: Text | undefined
+  public betText: BitmapText | undefined
 
-  public highScoreText: Text | undefined
+  public highScoreText: BitmapText | undefined
 
   public height: number = 1000
 
@@ -58,7 +57,7 @@ export default class BetScene extends PreloadScene {
   }
 
   private setUpTitle(): void {
-    const textTitle: Text = this.add.text(0, 20, 'Place your bet', textStyle)
+    const textTitle: BitmapText = this.add.bitmapText(0, 20, 'arcade', 'Place your bet', 30)
     Phaser.Display.Align.In.Center(
       textTitle,
       this.gameZone as Zone,
@@ -74,6 +73,7 @@ export default class BetScene extends PreloadScene {
         'pointerdown',
         () => {
           this.addChip(button.data.get('value'))
+          this.sound.play('coin')
         },
         this,
       )
@@ -107,13 +107,13 @@ export default class BetScene extends PreloadScene {
 
   public updateBetText() {
     this.betText?.setText(`Bet: $${this.bet}`)
-    Phaser.Display.Align.To.BottomLeft(this.betText as Text, this.moneyText as Text)
+    Phaser.Display.Align.To.BottomLeft(this.betText as BitmapText, this.moneyText as BitmapText)
   }
 
   public setUpText(): void {
-    this.moneyText = this.add.text(0, 0, '', textStyle)
-    this.betText = this.add.text(0, 0, '', textStyle)
-    this.highScoreText = this.add.text(0, 0, '', textStyle)
+    this.moneyText = this.add.bitmapText(0, 0, 'arcade', '', 20)
+    this.betText = this.add.bitmapText(0, 0, 'arcade', '', 20)
+    this.highScoreText = this.add.bitmapText(0, 0, 'arcade', '', 20)
 
     this.updateMoneyText()
     this.updateBetText()
@@ -121,13 +121,18 @@ export default class BetScene extends PreloadScene {
   }
 
   private updateHighScoreText() {
-    ;(this.highScoreText as Text).setText(`High score: $${100}`)
-    Phaser.Display.Align.In.TopCenter(<Text>this.highScoreText, this.gameZone as Zone, 200, 200)
+    ;(this.highScoreText as BitmapText).setText(`High score: $${100}`)
+    Phaser.Display.Align.In.TopCenter(
+      <BitmapText>this.highScoreText,
+      this.gameZone as Zone,
+      200,
+      200,
+    )
   }
 
   public updateMoneyText(): void {
-    ;(this.moneyText as Text).setText(`Money: $${this.money}`)
-    Phaser.Display.Align.In.TopRight(this.moneyText as Text, this.gameZone as Zone, -20, -20)
+    ;(this.moneyText as BitmapText).setText(`Money: $${this.money}`)
+    Phaser.Display.Align.In.TopRight(this.moneyText as BitmapText, this.gameZone as Zone, -20, -20)
   }
 
   // clearボタンとdealボタン
@@ -138,6 +143,7 @@ export default class BetScene extends PreloadScene {
       'pointerdown',
       () => {
         this.bet = 0
+        this.sound.play('clear', { volume: 0.1 })
         this.updateBetText()
       },
       this,
@@ -145,6 +151,7 @@ export default class BetScene extends PreloadScene {
     dealButton.on(
       'pointerdown',
       () => {
+        this.sound.play('bet')
         this.scene.start('Blackjack')
       },
       this,

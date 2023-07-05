@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Zone = Phaser.GameObjects.Zone
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
@@ -13,14 +13,14 @@ import { Result } from '@/model/common/types/game'
 import PokerPlayer from '@/model/poker/PokerPlayer'
 import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
 import PlayerAction from '@/model/poker/playAction'
-import { textStyle, GUTTER_SIZE } from '@/utility/constants'
+import { GUTTER_SIZE } from '@/utility/constants'
 
 const ANTE_AMOUNT = 20
 
 export default class Poker extends BaseScene {
   public playerHandZones: Array<Zone> = []
 
-  public playerNameTexts: Array<Text> = []
+  public playerNameTexts: Array<BitmapText> = []
 
   public pot: Pot | undefined
 
@@ -53,7 +53,7 @@ export default class Poker extends BaseScene {
 
   public currentBetAmount: number = 0
 
-  public cpuBettingStatus: Text | undefined
+  public cpuBettingStatus: BitmapText | undefined
 
   public width: number = 1024
 
@@ -79,7 +79,7 @@ export default class Poker extends BaseScene {
   }
 
   public setUpNewGame() {
-    this.playerDeck = new Deck(this, this.width / 2, -140, 'poker')
+    this.playerDeck = new Deck(this, 100, this.height / 2, 'poker')
   }
 
   public createActionPanel(): void {
@@ -93,7 +93,7 @@ export default class Poker extends BaseScene {
   }
 
   public createFoldButton(): void {
-    this.foldButton = new Button(this, this.width * 0.85, this.height * 0.9, 'chipBlue', 'FOLD')
+    this.foldButton = new Button(this, this.width * 0.92, this.height * 0.9, 'rectangle', 'FOLD')
 
     this.foldButton.setClickHandler(() => {
       this.player.gameStatus = PlayerAction.FOLD
@@ -247,7 +247,7 @@ export default class Poker extends BaseScene {
     this.destroyActionPanel()
     this.payOut(result)
     const noContestText = this.add
-      .text(this.width / 2, this.height / 2, result, textStyle)
+      .bitmapText(this.width / 2, this.height / 2, 'arcade', result, 20)
       .setOrigin(0.5)
       .setDepth(10)
 
@@ -298,7 +298,7 @@ export default class Poker extends BaseScene {
   }
 
   public createRaiseButton(): void {
-    this.raiseButton = new Button(this, this.width * 0.85, this.height * 0.7, 'chipBlue', 'RAISE')
+    this.raiseButton = new Button(this, this.width * 0.92, this.height * 0.7, 'rectangle', 'RAISE')
 
     this.raiseButton.setClickHandler(() => {
       this.addRaiseAmount()
@@ -328,10 +328,9 @@ export default class Poker extends BaseScene {
   }
 
   public createCheckButton(): void {
-    this.checkButton = new Button(this, this.width * 0.85, this.height * 0.8, 'chipBlue', 'CHECK')
+    this.checkButton = new Button(this, this.width * 0.92, this.height * 0.8, 'rectangle', 'CHECK')
 
     this.checkButton.setClickHandler(() => {
-      // TODO: チップアニメーション追加
       this.time.delayedCall(500, () => {
         this.destroyActionPanel()
         if (this.player.gameStatus === GameStatus.SECOND_BETTING) {
@@ -371,18 +370,18 @@ export default class Poker extends BaseScene {
   }
 
   public setUpMoneyText(): void {
-    this.moneyText = this.add.text(0, 0, '', textStyle)
-    this.betText = this.add.text(0, 0, '', textStyle)
+    this.moneyText = this.add.bitmapText(0, 0, 'arcade', '', 20)
+    this.betText = this.add.bitmapText(0, 0, 'arcade', '', 20)
   }
 
   public updateMText(money: number): void {
-    ;(this.moneyText as Text).setText(`Money: $${money}`)
-    Phaser.Display.Align.In.TopRight(this.moneyText as Text, this.gameZone as Zone, -20, -20)
+    ;(this.moneyText as BitmapText).setText(`Money: $${money}`)
+    Phaser.Display.Align.In.TopRight(this.moneyText as BitmapText, this.gameZone as Zone, -20, -20)
   }
 
   public updateBText(bet: number) {
-    ;(this.betText as Text).setText(`Bet: $${bet}`)
-    Phaser.Display.Align.To.BottomLeft(this.betText as Text, this.moneyText as Text)
+    ;(this.betText as BitmapText).setText(`Bet: $${bet}`)
+    Phaser.Display.Align.To.BottomLeft(this.betText as BitmapText, this.moneyText as BitmapText)
   }
 
   public animateChipToTableCenter(index: number) {
@@ -398,10 +397,10 @@ export default class Poker extends BaseScene {
   }
 
   public dealInitialCards(): void {
-    this.time.delayedCall(500, () => {
-      this.players.forEach((player, index) => {
-        if (player.playerType === 'player') {
-          for (let i = 0; i < 5; i += 1) {
+    this.players.forEach((player, index) => {
+      if (player.playerType === 'player' || player.playerType === 'cpu') {
+        for (let i = 0; i < 5; i += 1) {
+          this.time.delayedCall(300 * (i + 5 * index), () => {
             this.handOutCard(
               this.playerDeck as Deck,
               player as PokerPlayer,
@@ -409,22 +408,12 @@ export default class Poker extends BaseScene {
               this.playerHandZones[index].y,
               true,
             )
-          }
-        } else if (player.playerType === 'cpu') {
-          for (let i = 0; i < 5; i += 1) {
-            this.handOutCard(
-              this.playerDeck as Deck,
-              player as PokerPlayer,
-              this.playerHandZones[index].x - (CARD_WIDTH + 10) * 2 + i * (CARD_WIDTH + 10),
-              this.playerHandZones[index].y,
-              true,
-            )
-          }
+          })
         }
-      })
+      }
     })
 
-    this.time.delayedCall(1500, () => {
+    this.time.delayedCall(2000, () => {
       this.player.hand.forEach((card) => {
         if (card.getFaceDown()) {
           card.playFlipOverTween()
@@ -458,19 +447,18 @@ export default class Poker extends BaseScene {
       if (player.playerType === 'player') {
         Phaser.Display.Align.To.TopCenter(
           playerHandZone as Zone,
-          this.playerNameTexts[index] as Text,
+          this.playerNameTexts[index] as BitmapText,
           0,
           GUTTER_SIZE,
         )
       } else if (player.playerType === 'cpu') {
         Phaser.Display.Align.To.BottomCenter(
           playerHandZone as Zone,
-          this.playerNameTexts[index] as Text,
+          this.playerNameTexts[index] as BitmapText,
           0,
           GUTTER_SIZE,
         )
       }
-      // aiが存在する場合は、個別に位置の設定が必要。
       this.playerHandZones.push(playerHandZone)
     })
   }
@@ -478,11 +466,21 @@ export default class Poker extends BaseScene {
   public createPlayerNameTexts(): void {
     this.playerNameTexts = [] // 前回のゲームで作成したものが残っている可能性があるので、初期化する
     this.players.forEach((player) => {
-      const playerNameText = this.add.text(0, 300, player.name, textStyle)
+      const playerNameText = this.add.bitmapText(0, 300, 'arcade', player.name, 20)
       if (player.playerType === 'player') {
-        Phaser.Display.Align.In.BottomCenter(playerNameText as Text, this.gameZone as Zone, 0, -20)
+        Phaser.Display.Align.In.BottomCenter(
+          playerNameText as BitmapText,
+          this.gameZone as Zone,
+          0,
+          -20,
+        )
       } else if (player.playerType === 'cpu') {
-        Phaser.Display.Align.In.TopCenter(playerNameText as Text, this.gameZone as Zone, 0, -20)
+        Phaser.Display.Align.In.TopCenter(
+          playerNameText as BitmapText,
+          this.gameZone as Zone,
+          0,
+          -20,
+        )
       }
       // aiが存在する場合は、個別に位置の設定が必要。
       this.playerNameTexts.push(playerNameText)
@@ -561,7 +559,7 @@ export default class Poker extends BaseScene {
     else tmpStr = `FOLD`
 
     this.cpuBettingStatus = this.add
-      .text(this.playerHandZones[1].x, this.playerHandZones[1].y, tmpStr, textStyle)
+      .bitmapText(this.playerHandZones[1].x, this.playerHandZones[1].y, 'arcade', tmpStr, 30)
       .setOrigin(0.5)
       .setDepth(10)
   }
@@ -602,21 +600,25 @@ export default class Poker extends BaseScene {
 
     if (selectedCards.length === 0) return
 
-    selectedCards.forEach((card) => {
-      this.players[playerIndex].removeCardFromHand(card)
-      card.setOriginalPosition()
-      card.playMoveTween(this.width / 2, -600)
+    selectedCards.forEach((card, index) => {
+      setTimeout(() => {
+        this.players[playerIndex].removeCardFromHand(card)
+        card.setOriginalPosition()
+        card.playMoveTween(card.originalPositionX as number, -600)
+      }, index * 300)
     })
 
-    this.time.delayedCall(500, () => {
-      selectedCards.forEach((card) => {
-        this.handOutCard(
-          this.playerDeck as Deck,
-          this.players[playerIndex] as PokerPlayer,
-          card.originalPositionX as number,
-          card.originalPositionY as number,
-          true,
-        )
+    this.time.delayedCall(2000, () => {
+      selectedCards.forEach((card, index) => {
+        setTimeout(() => {
+          this.handOutCard(
+            this.playerDeck as Deck,
+            this.players[playerIndex] as PokerPlayer,
+            card.originalPositionX as number,
+            card.originalPositionY as number,
+            true,
+          )
+        }, index * 300)
       })
 
       this.nextPlayerTurnOnChangeHandRound(0)
@@ -746,30 +748,40 @@ export default class Poker extends BaseScene {
       this.player.gameStatus = GameStatus.SECOND_BETTING
 
       const selectedCards: Card[] = []
-      this.player.hand.forEach((card) => {
-        if (card.isMoveUp()) {
-          card.playMoveTween(this.width / 2, -140)
-          selectedCards.push(card)
-        }
+      this.player.hand.forEach((card, index) => {
+        setTimeout(() => {
+          if (card.isMoveUp()) {
+            card.playMoveTween(card.originalPositionX as number, 1000)
+            selectedCards.push(card)
+          }
+        }, index * 300)
       })
 
       selectedCards.forEach((card) => {
         this.player.removeCardFromHand(card)
       })
 
-      this.time.delayedCall(500, () => {
-        selectedCards.forEach((card) => {
-          this.handOutCard(
-            this.playerDeck as Deck,
-            this.player as PokerPlayer,
-            card.originalPositionX as number,
-            card.originalPositionY as number,
-            true,
-          )
+      selectedCards.forEach((card, index) => {
+        setTimeout(() => {
+          this.player.removeCardFromHand(card)
+        }, index * 300)
+      })
+
+      this.time.delayedCall(2000, () => {
+        selectedCards.forEach((card, index) => {
+          setTimeout(() => {
+            this.handOutCard(
+              this.playerDeck as Deck,
+              this.player as PokerPlayer,
+              card.originalPositionX as number,
+              card.originalPositionY as number,
+              true,
+            )
+          }, index * 300)
         })
       })
 
-      this.time.delayedCall(1500, () => {
+      this.time.delayedCall(3500, () => {
         this.player.hand.forEach((card) => {
           if (card.faceDown) {
             card.playFlipOverTween()
@@ -836,14 +848,14 @@ export default class Poker extends BaseScene {
   public showdown(result: GameResult): void {
     this.destroyActionPanel()
     this.payOut(result)
-    const handRanks: Text[] = []
+    const handRanks: BitmapText[] = []
 
     this.playerHandZones.forEach((handZone, index) => {
       const player = this.players[index] as PokerPlayer
       const handRankText = Poker.getKeyByValue(HAND_RANK_MAP, player.getHandRank())
 
       const handRank = this.add
-        .text(handZone.x, handZone.y, handRankText, textStyle)
+        .bitmapText(handZone.x, handZone.y, 'arcade', handRankText, 30)
         .setOrigin(0.5)
         .setDepth(10)
 
@@ -854,11 +866,21 @@ export default class Poker extends BaseScene {
     this.cpuBettingStatus?.destroy()
 
     // 勝敗結果表示
-    const resultText = this.add
-      .text(this.width / 2, this.height / 2, result, textStyle)
-      .setOrigin(0.5)
-      .setDepth(10)
-    resultText.setColor('#ffde3d')
+    let resultText: BitmapText
+    this.time.delayedCall(2500, () => {
+      resultText = this.add
+        .bitmapText(this.width / 2, this.height / 2, 'arcade', result, 30)
+        .setOrigin(0.5)
+        .setDepth(10)
+      resultText.setTint(0xffde3d)
+      if (result === 'WIN') {
+        this.sound.play('win')
+        resultText.setTint(0xffde3d)
+      } else {
+        this.sound.play('negative')
+        resultText.setTint(0xff0000)
+      }
+    })
 
     this.time.delayedCall(4000, () => {
       handRanks.forEach((handRank) => {

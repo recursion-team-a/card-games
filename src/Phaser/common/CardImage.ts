@@ -75,6 +75,7 @@ export default class Card extends Phaser.GameObjects.Image {
   }
 
   private onClick(): void {
+    this.scene.sound.play('thock')
     if (this.y === this.originalPositionY) {
       this.y -= 20
     } else {
@@ -83,6 +84,7 @@ export default class Card extends Phaser.GameObjects.Image {
   }
 
   public playMoveTween(toX: number, toY: number): void {
+    this.scene.sound.play('deal', { volume: 0.5 })
     this.scene.tweens.add({
       targets: this,
       x: toX,
@@ -104,20 +106,36 @@ export default class Card extends Phaser.GameObjects.Image {
   }
 
   public playFlipOverTween(): void {
+    const originalScaleX = this.scaleX
+
     this.scene.tweens.add({
       targets: this,
       scaleX: 0,
-      duration: 350,
+      duration: 200,
       ease: 'Linear',
       onComplete: () => {
-        // アニメーション完了後に実行するコールバック関数を追加
         this.setFaceUp()
+        this.setRotation(-Math.PI / 2)
+
         this.scene.tweens.add({
           targets: this,
-          scaleX: 1,
-          duration: 350,
-          delay: 350,
+          rotation: 0,
+          scaleX: originalScaleX,
+          duration: 200,
+          delay: 100,
           ease: 'Linear',
+          onStart: () => {
+            this.setAlpha(0)
+          },
+          onUpdate: (tween) => {
+            const { progress } = tween
+            const alpha = Math.min(progress * 2, 1)
+            this.setAlpha(alpha)
+          },
+          onComplete: () => {
+            this.setAlpha(1)
+            this.scene.sound.play('cardflip', { volume: 0.5 })
+          },
         })
       },
     })

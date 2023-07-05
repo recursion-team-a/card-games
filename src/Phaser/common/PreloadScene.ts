@@ -11,6 +11,8 @@ export default class PreloadScene extends Phaser.Scene {
 
   private percentText: Phaser.GameObjects.Text | null = null
 
+  public bitmapText: Phaser.GameObjects.BitmapText | undefined
+
   public preload() {
     const { width, height } = this.cameras.main
     // ロードバーの背景
@@ -63,6 +65,26 @@ export default class PreloadScene extends Phaser.Scene {
       path.join('/assets/Cards', 'playingCards.png'),
       path.join('/assets/Cards', 'playingCards.xml'),
     )
+    this.load.bitmapFont(
+      'arcade',
+      path.join('/assets/fonts', 'arcade.png'),
+      path.join('/assets/fonts', 'arcade.xml'),
+    )
+    this.load.audio('negative', path.join('/assets/sounds', 'negative-tone.wav'))
+    this.load.audio('countDown', path.join('/assets/sounds', 'countDown.wav'))
+    this.load.audio('bet', path.join('/assets/sounds', 'bet.wav'))
+    this.load.audio('click', path.join('/assets/sounds', 'click.wav'))
+    this.load.audio('cardflip', path.join('/assets/sounds', 'cardflip.mp3'))
+    this.load.audio('clear', path.join('/assets/sounds', 'clear.mp3'))
+    this.load.audio('coin', path.join('/assets/sounds', 'coin.wav'))
+    this.load.audio('deal', path.join('/assets/sounds', 'deal.wav'))
+    this.load.audio('kosh', path.join('/assets/sounds', 'kosh.wav'))
+    this.load.audio('win', path.join('/assets/sounds', 'win.wav'))
+    this.load.audio('shuffle1', path.join('/assets/sounds', 'shuffle1.wav'))
+    this.load.audio('shuffle2', path.join('/assets/sounds', 'shuffle2.wav'))
+    this.load.audio('thock', path.join('/assets/sounds', 'thock.wav'))
+    this.load.image('rectangle', path.join('/assets', 'rectangleButton.png'))
+    this.load.image('square', path.join('/assets', 'squareButton.png'))
     this.load.image('table', path.join('/assets', 'table.jpg'))
     this.load.image('betTable', path.join('/assets', 'betTable.jpg'))
     this.load.image('cardBack', path.join('/assets/Cards', 'cardBack.png'))

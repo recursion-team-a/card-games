@@ -1,20 +1,19 @@
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Image = Phaser.GameObjects.Image
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import BetScene from '@/Phaser/common/BetScene'
 import Deck from '@/Phaser/common/DeckImage'
 import PreloadScene from '@/Phaser/common/PreloadScene'
-import { textStyle } from '@/utility/constants'
 
 export default class BaseScene extends PreloadScene {
   protected deck: Deck | undefined
 
-  protected moneyText: Text | undefined
+  protected moneyText: BitmapText | undefined
 
-  protected betText: Text | undefined
+  protected betText: BitmapText | undefined
 
-  protected timerText: Text | undefined
+  protected timerText: BitmapText | undefined
 
   protected gameZone: Zone | undefined
 
@@ -22,7 +21,7 @@ export default class BaseScene extends PreloadScene {
 
   protected CARD_FLIP_TIME = 600
 
-  protected INITIAL_TIME = 2
+  protected INITIAL_TIME = 3
 
   public betScene: BetScene | undefined
 
@@ -40,7 +39,7 @@ export default class BaseScene extends PreloadScene {
 
     button.setInteractive()
 
-    this.INITIAL_TIME = 2
+    this.INITIAL_TIME = 3
 
     button.on('pointerdown', () => {
       window.location.href = '/studio'
@@ -49,18 +48,18 @@ export default class BaseScene extends PreloadScene {
   }
 
   public updateMoneyText(): void {
-    ;(this.moneyText as Text).setText(`Money: $${(<BetScene>this.betScene).money}`)
-    Phaser.Display.Align.In.TopRight(this.moneyText as Text, this.gameZone as Zone, -20, -20)
+    ;(this.moneyText as BitmapText).setText(`Money: $${(<BetScene>this.betScene).money}`)
+    Phaser.Display.Align.In.TopRight(this.moneyText as BitmapText, this.gameZone as Zone, -20, -20)
   }
 
   public updateBetText() {
-    ;(this.betText as Text).setText(`Bet: $${(<BetScene>this.betScene).bet}`)
-    Phaser.Display.Align.To.BottomLeft(this.betText as Text, this.moneyText as Text)
+    ;(this.betText as BitmapText).setText(`Bet: $${(<BetScene>this.betScene).bet}`)
+    Phaser.Display.Align.To.BottomLeft(this.betText as BitmapText, this.moneyText as BitmapText)
   }
 
   public setUpMoneyText(): void {
-    this.moneyText = this.add.text(0, 0, '', textStyle)
-    this.betText = this.add.text(0, 0, '', textStyle)
+    this.moneyText = this.add.bitmapText(0, 0, 'arcade', '', 20)
+    this.betText = this.add.bitmapText(0, 0, 'arcade', '', 20)
 
     this.updateMoneyText()
     this.updateBetText()
@@ -72,7 +71,12 @@ export default class BaseScene extends PreloadScene {
       this.setTimerText(`${String(this.INITIAL_TIME)}`)
     } else if (this.INITIAL_TIME === 0) {
       this.setTimerText('START')
-      Phaser.Display.Align.In.Center(this.timerText as Text, this.gameZone as GameObject, 0, -20)
+      Phaser.Display.Align.In.Center(
+        this.timerText as BitmapText,
+        this.gameZone as GameObject,
+        0,
+        -20,
+      )
     } else {
       this.setTimerText('')
       callback()
@@ -80,9 +84,14 @@ export default class BaseScene extends PreloadScene {
   }
 
   protected createTimerText(): void {
-    this.timerText = this.add.text(0, 0, '', textStyle)
+    this.timerText = this.add.bitmapText(0, 0, 'arcade', '', 30)
     this.setTimerText(`${String(this.INITIAL_TIME)}`)
-    Phaser.Display.Align.In.Center(this.timerText as Text, this.gameZone as GameObject, 0, -20)
+    Phaser.Display.Align.In.Center(
+      this.timerText as BitmapText,
+      this.gameZone as GameObject,
+      0,
+      -20,
+    )
   }
 
   protected setTimerText(time: string): void {

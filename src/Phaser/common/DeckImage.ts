@@ -7,7 +7,7 @@ export default class Deck {
   constructor(scene: Phaser.Scene, x: number, y: number, gameType?: string, playerType?: string) {
     // カードの配列
     this.cards = []
-    // デッキの生成
+    // デッキの}, index * 500)生成
     this.generateDeck(scene, x, y, gameType, playerType)
     this.shuffle()
   }
