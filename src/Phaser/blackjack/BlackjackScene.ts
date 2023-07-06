@@ -113,7 +113,7 @@ export default class Blackjack extends BaseScene {
     }
     this.children.bringToTop(card)
     card.playMoveTween(toX, toY)
-    this.time.delayedCall(500, () => {
+    this.time.delayedCall(700, () => {
       if (isFaceDown && isCardUntil17) {
         card.setFaceDown(true)
         card.playFlipOverTween()
@@ -366,7 +366,7 @@ export default class Blackjack extends BaseScene {
         true,
         true,
       )
-      setTimeout(() => this.drawCardsUntil17(), 500)
+      setTimeout(() => this.drawCardsUntil17(), 1000)
       return
     }
     let result: GameResult
