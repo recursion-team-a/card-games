@@ -93,7 +93,7 @@ export default class Poker extends BaseScene {
   }
 
   public createFoldButton(): void {
-    this.foldButton = new Button(this, this.width * 0.92, this.height * 0.9, 'rectangle', 'FOLD')
+    this.foldButton = new Button(this, this.width * 0.92, this.height * 0.9, 'grayButton', 'FOLD')
 
     this.foldButton.setClickHandler(() => {
       this.player.gameStatus = PlayerAction.FOLD
@@ -298,7 +298,7 @@ export default class Poker extends BaseScene {
   }
 
   public createRaiseButton(): void {
-    this.raiseButton = new Button(this, this.width * 0.92, this.height * 0.7, 'rectangle', 'RAISE')
+    this.raiseButton = new Button(this, this.width * 0.92, this.height * 0.7, 'grayButton', 'RAISE')
 
     this.raiseButton.setClickHandler(() => {
       this.addRaiseAmount()
@@ -328,7 +328,7 @@ export default class Poker extends BaseScene {
   }
 
   public createCheckButton(): void {
-    this.checkButton = new Button(this, this.width * 0.92, this.height * 0.8, 'rectangle', 'CHECK')
+    this.checkButton = new Button(this, this.width * 0.92, this.height * 0.8, 'grayButton', 'CHECK')
 
     this.checkButton.setClickHandler(() => {
       this.time.delayedCall(500, () => {

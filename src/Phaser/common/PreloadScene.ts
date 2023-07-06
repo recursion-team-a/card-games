@@ -90,8 +90,11 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('chipGray', path.join('/assets/Chips', 'chipGray.png'))
     this.load.image('chipBlue', path.join('/assets/Chips', 'chipBlue.png'))
     this.load.image('back', path.join('/assets/ui/buttons', 'back.png'))
-    this.load.image('rectangle', path.join('/assets/ui/buttons', 'rectangleButton.png'))
-    this.load.image('square', path.join('/assets/ui/buttons', 'squareButton.png'))
+    this.load.image('rectangleButton', path.join('/assets/ui/buttons', 'rectangleButton.png'))
+    this.load.image('squareButton', path.join('/assets/ui/buttons', 'squareButton.png'))
+    this.load.image('blueEmptyButton', path.join('/assets/ui/buttons', 'blueEmptyButton.png'))
+    this.load.image('blackButton', path.join('/assets/ui/buttons', 'blackButton.png'))
+    this.load.image('grayButton', path.join('/assets/ui/buttons', 'grayButton.png'))
     this.load.image('table', path.join('/assets/ui/table', 'table.jpg'))
     this.load.image('betTable', path.join('/assets/ui/table', 'betTable.jpg'))
   }
