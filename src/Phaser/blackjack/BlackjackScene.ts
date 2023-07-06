@@ -94,6 +94,7 @@ export default class Blackjack extends BaseScene {
     toY: number,
     isFaceDown: boolean,
     isEnd?: boolean | undefined,
+    isCardUntil17?: boolean | undefined,
   ): void {
     const card: Card | undefined = deck.drawOne()
 
@@ -112,6 +113,12 @@ export default class Blackjack extends BaseScene {
     }
     this.children.bringToTop(card)
     card.playMoveTween(toX, toY)
+    this.time.delayedCall(500, () => {
+      if (isFaceDown && isCardUntil17) {
+        card.setFaceDown(true)
+        card.playFlipOverTween()
+      }
+    })
   }
 
   // トランプを0.5秒おきに描画する
@@ -355,7 +362,8 @@ export default class Blackjack extends BaseScene {
         this.dealerHand as BlackjackPlayer,
         (this.dealerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
         (this.dealerHandZone as Zone).y,
-        false,
+        true,
+        true,
         true,
       )
       setTimeout(() => this.drawCardsUntil17(), 500)
