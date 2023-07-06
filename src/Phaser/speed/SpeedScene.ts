@@ -343,11 +343,9 @@ export default class Speed extends BaseScene {
     const card: Card | undefined = deck.drawOne()
 
     if (!card) return
+    card.disableInteractive()
     if (!faceDown) {
       card.setFaceUp()
-    }
-    if (!isStart && player.playerType === 'player') {
-      card.setDrag()
     }
     player.addHand(card)
 
@@ -355,6 +353,11 @@ export default class Speed extends BaseScene {
     card.playMoveTween(x, y)
     this.setHouseDeckSizeText()
     this.setPlayerDeckSizeText()
+    this.time.delayedCall(500, () => {
+      if (!isStart && player.playerType === 'player') {
+        card.setDrag()
+      }
+    })
   }
 
   private dealInitialCards() {
