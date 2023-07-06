@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 500;
+  src: local(''), url('/VT323.ttf') format('truetype');
+}
+
 html,
 body,
 :root {

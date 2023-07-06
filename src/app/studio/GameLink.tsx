@@ -13,21 +13,21 @@ function GameLink({ title, ruleLink, playLink }: GameLinkProps) {
       <Link href={ruleLink} legacyBehavior>
         <button
           type='button'
-          className='bg-[#F4F5FA] px-4 py-3 rounded-full text-center border border-[#F0F0F6] shadow-xl mt-4'
+          className='bg-[#F4F5FA] px-4 py-3 rounded-full text-center border border-[#F0F0F6] text-base shadow-xl mt-4'
         >
           RULE
         </button>
       </Link>
       <button
         type='button'
-        className='bg-[#F4F5FA] px-4 py-3 rounded-full border border-[#F0F0F6] shadow-xl mt-4'
+        className='bg-[#F4F5FA] px-4 py-3 rounded-full border border-[#F0F0F6] text-base shadow-xl mt-4'
       >
         TUTORIAL
       </button>
       <Link href={playLink} legacyBehavior>
         <button
           type='button'
-          className='bg-[#f24e4e] px-4 py-3 rounded-full border border-[#F0F0F6] shadow-xl mt-4'
+          className='bg-[#f24e4e] px-4 py-3 rounded-full border border-[#F0F0F6] text-base shadow-xl mt-4'
         >
           PLAY
         </button>
