@@ -17,10 +17,10 @@ export default class PokerPlayer extends Player {
     return this.hand.length
   }
 
-  public getRanks(): number[] {
+  public getRanks(rankChoices: string[]): number[] {
     const ranks: number[] = this.hand
       .map((card) =>
-        RANK_CHOICES.indexOf(
+        rankChoices.indexOf(
           card.rank as 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K',
         ),
       )
@@ -29,8 +29,25 @@ export default class PokerPlayer extends Player {
     return ranks
   }
 
+  public static findPair(ranks: number[]): [number | null, number[]] {
+    const sortedRanks = [...ranks].sort((a, b) => a - b) // sort the ranks
+    let pair: number | null = null
+    const newRanks: number[] = []
+
+    for (let i = 0; i < sortedRanks.length; i += 1) {
+      if (sortedRanks[i] === sortedRanks[i + 1]) {
+        pair = sortedRanks[i]
+        i += 1 // skip the next rank
+      } else {
+        newRanks.push(sortedRanks[i])
+      }
+    }
+
+    return [pair, newRanks]
+  }
+
   public getHandRank(): number {
-    const ranks = this.getRanks()
+    const ranks = this.getRanks(RANK_CHOICES)
 
     // フラッシュ
     const isFlush = this.hand.every((card) => card.suit === this.hand[0].suit)

@@ -11,7 +11,7 @@ import GameResult from '@/model/common/gameResult'
 import GameStatus from '@/model/common/gameStatus'
 import { Result } from '@/model/common/types/game'
 import PokerPlayer from '@/model/poker/PokerPlayer'
-import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES, RANK_CHOICES_TEXAS } from '@/model/poker/handRank'
 import PlayerAction from '@/model/poker/playAction'
 import { GUTTER_SIZE } from '@/utility/constants'
 
@@ -154,33 +154,72 @@ export default class Poker extends BaseScene {
   }
 
   public compareAllHands(): PokerPlayer[] {
-    const players = (this.players as PokerPlayer[]).filter(
-      (player) => player.gameStatus !== PlayerAction.FOLD,
-    )
-    const sortedPlayers = players.sort((a, b) => {
-      const aRank = a.getHandRank()
-      const bRank = b.getHandRank()
-      if (aRank > bRank) {
-        return -1
-      }
-      if (aRank < bRank) {
-        return 1
-      }
-      const aHighCard = a.getHandRank()
-      const bHighCard = b.getHandRank()
+    const winPlayer: Array<PokerPlayer> = []
 
-      if (aHighCard > bHighCard) {
-        return -1
-      }
-      if (aHighCard < bHighCard) {
-        return 1
-      }
-      return 0
-    })
+    const player = this.players[0]
+    const house = this.players[1]
+    const playerRank = player.getHandRank()
+    const houseRank = house.getHandRank()
 
-    const maxRank = sortedPlayers[0].getHandRank()
-    const winners = sortedPlayers.filter((player) => player.getHandRank() === maxRank)
-    return winners
+    if (playerRank > houseRank) {
+      winPlayer.push(player)
+      return winPlayer
+    }
+    if (houseRank > playerRank) {
+      winPlayer.push(house)
+      return winPlayer
+    }
+
+    let playerRanks = player.getRanks(RANK_CHOICES_TEXAS)
+    let houseRanks = house.getRanks(RANK_CHOICES_TEXAS)
+
+    let playerPair
+    let housePair
+    ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
+    ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
+
+    if (playerPair && housePair) {
+      if (playerPair > housePair) {
+        winPlayer.push(player)
+        return winPlayer
+      }
+      if (playerPair < housePair) {
+        winPlayer.push(house)
+        return winPlayer
+      }
+    }
+
+    // 2つ目のペア
+    ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
+    ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
+
+    if (playerPair && housePair) {
+      if (playerPair > housePair) {
+        winPlayer.push(player)
+        return winPlayer
+      }
+      if (playerPair < housePair) {
+        winPlayer.push(house)
+        return winPlayer
+      }
+    }
+
+    playerRanks.sort((a, b) => b - a)
+    houseRanks.sort((a, b) => b - a)
+
+    for (let i = 0; i < playerRanks.length; i += 1) {
+      if (playerRanks[i] > houseRanks[i]) {
+        winPlayer.push(player)
+        return winPlayer
+      }
+      if (playerRanks[i] < houseRanks[i]) {
+        winPlayer.push(house)
+        return winPlayer
+      }
+    }
+    winPlayer.push(player)
+    winPlayer.push(house)
+    return winPlayer
   }
 
   public isSecondBettingEnd(): boolean {
@@ -589,7 +628,7 @@ export default class Poker extends BaseScene {
     const selectedCards: Card[] = []
     this.players[1].gameStatus = GameStatus.SECOND_BETTING
     const handStrength = this.players[playerIndex].getHandRank()
-    const ranks = this.players[playerIndex].getRanks()
+    const ranks = this.players[playerIndex].getRanks(RANK_CHOICES)
     const playerHand = this.players[playerIndex].hand
 
     this.players[playerIndex].hand.forEach((card) => {
@@ -806,8 +845,7 @@ export default class Poker extends BaseScene {
       let result = GameResult.LOSS
       if (winPlayers.length >= 2) {
         result = GameResult.TIE
-      }
-      if (winPlayers.includes(this.player)) {
+      } else if (winPlayers.includes(this.player)) {
         result = GameResult.WIN
       }
       this.showdown(result)
@@ -882,7 +920,7 @@ export default class Poker extends BaseScene {
       }
     })
 
-    this.time.delayedCall(4000, () => {
+    this.input.once('pointerdown', () => {
       handRanks.forEach((handRank) => {
         handRank.destroy()
       })

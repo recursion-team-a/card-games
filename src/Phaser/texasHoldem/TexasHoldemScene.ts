@@ -972,8 +972,7 @@ export default class TexasHoldem extends BaseScene {
       let result = GameResult.LOSS
       if (winPlayers.length >= 2) {
         result = GameResult.TIE
-      }
-      if (winPlayers.includes(this.player)) {
+      } else if (winPlayers.includes(this.player)) {
         result = GameResult.WIN
       }
       this.showdown(result)
