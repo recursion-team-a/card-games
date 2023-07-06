@@ -158,6 +158,7 @@ export default class Poker extends BaseScene {
 
     const player = this.players[0]
     const house = this.players[1]
+
     const playerRank = player.getHandRank()
     const houseRank = house.getHandRank()
 
@@ -172,6 +173,9 @@ export default class Poker extends BaseScene {
 
     let playerRanks = player.getRanks(RANK_CHOICES_TEXAS)
     let houseRanks = house.getRanks(RANK_CHOICES_TEXAS)
+
+    console.log(playerRanks)
+    console.log(houseRanks)
 
     let playerPair
     let housePair
@@ -193,6 +197,9 @@ export default class Poker extends BaseScene {
     ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
     ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
 
+    console.log(playerRanks)
+    console.log(houseRanks)
+
     if (playerPair && housePair) {
       if (playerPair > housePair) {
         winPlayer.push(player)
@@ -206,6 +213,9 @@ export default class Poker extends BaseScene {
 
     playerRanks.sort((a, b) => b - a)
     houseRanks.sort((a, b) => b - a)
+
+    console.log(playerRanks)
+    console.log(houseRanks)
 
     for (let i = 0; i < playerRanks.length; i += 1) {
       if (playerRanks[i] > houseRanks[i]) {
@@ -792,17 +802,8 @@ export default class Poker extends BaseScene {
           if (card.isMoveUp()) {
             card.playMoveTween(card.originalPositionX as number, 1000)
             selectedCards.push(card)
+            this.player.removeCardFromHand(card)
           }
-        }, index * 300)
-      })
-
-      selectedCards.forEach((card) => {
-        this.player.removeCardFromHand(card)
-      })
-
-      selectedCards.forEach((card, index) => {
-        setTimeout(() => {
-          this.player.removeCardFromHand(card)
         }, index * 300)
       })
 
