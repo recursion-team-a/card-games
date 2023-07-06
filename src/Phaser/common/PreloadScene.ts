@@ -95,6 +95,15 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('blueEmptyButton', path.join('/assets/ui/buttons', 'blueEmptyButton.png'))
     this.load.image('blackButton', path.join('/assets/ui/buttons', 'blackButton.png'))
     this.load.image('grayButton', path.join('/assets/ui/buttons', 'grayButton.png'))
+    this.load.image('largeGrayButton', path.join('/assets/ui/buttons', 'largeGrayButton.png'))
+    this.load.image(
+      'extraLargeGrayButton',
+      path.join('/assets/ui/buttons', 'extraLargeGrayButton.png'),
+    )
+    this.load.image('largeRedButton', path.join('/assets/ui/buttons', 'largeRedButton.png'))
+    this.load.image('darkRedButton', path.join('/assets/ui/buttons', 'darkRedButton.png'))
+    this.load.image('greenButton', path.join('/assets/ui/buttons', 'greenButton.png'))
+    this.load.image('orangeButton', path.join('/assets/ui/buttons', 'orangeButton.png'))
     this.load.image('table', path.join('/assets/ui/table', 'table.jpg'))
     this.load.image('betTable', path.join('/assets/ui/table', 'betTable.jpg'))
   }

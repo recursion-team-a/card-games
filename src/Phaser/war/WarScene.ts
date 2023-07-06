@@ -192,7 +192,7 @@ export default class WarScene extends BaseScene {
   }
 
   private setUpBattleButton(): void {
-    this.stayButton = new Button(this, this.width / 2, this.height / 2, 'chipOrange', 'battle')
+    this.stayButton = new Button(this, this.width / 2, this.height / 2, 'largeRedButton', 'battle')
     this.stayButton.setClickHandler(() => {
       this.handleBattle()
     })

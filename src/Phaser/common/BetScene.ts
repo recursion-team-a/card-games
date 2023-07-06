@@ -137,8 +137,8 @@ export default class BetScene extends PreloadScene {
 
   // clearボタンとdealボタン
   public setUpButtons(): void {
-    const clearButton = new Button(this, 0, this.height * 0.75, 'chipBlue', 'clear')
-    const dealButton = new Button(this, 200, this.height * 0.75, 'chipBlue', 'Deal')
+    const clearButton = new Button(this, 0, this.height * 0.75, 'grayButton', 'clear')
+    const dealButton = new Button(this, 200, this.height * 0.75, 'grayButton', 'Deal')
     clearButton.on(
       'pointerdown',
       () => {
