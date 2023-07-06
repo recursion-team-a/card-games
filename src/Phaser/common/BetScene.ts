@@ -15,6 +15,8 @@ export default class BetScene extends PreloadScene {
 
   public bet: number = 0
 
+  public dealButton: Button | undefined
+
   public moneyText: BitmapText | undefined
 
   public betText: BitmapText | undefined
@@ -101,6 +103,10 @@ export default class BetScene extends PreloadScene {
 
   private addChip(value: number) {
     this.bet += value
+    if (this.dealButton && this.bet > 0) {
+      this.dealButton.visible = true
+      this.dealButton.text.visible = true
+    }
     if (this.bet > this.money) this.bet = this.money
     this.updateBetText()
   }
@@ -138,27 +144,35 @@ export default class BetScene extends PreloadScene {
   // clearボタンとdealボタン
   public setUpButtons(): void {
     const clearButton = new Button(this, 0, this.height * 0.75, 'chipBlue', 'clear')
-    const dealButton = new Button(this, 200, this.height * 0.75, 'chipBlue', 'Deal')
+    this.dealButton = new Button(this, 200, this.height * 0.75, 'chipBlue', 'Deal')
+    this.dealButton.visible = false
+    this.dealButton.text.visible = false
     clearButton.on(
       'pointerdown',
       () => {
         this.bet = 0
         this.sound.play('clear', { volume: 0.1 })
         this.updateBetText()
+        if (this.dealButton) {
+          this.dealButton.visible = false
+          this.dealButton.text.visible = false
+        }
       },
       this,
     )
-    dealButton.on(
+    this.dealButton.on(
       'pointerdown',
       () => {
-        this.sound.play('bet')
-        this.scene.start('Blackjack')
+        if (this.bet > 0) {
+          this.sound.play('bet')
+          this.scene.start('Blackjack')
+        }
       },
       this,
     )
     const buttons: Image[] = new Array<Image>()
     buttons.push(clearButton)
-    buttons.push(dealButton)
+    buttons.push(this.dealButton)
     ImageUtility.spaceOutImagesEvenlyHorizontally(buttons, this.scene)
   }
 }
