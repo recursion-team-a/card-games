@@ -1,5 +1,5 @@
 <TextureAtlas imagePath="sheet.png">
-	<SubTexture name="card♣2.png" x="399" y="0" width="133" height="195"/>
+	<SubTexture name="card♣2.png" x="266" y="0" width="133" height="195"/>
 	<SubTexture name="card♣3.png" x="266" y="585" width="133" height="195"/>
 	<SubTexture name="card♣4.png" x="266" y="975" width="133" height="195"/>
 	<SubTexture name="card♣5.png" x="266" y="1365" width="133" height="195"/>
@@ -13,7 +13,7 @@
 	<SubTexture name="card♣K.png" x="266" y="4485" width="133" height="195"/>
 	<SubTexture name="card♣Q.png" x="266" y="4875" width="133" height="195"/>
 
-	<SubTexture name="card♦2.png" x="399" y="195" width="133" height="195"/>
+	<SubTexture name="card♦2.png" x="266" y="195" width="133" height="195"/>
 	<SubTexture name="card♦3.png" x="399" y="390" width="133" height="195"/>
 	<SubTexture name="card♦4.png" x="399" y="780" width="133" height="195"/>
 	<SubTexture name="card♦5.png" x="399" y="1170" width="133" height="195"/>
@@ -27,7 +27,7 @@
 	<SubTexture name="card♦K.png" x="399" y="4290" width="133" height="195"/>
 	<SubTexture name="card♦Q.png" x="399" y="4680" width="133" height="195"/>
 
-	<SubTexture name="card♥︎2.png" x="133" y="195" width="133" height="195"/>
+	<SubTexture name="card♥︎2.png" x="0" y="195" width="133" height="195"/>
 	<SubTexture name="card♥︎3.png" x="133" y="390" width="133" height="195"/>
 	<SubTexture name="card♥︎4.png" x="133" y="780" width="133" height="195"/>
 	<SubTexture name="card♥︎5.png" x="133" y="1170" width="133" height="195"/>
@@ -41,7 +41,7 @@
 	<SubTexture name="card♥︎K.png" x="133" y="4290" width="133" height="195"/>
 	<SubTexture name="card♥︎Q.png" x="133" y="4680" width="133" height="195"/>
 
-	<SubTexture name="card♠2.png" x="133" y="0" width="133" height="195"/>
+	<SubTexture name="card♠2.png" x="0" y="0" width="133" height="195"/>
 	<SubTexture name="card♠3.png" x="0" y="585" width="133" height="195"/>
 	<SubTexture name="card♠4.png" x="0" y="975" width="133" height="195"/>
 	<SubTexture name="card♠5.png" x="0" y="1365" width="133" height="195"/>
