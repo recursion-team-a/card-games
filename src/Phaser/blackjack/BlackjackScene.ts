@@ -298,6 +298,8 @@ export default class Blackjack extends BaseScene {
   }
 
   private handleHit(): void {
+    this.doubleButton?.destroy()
+    this.surrenderButton?.destroy()
     const handleLen = (this.playerHand as BlackjackPlayer).hand.length
     this.handOutCard(
       this.deck as Deck,
