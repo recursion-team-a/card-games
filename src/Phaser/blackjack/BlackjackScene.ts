@@ -326,6 +326,10 @@ export default class Blackjack extends BaseScene {
     this.updateBetText()
     if ((<BlackjackPlayer>this.playerHand).getHandScore() > 21) {
       this.endHand(GameResult.BUST)
+    } else {
+      this.handleFlipOver()
+      this.fadeOutButton()
+      setTimeout(() => this.drawCardsUntil17(), 1000)
     }
   }
 
