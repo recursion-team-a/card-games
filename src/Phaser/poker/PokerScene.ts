@@ -174,9 +174,6 @@ export default class Poker extends BaseScene {
     let playerRanks = player.getRanks(RANK_CHOICES_TEXAS)
     let houseRanks = house.getRanks(RANK_CHOICES_TEXAS)
 
-    console.log(playerRanks)
-    console.log(houseRanks)
-
     let playerPair
     let housePair
     ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
@@ -197,9 +194,6 @@ export default class Poker extends BaseScene {
     ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
     ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
 
-    console.log(playerRanks)
-    console.log(houseRanks)
-
     if (playerPair && housePair) {
       if (playerPair > housePair) {
         winPlayer.push(player)
@@ -213,9 +207,6 @@ export default class Poker extends BaseScene {
 
     playerRanks.sort((a, b) => b - a)
     houseRanks.sort((a, b) => b - a)
-
-    console.log(playerRanks)
-    console.log(houseRanks)
 
     for (let i = 0; i < playerRanks.length; i += 1) {
       if (playerRanks[i] > houseRanks[i]) {
