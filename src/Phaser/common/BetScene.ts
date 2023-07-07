@@ -143,7 +143,9 @@ export default class BetScene extends PreloadScene {
   // clearボタンとdealボタン
   public setUpButtons(): void {
     const clearButton = new Button(this, 0, this.height * 0.75, 'grayButton', 'clear')
-    const dealButton = new Button(this, 200, this.height * 0.75, 'grayButton', 'Deal')
+    this.dealButton = new Button(this, 200, this.height * 0.75, 'grayButton', 'Deal')
+    this.dealButton.visible = false
+    this.dealButton.text.visible = false
     clearButton.on(
       'pointerdown',
       () => {
@@ -157,7 +159,7 @@ export default class BetScene extends PreloadScene {
       },
       this,
     )
-    this.dealButton?.on(
+    this.dealButton.on(
       'pointerdown',
       () => {
         if (this.bet > 0) {
@@ -169,7 +171,7 @@ export default class BetScene extends PreloadScene {
     )
     const buttons: Image[] = new Array<Image>()
     buttons.push(clearButton)
-    buttons.push(dealButton)
+    buttons.push(this.dealButton)
     ImageUtility.spaceOutImagesEvenlyHorizontally(buttons, this.scene)
   }
 }
