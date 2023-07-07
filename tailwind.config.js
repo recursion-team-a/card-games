@@ -10,6 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         vt323: ['VT323', ...defaultTheme.fontFamily.mono],
+        Nosutaru: ['Nosutaru-dotMPlusH-10-Regular', ...defaultTheme.fontFamily.mono],
       },
       fontSize: {
         sm: ['20px', '20px'],
