@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 export default function Home() {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const [windowWidth, setWindowWidth] = useState(globalThis.window?.innerWidth)
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
