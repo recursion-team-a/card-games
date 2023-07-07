@@ -338,15 +338,14 @@ export default class Speed extends BaseScene {
     x: number,
     y: number,
     faceDown: boolean,
+    isStart?: boolean,
   ): void {
     const card: Card | undefined = deck.drawOne()
 
     if (!card) return
+    card.disableInteractive()
     if (!faceDown) {
       card.setFaceUp()
-    }
-    if (player.playerType === 'player') {
-      card.setDrag()
     }
     player.addHand(card)
 
@@ -354,6 +353,11 @@ export default class Speed extends BaseScene {
     card.playMoveTween(x, y)
     this.setHouseDeckSizeText()
     this.setPlayerDeckSizeText()
+    this.time.delayedCall(500, () => {
+      if (!isStart && player.playerType === 'player') {
+        card.setDrag()
+      }
+    })
   }
 
   private dealInitialCards() {
@@ -381,6 +385,8 @@ export default class Speed extends BaseScene {
       }
 
       if (!card) return
+
+      card.disableInteractive()
 
       this.dropCardRanks[index] = card.getRankNumber('speed')
       this.children.bringToTop(card)
@@ -420,6 +426,7 @@ export default class Speed extends BaseScene {
             handZone.x + xOffset[player.playerType as 'player' | 'house'],
             handZone.y,
             true,
+            true,
           )
         })
         count += 1
@@ -427,6 +434,7 @@ export default class Speed extends BaseScene {
       callbackScope: this,
       repeat: 3,
     })
+    this.disableCardDraggable()
 
     this.time.delayedCall(1500, () => {
       this.players.forEach((player) => {
@@ -434,7 +442,6 @@ export default class Speed extends BaseScene {
           card.playFlipOverTween()
         })
       })
-      this.disableCardDraggable()
     })
   }
 
@@ -449,7 +456,9 @@ export default class Speed extends BaseScene {
   private ableCardDraggable(): void {
     this.players.forEach((player) => {
       if (player.playerType === 'player') {
-        player.hand.forEach((card) => card.setInteractive())
+        player.hand.forEach((card) => {
+          card.setDrag()
+        })
       }
     })
   }

@@ -94,6 +94,7 @@ export default class Blackjack extends BaseScene {
     toY: number,
     isFaceDown: boolean,
     isEnd?: boolean | undefined,
+    isCardUntil17?: boolean | undefined,
   ): void {
     const card: Card | undefined = deck.drawOne()
 
@@ -112,6 +113,12 @@ export default class Blackjack extends BaseScene {
     }
     this.children.bringToTop(card)
     card.playMoveTween(toX, toY)
+    this.time.delayedCall(700, () => {
+      if (isFaceDown && isCardUntil17) {
+        card.setFaceDown(true)
+        card.playFlipOverTween()
+      }
+    })
   }
 
   // トランプを0.5秒おきに描画する
@@ -291,6 +298,8 @@ export default class Blackjack extends BaseScene {
   }
 
   private handleHit(): void {
+    this.doubleButton?.destroy()
+    this.surrenderButton?.destroy()
     const handleLen = (this.playerHand as BlackjackPlayer).hand.length
     this.handOutCard(
       this.deck as Deck,
@@ -326,6 +335,10 @@ export default class Blackjack extends BaseScene {
     this.updateBetText()
     if ((<BlackjackPlayer>this.playerHand).getHandScore() > 21) {
       this.endHand(GameResult.BUST)
+    } else {
+      this.handleFlipOver()
+      this.fadeOutButton()
+      setTimeout(() => this.drawCardsUntil17(), 1000)
     }
   }
 
@@ -351,10 +364,11 @@ export default class Blackjack extends BaseScene {
         this.dealerHand as BlackjackPlayer,
         (this.dealerHandZone as Zone).x + CARD_WIDTH * (handleLen * 0.3 - 0.15),
         (this.dealerHandZone as Zone).y,
-        false,
+        true,
+        true,
         true,
       )
-      setTimeout(() => this.drawCardsUntil17(), 500)
+      setTimeout(() => this.drawCardsUntil17(), 1000)
       return
     }
     let result: GameResult

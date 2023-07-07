@@ -15,6 +15,8 @@ export default class BetScene extends PreloadScene {
 
   public bet: number = 0
 
+  public dealButton: Button | undefined
+
   public moneyText: BitmapText | undefined
 
   public betText: BitmapText | undefined
@@ -86,7 +88,6 @@ export default class BetScene extends PreloadScene {
     const yellowChip = new Button(this, 0, chipHeight, 'chipGray', '10', 10)
     const redChip = new Button(this, 0, chipHeight, 'chipRed', '50', 50)
     const orangeChip = new Button(this, 0, chipHeight, 'chipOrange', '100', 100)
-    // リファクタリングしたい
     this.setUpButtons()
 
     const chips: Button[] = new Array<Button>()
@@ -101,6 +102,10 @@ export default class BetScene extends PreloadScene {
 
   private addChip(value: number) {
     this.bet += value
+    if (this.dealButton && this.bet > 0) {
+      this.dealButton.visible = true
+      this.dealButton.text.visible = true
+    }
     if (this.bet > this.money) this.bet = this.money
     this.updateBetText()
   }
@@ -145,14 +150,20 @@ export default class BetScene extends PreloadScene {
         this.bet = 0
         this.sound.play('clear', { volume: 0.1 })
         this.updateBetText()
+        if (this.dealButton) {
+          this.dealButton.visible = false
+          this.dealButton.text.visible = false
+        }
       },
       this,
     )
-    dealButton.on(
+    this.dealButton?.on(
       'pointerdown',
       () => {
-        this.sound.play('bet')
-        this.scene.start('Blackjack')
+        if (this.bet > 0) {
+          this.sound.play('bet')
+          this.scene.start('Blackjack')
+        }
       },
       this,
     )
