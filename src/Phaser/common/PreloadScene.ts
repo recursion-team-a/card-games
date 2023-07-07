@@ -83,16 +83,28 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.audio('shuffle1', path.join('/assets/sounds', 'shuffle1.wav'))
     this.load.audio('shuffle2', path.join('/assets/sounds', 'shuffle2.wav'))
     this.load.audio('thock', path.join('/assets/sounds', 'thock.wav'))
-    this.load.image('rectangle', path.join('/assets', 'rectangleButton.png'))
-    this.load.image('square', path.join('/assets', 'squareButton.png'))
-    this.load.image('table', path.join('/assets', 'table.jpg'))
-    this.load.image('betTable', path.join('/assets', 'betTable.jpg'))
     this.load.image('cardBack', path.join('/assets/Cards', 'cardBack.png'))
     this.load.image('chipYellow', path.join('/assets/Chips', 'chipYellow.png'))
     this.load.image('chipOrange', path.join('/assets/Chips', 'chipOrange.png'))
     this.load.image('chipRed', path.join('/assets/Chips', 'chipRed.png'))
     this.load.image('chipGray', path.join('/assets/Chips', 'chipGray.png'))
     this.load.image('chipBlue', path.join('/assets/Chips', 'chipBlue.png'))
-    this.load.image('back', path.join('/assets', 'back.png'))
+    this.load.image('back', path.join('/assets/ui/buttons', 'back.png'))
+    this.load.image('rectangleButton', path.join('/assets/ui/buttons', 'rectangleButton.png'))
+    this.load.image('squareButton', path.join('/assets/ui/buttons', 'squareButton.png'))
+    this.load.image('blueEmptyButton', path.join('/assets/ui/buttons', 'blueEmptyButton.png'))
+    this.load.image('blackButton', path.join('/assets/ui/buttons', 'blackButton.png'))
+    this.load.image('grayButton', path.join('/assets/ui/buttons', 'grayButton.png'))
+    this.load.image('largeGrayButton', path.join('/assets/ui/buttons', 'largeGrayButton.png'))
+    this.load.image(
+      'extraLargeGrayButton',
+      path.join('/assets/ui/buttons', 'extraLargeGrayButton.png'),
+    )
+    this.load.image('largeRedButton', path.join('/assets/ui/buttons', 'largeRedButton.png'))
+    this.load.image('darkRedButton', path.join('/assets/ui/buttons', 'darkRedButton.png'))
+    this.load.image('greenButton', path.join('/assets/ui/buttons', 'greenButton.png'))
+    this.load.image('orangeButton', path.join('/assets/ui/buttons', 'orangeButton.png'))
+    this.load.image('table', path.join('/assets/ui/table', 'table.jpg'))
+    this.load.image('betTable', path.join('/assets/ui/table', 'betTable.jpg'))
   }
 }

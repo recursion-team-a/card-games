@@ -88,7 +88,6 @@ export default class BetScene extends PreloadScene {
     const yellowChip = new Button(this, 0, chipHeight, 'chipGray', '10', 10)
     const redChip = new Button(this, 0, chipHeight, 'chipRed', '50', 50)
     const orangeChip = new Button(this, 0, chipHeight, 'chipOrange', '100', 100)
-    // リファクタリングしたい
     this.setUpButtons()
 
     const chips: Button[] = new Array<Button>()
@@ -143,8 +142,8 @@ export default class BetScene extends PreloadScene {
 
   // clearボタンとdealボタン
   public setUpButtons(): void {
-    const clearButton = new Button(this, 0, this.height * 0.75, 'chipBlue', 'clear')
-    this.dealButton = new Button(this, 200, this.height * 0.75, 'chipBlue', 'Deal')
+    const clearButton = new Button(this, 0, this.height * 0.75, 'grayButton', 'clear')
+    this.dealButton = new Button(this, 200, this.height * 0.75, 'grayButton', 'Deal')
     this.dealButton.visible = false
     this.dealButton.text.visible = false
     clearButton.on(

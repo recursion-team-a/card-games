@@ -47,9 +47,9 @@ export default class CpuLevelScene extends PreloadScene {
 
   private createButton(): void {
     const { height } = this.sys.game.canvas
-    this.easyButton = new Button(this, 0, height / 2, 'chipOrange', 'easy')
-    this.normalButton = new Button(this, 0, height / 2, 'chipYellow', 'normal')
-    this.hardButton = new Button(this, 0, height / 2, 'chipRed', 'hard')
+    this.easyButton = new Button(this, 0, height / 2, 'orangeButton', 'easy')
+    this.normalButton = new Button(this, 0, height / 2, 'largeRedButton', 'normal')
+    this.hardButton = new Button(this, 0, height / 2, 'darkRedButton', 'hard')
 
     const buttons: Button[] = new Array<Button>()
     buttons.push(this.easyButton)
