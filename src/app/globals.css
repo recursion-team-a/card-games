@@ -2,12 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 500;
+  src: local(''), url('/VT323.ttf') format('truetype');
+}
+
 html,
 body,
 :root {
   height: 100%;
   background-color: rgb(20 83 45);
   color: black;
+}
+
+button:active {
+  box-shadow: none;
+  position: relative;
+  top: 0.2em;
 }
 
 /* @media (prefers-color-scheme: dark) {

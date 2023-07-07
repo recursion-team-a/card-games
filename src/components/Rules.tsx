@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import React from 'react'
+import '../app/rules/rules.css'
 
 interface RulesProps {
   game: {
     title: string
     desc: string
-  } // ゲームの配列の型を指定する
+  }
 }
 
 function Rules({ game }: RulesProps) {
