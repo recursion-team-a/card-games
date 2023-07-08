@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import games from '../games.json'
 import Slider from './slider'
+import games from '@/app/games.json'
 
 export default function hub() {
   return (

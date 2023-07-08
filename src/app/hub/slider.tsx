@@ -66,7 +66,7 @@ function Slider({ games }: SliderProps) {
                         </button>
                       </Link>
                       {/* TUTORIALのリンクをruleリンクにしています */}
-                      <Link href={game.ruleLink} legacyBehavior>
+                      <Link href={game.tutorialLink} legacyBehavior>
                         <button type='button' className='button'>
                           TUTORIAL
                         </button>

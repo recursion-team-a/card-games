@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import React from 'react'
-import '@/app/rules/rules.css'
 
 interface Word {
   id: string
@@ -16,7 +15,7 @@ interface RulesProps {
   }
 }
 
-function Rules({ game }: RulesProps) {
+function Tutorials({ game }: RulesProps) {
   return (
     <div className='fixed inset-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50 py-10'>
       <div className='max-h-full w-full max-w-5xl overflow-y-auto rounded-2xl bg-white'>
@@ -85,4 +84,4 @@ function Rules({ game }: RulesProps) {
   )
 }
 
-export default Rules
+export default Tutorials
