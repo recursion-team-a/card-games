@@ -112,7 +112,7 @@ export default class TexasHoldem extends BaseScene {
   }
 
   public createCallButton(): void {
-    this.callButton = new Button(this, this.width * 0.85, this.height * 0.8, 'chipBlue', 'CALL')
+    this.callButton = new Button(this, this.width * 0.92, this.height * 0.8, 'grayButton', 'CALL')
 
     this.callButton.setClickHandler(() => {
       if (this.playerMoney < this.currentBetAmount) {
