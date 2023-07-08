@@ -50,6 +50,6 @@ export default class ContinueScene extends BaseScene {
   }
 
   private static handleNoButton(): void {
-    window.location.href = '/studio'
+    window.location.href = '/hub'
   }
 }
