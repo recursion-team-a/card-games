@@ -1,0 +1,145 @@
+.studio {
+  display: flex;
+  justify-content: center;
+  height: 100px;
+}
+
+.title {
+  position: relative;
+  bottom: 0;
+  margin-top: 100px;
+}
+
+.wrapper {
+  min-height: 770px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-container {
+  max-width: 1120px;
+  width: 70%;
+  padding: 40px 0;
+  margin: 0 auto;
+}
+.slide-content {
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 50px;
+}
+.card {
+  border-radius: 25px;
+  background-color: #fff;
+}
+.image-content,
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 14px;
+}
+.overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #4070f4;
+  border-radius: 25px 25px 0 25px;
+}
+.overlay::before,
+.overlay::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -40px;
+  height: 40px;
+  width: 40px;
+  background-color: #4070f4;
+}
+.overlay::after {
+  border-radius: 0 25px 0 0;
+  background-color: #fff;
+}
+.name {
+  font-size: 40px;
+  font-weight: 1000;
+  color: #333;
+  margin: 50px;
+}
+.button {
+  font-size: 25px;
+  color: black;
+  border-width: 2px;
+  border-color: black;
+  padding: 8px;
+  border-style: solid;
+  background-color: #f4f5fa;
+  justify-content: center;
+  border-radius: 100px;
+  margin: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100px;
+}
+.button:hover {
+  background: #e5e7f2;
+}
+
+.play-button {
+  font-size: 25px;
+  color: black;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  padding: 8px;
+  background-color: #ff0000;
+  border-radius: 100px;
+  margin: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: center;
+  width: 100px;
+}
+
+.play-button:hover {
+  background-color: #ff3333;
+}
+
+.swiper-navBtn {
+  color: #6e93f7;
+  transition: color 0.3s ease;
+}
+.swiper-navBtn:hover {
+  color: #4070f4;
+}
+.swiper-navBtn::before,
+.swiper-navBtn::after {
+  font-size: 38px;
+}
+.swiper-button-next {
+  right: 0;
+}
+.swiper-button-prev {
+  left: 0;
+}
+.swiper-pagination-bullet {
+  background-color: #6e93f7;
+  opacity: 1;
+}
+.swiper-pagination-bullet-active {
+  background-color: #4070f4;
+}
+
+@media screen and (max-width: 800px) {
+  .slide-content {
+    justify-self: center;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .slide-content {
+    justify-self: center;
+  }
+}

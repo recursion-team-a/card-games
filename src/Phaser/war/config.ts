@@ -7,7 +7,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: 'phaser-war-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-war-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,
