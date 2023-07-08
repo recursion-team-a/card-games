@@ -1,13 +1,12 @@
 import Phaser from 'phaser'
-import { textStyle } from '../../utility/constants'
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 
 export default class Button extends Phaser.GameObjects.Image {
-  key: string
+  public key: string
 
-  initScale: number
+  public initScale: number
 
-  text: Text
+  public text: BitmapText
 
   constructor(
     scene: Phaser.Scene,
@@ -22,7 +21,7 @@ export default class Button extends Phaser.GameObjects.Image {
 
     this.key = key
     this.initScale = 0.7
-    this.text = this.scene.add.text(0, 0, this.key, textStyle)
+    this.text = this.scene.add.bitmapText(0, 0, 'arcade', this.key, 20)
     Phaser.Display.Align.In.Center(this.text, this)
 
     this.setScale(this.initScale)
@@ -32,7 +31,7 @@ export default class Button extends Phaser.GameObjects.Image {
     this.setUpHoverButtons()
   }
 
-  setUpHoverButtons(): void {
+  public setUpHoverButtons(): void {
     this.on(
       'pointerover',
       () => {
@@ -49,13 +48,44 @@ export default class Button extends Phaser.GameObjects.Image {
     )
   }
 
-  setX(x: number): any {
+  public setX(x: number): any {
     super.setX(x)
     Phaser.Display.Align.In.Center(this.text, this)
   }
 
-  destroy(): void {
+  public destroy(): void {
     this.text.destroy()
     super.destroy()
+  }
+
+  public setClickHandler(pushHandler: () => void): void {
+    this.once(
+      'pointerdown',
+      () => {
+        this.scene.sound.play('click')
+        pushHandler()
+      },
+      this,
+    )
+  }
+
+  public resizeButton(scale: number): void {
+    if (scale < 0) {
+      throw new Error('Scale value cannot be negative.')
+    }
+    this.setScale(this.initScale * scale)
+  }
+
+  public playMoveAndDestroy(toX: number, toY: number): void {
+    this.scene.tweens.add({
+      targets: this,
+      x: toX,
+      y: toY,
+      duration: 200,
+      ease: 'Linear',
+      onComplete: () => {
+        this.destroy()
+      },
+    })
   }
 }

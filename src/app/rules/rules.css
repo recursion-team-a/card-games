@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Nosutaru';
+  src: local(''), url('/Nosutaru-dotMPlusH-10-Regular.ttf') format('truetype');
+}
+
+p,
+h1,
+h2,
+th,
+td {
+  font-family: 'Nosutaru', sans-serif;
+}

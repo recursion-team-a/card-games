@@ -1,0 +1,6 @@
+<TextureA imagePath="sheet.png">
+    <SubTexture name="button1.png" x="399" y="0" width="133" height="195"/>
+	<SubTexture name="button2.png" x="266" y="585" width="133" height="195"/>
+	<SubTexture name="button3.png" x="266" y="975" width="133" height="195"/>
+	<SubTexture name="button4.png" x="266" y="1365" width="133" height="195"/>
+</TextureA>

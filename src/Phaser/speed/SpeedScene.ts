@@ -1,15 +1,16 @@
-import Text = Phaser.GameObjects.Text
+import BitmapText = Phaser.GameObjects.BitmapText
 import Zone = Phaser.GameObjects.Zone
 import GameObject = Phaser.GameObjects.GameObject
 import TimeEvent = Phaser.Time.TimerEvent
 import { CARD_HEIGHT, CARD_WIDTH } from '@/Factories/cardFactory'
 import BaseScene from '@/Phaser/common/BaseScene'
-import Card from '@/model/common/CardImage'
-import Deck from '@/model/common/DeckImage'
+import Card from '@/Phaser/common/CardImage'
+import Deck from '@/Phaser/common/DeckImage'
+import CpuLevel from '@/model/common/cpuLevel'
 import GameResult from '@/model/common/gameResult'
 import SpeedPlayer from '@/model/speed/SpeedPlayer'
-import { HOUSE_SPEED, DEALER_SPEED } from '@/model/speed/const'
-import { GUTTER_SIZE, textStyle } from '@/utility/constants'
+import { houseSpeed, DEALER_SPEED } from '@/model/speed/speedCpuConfig'
+import { GUTTER_SIZE } from '@/utility/constants'
 
 export default class Speed extends BaseScene {
   constructor() {
@@ -24,9 +25,9 @@ export default class Speed extends BaseScene {
 
   protected houseDeck: Deck | undefined
 
-  protected playerDeckSizeText: Text | undefined
+  protected playerDeckSizeText: BitmapText | undefined
 
-  protected houseDeckSizeText: Text | undefined
+  protected houseDeckSizeText: BitmapText | undefined
 
   protected gameZone: Zone | undefined
 
@@ -44,7 +45,7 @@ export default class Speed extends BaseScene {
 
   protected dropCardRanks: number[] = [] // 台札のカード番号, 長さ2の配列
 
-  create(): void {
+  public create(): void {
     // betSceneに戻るためのボタン
     this.createField()
 
@@ -69,7 +70,7 @@ export default class Speed extends BaseScene {
     this.startDealer()
   }
 
-  update(): void {
+  public update(): void {
     let result: GameResult | undefined
 
     if (this.gamePhase === 'acting') {
@@ -85,17 +86,17 @@ export default class Speed extends BaseScene {
     }
   }
 
-  createHandZone() {
+  public createHandZone() {
     Phaser.Display.Align.To.TopCenter(
       this.playerHandZone as Zone,
-      this.playerDeckSizeText as Text,
+      this.playerDeckSizeText as BitmapText,
       0,
       GUTTER_SIZE,
     )
 
     Phaser.Display.Align.To.BottomCenter(
       this.houseHandZone as Zone,
-      this.houseDeckSizeText as Text,
+      this.houseDeckSizeText as BitmapText,
       0,
       GUTTER_SIZE,
     )
@@ -111,8 +112,8 @@ export default class Speed extends BaseScene {
 
     this.players.forEach((player) => {
       const dropZone = this.add
-        .zone(0, 0, CARD_WIDTH * 1.5, CARD_HEIGHT * 1.5)
-        .setRectangleDropZone(CARD_WIDTH, CARD_HEIGHT)
+        .zone(0, 0, CARD_WIDTH * 2, CARD_HEIGHT * 2)
+        .setRectangleDropZone(CARD_WIDTH * 1.5, CARD_HEIGHT * 1.5)
       Phaser.Display.Align.In.Center(
         dropZone,
         this.gameZone as GameObject,
@@ -124,6 +125,7 @@ export default class Speed extends BaseScene {
 
   private startCountDown(): void {
     this.time.delayedCall(3000, () => {
+      this.sound.play('countDown')
       this.createTimerText()
       this.timeEvent = this.time.addEvent({
         delay: 1000,
@@ -142,9 +144,12 @@ export default class Speed extends BaseScene {
 
   // ハウスのプレイを一定間隔で行うための関数（playhouseTurn()を呼び出す）
   private startHousePlay(delay: number): void {
+    const level = this.registry.get('cpuLevel') ?? CpuLevel.NORMAL
+    const speed = houseSpeed[level]
+
     this.time.delayedCall(delay, () => {
       this.houseTimeEvent = this.time.addEvent({
-        delay: HOUSE_SPEED,
+        delay: speed,
         callback: this.playHouseTurn,
         callbackScope: this,
         loop: true,
@@ -191,7 +196,7 @@ export default class Speed extends BaseScene {
 
     this.children.bringToTop(card)
     this.dropCardRanks[index] = card.getRankNumber('speed')
-    this.createCardTween(card, (this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
+    card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
     this.handOutCard(this.houseDeck as Deck, house as SpeedPlayer, card.x, card.y, false)
   }
 
@@ -204,7 +209,7 @@ export default class Speed extends BaseScene {
       const card = player.hand[i]
       for (let index = 0; index < this.dropCardRanks.length; index += 1) {
         if (Speed.isNextRank(card.getRankNumber('speed'), this.dropCardRanks[index])) {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           return { card, index }
         }
       }
@@ -286,7 +291,7 @@ export default class Speed extends BaseScene {
       // 置いたカードを手札から抜き, 一枚配る
       this.players.forEach((player) => {
         if (player.playerType === 'player') {
-          player.removeCard(card)
+          player.removeCardFromHand(card)
           this.handOutCard(
             this.playerDeck as Deck,
             player as SpeedPlayer,
@@ -333,22 +338,26 @@ export default class Speed extends BaseScene {
     x: number,
     y: number,
     faceDown: boolean,
+    isStart?: boolean,
   ): void {
     const card: Card | undefined = deck.drawOne()
 
     if (!card) return
+    card.disableInteractive()
     if (!faceDown) {
       card.setFaceUp()
-    }
-    if (player.playerType === 'player') {
-      card.setDrag()
     }
     player.addHand(card)
 
     this.children.bringToTop(card)
-    this.createCardTween(card, x, y)
+    card.playMoveTween(x, y)
     this.setHouseDeckSizeText()
     this.setPlayerDeckSizeText()
+    this.time.delayedCall(500, () => {
+      if (!isStart && player.playerType === 'player') {
+        card.setDrag()
+      }
+    })
   }
 
   private dealInitialCards() {
@@ -377,13 +386,11 @@ export default class Speed extends BaseScene {
 
       if (!card) return
 
+      card.disableInteractive()
+
       this.dropCardRanks[index] = card.getRankNumber('speed')
       this.children.bringToTop(card)
-      this.createCardTween(
-        card,
-        (this.dropZones[index] as Zone).x,
-        (this.dropZones[index] as Zone).y,
-      )
+      card.playMoveTween((this.dropZones[index] as Zone).x, (this.dropZones[index] as Zone).y)
 
       if (card.faceDown) {
         this.time.delayedCall(1500, () => {
@@ -419,6 +426,7 @@ export default class Speed extends BaseScene {
             handZone.x + xOffset[player.playerType as 'player' | 'house'],
             handZone.y,
             true,
+            true,
           )
         })
         count += 1
@@ -426,6 +434,7 @@ export default class Speed extends BaseScene {
       callbackScope: this,
       repeat: 3,
     })
+    this.disableCardDraggable()
 
     this.time.delayedCall(1500, () => {
       this.players.forEach((player) => {
@@ -433,7 +442,6 @@ export default class Speed extends BaseScene {
           card.playFlipOverTween()
         })
       })
-      this.disableCardDraggable()
     })
   }
 
@@ -448,7 +456,9 @@ export default class Speed extends BaseScene {
   private ableCardDraggable(): void {
     this.players.forEach((player) => {
       if (player.playerType === 'player') {
-        player.hand.forEach((card) => card.setInteractive())
+        player.hand.forEach((card) => {
+          card.setDrag()
+        })
       }
     })
   }
@@ -478,23 +488,27 @@ export default class Speed extends BaseScene {
   }
 
   private setUpHouseDeckSizeText(): void {
-    this.houseDeckSizeText = this.add.text(0, 200, '', textStyle)
+    this.houseDeckSizeText = this.add.bitmapText(0, 200, 'arcade', '', 30)
     this.setHouseDeckSizeText()
     Phaser.Display.Align.In.TopCenter(this.houseDeckSizeText, this.gameZone as Zone, 0, -20)
   }
 
   private setUpPlayerDeckSizeText(): void {
-    this.playerDeckSizeText = this.add.text(0, 300, '', textStyle)
+    this.playerDeckSizeText = this.add.bitmapText(0, 300, 'arcade', '', 30)
     this.setPlayerDeckSizeText()
     Phaser.Display.Align.In.BottomCenter(this.playerDeckSizeText, this.gameZone as Zone, 0, -20)
   }
 
   private setHouseDeckSizeText() {
-    ;(this.houseDeckSizeText as Text).setText(`House cards : ${this.houseDeck?.getDeckSize()}`)
+    ;(this.houseDeckSizeText as BitmapText).setText(
+      `House cards : ${this.houseDeck?.getDeckSize()}`,
+    )
   }
 
   private setPlayerDeckSizeText() {
-    ;(this.playerDeckSizeText as Text).setText(`Your Cards: ${this.playerDeck?.getDeckSize()}`)
+    ;(this.playerDeckSizeText as BitmapText).setText(
+      `Your Cards: ${this.playerDeck?.getDeckSize()}`,
+    )
   }
 
   // 状況を判断し, resultを返す関数
@@ -536,8 +550,15 @@ export default class Speed extends BaseScene {
     const { width, height } = this.sys.game.canvas
     const square = Phaser.Geom.Rectangle.FromXY(0, 0, width, height)
     graphics.fillRectShape(square)
-    const resultText: Text = this.add.text(0, 0, `${result}`, textStyle)
-    resultText.setColor('#ffde3d')
+    const resultText: BitmapText = this.add.bitmapText(0, 0, 'arcade', `${result}`, 30)
+    resultText.setTint(0xffde3d)
+    if (result === 'WIN') {
+      this.sound.play('win')
+      resultText.setTint(0xffde3d)
+    } else {
+      this.sound.play('negative')
+      resultText.setTint(0xff0000)
+    }
     Phaser.Display.Align.In.Center(resultText, this.gameZone as Zone)
     this.input.once(
       'pointerdown',
@@ -545,7 +566,8 @@ export default class Speed extends BaseScene {
         this.input.once(
           'pointerdown',
           () => {
-            window.location.href = '/studio'
+            this.sound.play('click')
+            this.scene.start('ContinueScene', { nextScene: 'CpuLevelScene' })
           },
           this,
         )

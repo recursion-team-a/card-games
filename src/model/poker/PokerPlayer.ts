@@ -1,126 +1,102 @@
-import GameDecision from '../common/GameDecision'
 import Player from '../common/Player'
+import { HAND_RANK, HAND_RANK_MAP, RANK_CHOICES } from '@/model/poker/handRank'
 
 export default class PokerPlayer extends Player {
   private suits: string[]
 
   private ranks: number[]
 
-  /* 
-    _suits: string[] 手札のスートを格納する配列
-    _ranks: string[] 手札を番号に変換し,ソートして格納する配列
-  */
-  constructor(name: string, playerType: string, chips = 400) {
-    super(name, playerType, chips)
+  constructor(name: string, playerType: string, gameStatus: string) {
+    super(name, playerType)
     this.suits = this.hand.map((card) => card.suit)
     this.ranks = this.hand.map((card) => card.getRankNumber('poker')).sort((a, b) => a - b)
+    this.gameStatus = gameStatus
   }
 
-  promptPlayer(): GameDecision {
-    return new GameDecision('Under development', this.bet)
-  }
-
-  getHandScore(): number {
+  public getHandScore(): number {
     return this.hand.length
   }
 
-  getHandRank(): number {
-    let num: number = 0
-    if (this.isRoyalFlush()) {
-      num = 10
-    } else if (this.isStraightFlush()) {
-      num = 9
-    } else if (this.isFourOfAKind()) {
-      num = 8
-    } else if (this.isFullHouse()) {
-      num = 7
-    } else if (this.isFlush()) {
-      num = 6
-    } else if (this.isStraight()) {
-      num = 5
-    } else if (this.isThreeOfAKind()) {
-      num = 4
-    } else if (this.isTwoPair()) {
-      num = 3
-    } else if (this.isOnePair()) {
-      num = 2
-    } else {
-      num = 1
-    }
-    return num
+  public getRanks(rankChoices: string[]): number[] {
+    const ranks: number[] = this.hand
+      .map((card) =>
+        rankChoices.indexOf(
+          card.rank as 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K',
+        ),
+      )
+      .sort((a, b) => a - b)
+
+    return ranks
   }
 
-  // 各役の判定メソッド
-  // ロイヤルストレートフラッシュ(10, 11, 12, 13, 1の5枚でsuitが同じ)
-  private isRoyalFlush(): boolean {
-    return this.isFlush() && this.isStraight() && this.ranks[0] === 10
-  }
+  public static findPair(ranks: number[]): [number | null, number[]] {
+    const sortedRanks = [...ranks].sort((a, b) => a - b) // sort the ranks
+    let pair: number | null = null
+    const newRanks: number[] = []
 
-  // ストレートフラッシュ
-  private isStraightFlush(): boolean {
-    return this.isFlush() && this.isStraight()
-  }
-
-  // フォーカード
-  private isFourOfAKind(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(4)
-  }
-
-  // フルハウス（同数位のカード3枚とペア）
-  private isFullHouse(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(3) && rankCounts.includes(2)
-  }
-
-  // フラッシュ(一種類のsuit)
-  private isFlush(): boolean {
-    return new Set(this.suits).size === 1
-  }
-
-  // ストレート（5枚のカードの数位が連続・10JQKAはストレート・KA2などは×）
-  private isStraight(): boolean {
-    if (
-      this.ranks[0] === 0 &&
-      this.ranks[1] === 9 &&
-      this.ranks[2] === 10 &&
-      this.ranks[3] === 11 &&
-      this.ranks[4] === 12
-    ) {
-      return true
-    }
-    for (let i = 0; i < 4; i += 1) {
-      if (this.ranks[i + 1] - this.ranks[i] !== 1) {
-        return false
+    for (let i = 0; i < sortedRanks.length; i += 1) {
+      if (sortedRanks[i] === sortedRanks[i + 1]) {
+        pair = sortedRanks[i]
+        i += 1 // skip the next rank
+      } else {
+        newRanks.push(sortedRanks[i])
       }
     }
-    return true
+
+    return [pair, newRanks]
   }
 
-  // スリーカード
-  private isThreeOfAKind(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(3)
-  }
+  public getHandRank(): number {
+    const ranks = this.getRanks(RANK_CHOICES)
 
-  // ツーペア
-  private isTwoPair(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.filter((count) => count === 2).length === 2
-  }
+    // フラッシュ
+    const isFlush = this.hand.every((card) => card.suit === this.hand[0].suit)
 
-  // ワンペア
-  private isOnePair(): boolean {
-    const rankCounts = this.countRanks()
-    return rankCounts.includes(2)
-  }
+    let isStraight: boolean
 
-  // 各ランクの数を数えます
-  private countRanks(): number[] {
-    const counts: number[] = Array(13).fill(0)
-    for (let i = 0; i < this.ranks.length; i += 1) {
-      counts[this.ranks[i]] += 1
+    if (ranks[4] === 12 && ranks[0] === 0) {
+      // Aを0として扱う場合のストレート
+      isStraight = ranks[3] === 11 && ranks[2] === 10 && ranks[1] === 9
+    } else {
+      // Aを13として扱う場合のストレート
+      isStraight = ranks[4] - ranks[0] === 4 && new Set(ranks).size === 5
     }
-    return counts
+
+    const isRoyalStraightFlush = isFlush && isStraight && ranks[0] === 0 && ranks[4] === 12
+
+    // ペア
+    const pairs = ranks.filter((rank, i) => rank === ranks[i + 1])
+
+    // フルハウス
+    const isFullHouse = pairs.length === 3 && new Set(pairs).size === 2
+
+    if (isRoyalStraightFlush) {
+      return HAND_RANK_MAP.get(HAND_RANK.ROYAL_STRAIGHT_FLUSH) as number
+    }
+    if (isFlush && isStraight) {
+      return HAND_RANK_MAP.get(HAND_RANK.STRAIGHT_FLUSH) as number
+    }
+    if (isFullHouse) {
+      return HAND_RANK_MAP.get(HAND_RANK.FULL_HOUSE) as number
+    }
+    if (pairs.length === 1) {
+      return HAND_RANK_MAP.get(HAND_RANK.ONE_PAIR) as number
+    }
+    if (pairs.length === 2 && new Set(pairs).size === 2) {
+      return HAND_RANK_MAP.get(HAND_RANK.TWO_PAIR) as number
+    }
+    if (pairs.length === 2 && new Set(pairs).size === 1) {
+      return HAND_RANK_MAP.get(HAND_RANK.THREE_OF_A_KIND) as number
+    }
+    if (pairs.length === 3 && new Set(pairs).size === 1) {
+      return HAND_RANK_MAP.get(HAND_RANK.FOUR_OF_A_KIND) as number
+    }
+    if (isFlush) {
+      return HAND_RANK_MAP.get(HAND_RANK.FLUSH) as number
+    }
+    if (isStraight) {
+      return HAND_RANK_MAP.get(HAND_RANK.STRAIGHT) as number
+    }
+    return HAND_RANK_MAP.get(HAND_RANK.HIGH_CARD) as number
   }
 }

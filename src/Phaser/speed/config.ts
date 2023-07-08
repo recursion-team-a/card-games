@@ -1,12 +1,14 @@
 import Phaser from 'phaser'
-import Speed from './SpeedScene'
+import ContinueScene from '@/Phaser/common/ContinueScene'
+import CpuLevelScene from '@/Phaser/common/CpuLevelScene'
+import Speed from '@/Phaser/speed/SpeedScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'phaser-speed-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-speed-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,
@@ -23,7 +25,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [Speed],
+  scene: [CpuLevelScene, Speed, ContinueScene],
 }
 
 export default gameConfig

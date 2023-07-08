@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import ContinueScene from '@/Phaser/common/ContinueScene'
 import WarScene from '@/Phaser/war/WarScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -6,7 +7,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: 'phaser-war-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-war-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,
@@ -23,7 +24,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 },
     },
   },
-  scene: [WarScene],
+  scene: [WarScene, ContinueScene],
 }
 
 export default gameConfig

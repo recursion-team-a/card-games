@@ -1,9 +1,9 @@
-import Card from './Card'
+import Card from '@/Phaser/common/CardImage'
 
 export default abstract class Player {
-  readonly p_name: string
+  private p_name: string
 
-  readonly p_playerType: string
+  private p_playerType: string
 
   private p_chips: number
 
@@ -80,8 +80,6 @@ export default abstract class Player {
     this.p_hand.push(card)
   }
 
-  abstract promptPlayer(): any
-
   abstract getHandScore(): number
 
   public initializeHandAndBet(): void {
@@ -91,5 +89,25 @@ export default abstract class Player {
 
   public addHand(card: Card | undefined): void {
     if (card instanceof Card) this.hand.push(card)
+  }
+
+  public addBet(bet: number) {
+    this.bet += bet
+  }
+
+  public clearBet() {
+    this.bet = 0
+  }
+
+  public clearHand() {
+    this.hand.length = 0
+  }
+
+  public removeCardFromHand(card: Card): void {
+    for (let i = 0; i < this.hand.length; i += 1) {
+      if (this.hand[i].suit === card.suit && this.hand[i].rank === card.rank) {
+        this.hand.splice(i, 1)
+      }
+    }
   }
 }

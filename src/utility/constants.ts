@@ -1,9 +1,14 @@
 // テキストのフォント
-export const textStyle = {
-  font: 'normal 30px Impact',
+// export const textStyle = {
+//   font: '30px arcade',
+//   fill: '#FFFFFF',
+//   stroke: '#000000',
+//   strokeThickness: 5,
+// }
+
+export const loadText = {
+  font: '20px monospace',
   fill: '#FFFFFF',
-  stroke: '#000000',
-  strokeThickness: 5,
 }
 
 export const CARD_WIDTH = 140

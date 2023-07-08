@@ -1,0 +1,42 @@
+const HAND_RANK = {
+  HIGH_CARD: 'HIGH_CARD',
+  ONE_PAIR: 'ONE_PAIR',
+  TWO_PAIR: 'TWO_PAIR',
+  THREE_OF_A_KIND: 'THREE_OF_A_KIND',
+  STRAIGHT: 'STRAIGHT',
+  FLUSH: 'FLUSH',
+  FULL_HOUSE: 'FULL_HOUSE',
+  FOUR_OF_A_KIND: 'FOUR_OF_A_KIND',
+  STRAIGHT_FLUSH: 'STRAIGHT_FLUSH',
+  ROYAL_STRAIGHT_FLUSH: 'ROYAL_STRAIGHT_FLUSH',
+}
+
+const HAND_RANK_MAP = new Map([
+  ['HIGH_CARD', 1],
+  ['ONE_PAIR', 2],
+  ['TWO_PAIR', 3],
+  ['THREE_OF_A_KIND', 4],
+  ['STRAIGHT', 5],
+  ['FLUSH', 6],
+  ['FULL_HOUSE', 7],
+  ['FOUR_OF_A_KIND', 8],
+  ['STRAIGHT_FLUSH', 9],
+  ['ROYAL_STRAIGHT_FLUSH', 10],
+])
+
+const RANK_CHOICES = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+
+const RANK_CHOICES_TEXAS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+const STRONG_HAND_RANK = 4
+
+const MINIMUM_HAND_RANK = 2
+
+export {
+  HAND_RANK,
+  HAND_RANK_MAP,
+  RANK_CHOICES,
+  RANK_CHOICES_TEXAS,
+  STRONG_HAND_RANK,
+  MINIMUM_HAND_RANK,
+}
