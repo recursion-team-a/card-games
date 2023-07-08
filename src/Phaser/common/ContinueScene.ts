@@ -26,8 +26,8 @@ export default class ContinueScene extends BaseScene {
   private createButton() {
     const { width, height } = this.scale
     this.add.bitmapText(width * 0.5, height * 0.5, 'arcade', 'Continue?', 25).setOrigin(0.5)
-    this.YesButton = new Button(this, 0, height / 2, 'chipOrange', 'Yes')
-    this.NoButton = new Button(this, 0, height / 2, 'chipYellow', 'No')
+    this.YesButton = new Button(this, 0, height * 0.75, 'grayButton', 'Yes')
+    this.NoButton = new Button(this, 0, height * 0.75, 'grayButton', 'No')
 
     const buttons: Button[] = new Array<Button>()
     buttons.push(this.YesButton)

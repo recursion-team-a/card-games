@@ -33,7 +33,7 @@ export default class BaseScene extends PreloadScene {
     const scaleY = height / table.height
     const scale = Math.max(scaleX, scaleY)
     table.setScale(scale).setScrollFactor(0)
-    const button = this.add.image(100, 100, 'back')
+    const button = this.add.image(100, 100, 'homeButton')
     const buttonScale = Math.min(width / 1920, height / 1080) * 1.5
     button.setScale(buttonScale)
 

@@ -32,7 +32,7 @@ export default class CpuLevelScene extends PreloadScene {
 
     this.gameZone = this.add.zone(this.width * 0.5, this.height * 0.5, this.width, this.height)
 
-    const button = this.add.image(100, 100, 'back')
+    const button = this.add.image(100, 100, 'homeButton')
     const buttonScale = Math.min(this.width / 1920, this.height / 1080) * 1.5
     button.setScale(buttonScale)
 

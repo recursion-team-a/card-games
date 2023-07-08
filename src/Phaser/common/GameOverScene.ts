@@ -18,7 +18,7 @@ export default class GameOverScene extends BaseScene {
     const { width, height } = this.scale
     this.sound.play('negative')
     this.add.bitmapText(width * 0.5, height * 0.5, 'arcade', 'Game Over!', 30).setOrigin(0.5)
-    this.RestartButton = new Button(this, width / 2, height * 0.75, 'chipOrange', 'Back')
+    this.RestartButton = new Button(this, width / 2, height * 0.75, 'grayButton', 'BACK')
 
     this.setUpClickHandler(this.RestartButton, GameOverScene.handleRestartButton.bind(this))
   }
