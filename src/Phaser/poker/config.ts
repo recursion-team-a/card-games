@@ -5,10 +5,10 @@ import Poker from '@/Phaser/poker/PokerScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'phaser-speed-game',
+  parent: 'phaser-poker-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-poker-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,

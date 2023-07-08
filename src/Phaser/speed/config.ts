@@ -8,7 +8,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: 'phaser-speed-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-speed-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,
