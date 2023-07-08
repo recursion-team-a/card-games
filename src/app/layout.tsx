@@ -1,7 +1,7 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Card Game Studio',
+  title: 'Card Game Hub',
   description: 'Simple and fun card games',
 }
 

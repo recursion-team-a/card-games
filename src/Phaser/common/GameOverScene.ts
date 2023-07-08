@@ -30,6 +30,6 @@ export default class GameOverScene extends BaseScene {
   }
 
   private static handleRestartButton(): void {
-    window.location.href = '/studio'
+    window.location.href = '/hub'
   }
 }

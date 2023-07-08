@@ -69,7 +69,7 @@ function Rules({ game }: RulesProps) {
               ) : null}
             </div>
             <div className='space-y-4'>
-              <Link href='/studio'>
+              <Link href='/hub'>
                 <button
                   type='button'
                   className='p-3 bg-black rounded-full text-white w-full font-semibold'
