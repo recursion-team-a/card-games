@@ -179,7 +179,7 @@ export default class Poker extends BaseScene {
     ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
     ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
 
-    if (playerPair && housePair) {
+    if (playerPair !== null && housePair !== null) {
       if (playerPair > housePair) {
         winPlayer.push(player)
         return winPlayer
@@ -194,7 +194,7 @@ export default class Poker extends BaseScene {
     ;[playerPair, playerRanks] = PokerPlayer.findPair(playerRanks)
     ;[housePair, houseRanks] = PokerPlayer.findPair(houseRanks)
 
-    if (playerPair && housePair) {
+    if (playerPair !== null && housePair !== null) {
       if (playerPair > housePair) {
         winPlayer.push(player)
         return winPlayer
@@ -897,7 +897,7 @@ export default class Poker extends BaseScene {
 
     // 勝敗結果表示
     let resultText: BitmapText
-    this.time.delayedCall(2500, () => {
+    this.time.delayedCall(2000, () => {
       resultText = this.add
         .bitmapText(this.width / 2, this.height / 2, 'arcade', result, 30)
         .setOrigin(0.5)
@@ -912,15 +912,17 @@ export default class Poker extends BaseScene {
       }
     })
 
-    this.input.once('pointerdown', () => {
-      handRanks.forEach((handRank) => {
-        handRank.destroy()
+    this.time.delayedCall(2000, () => {
+      this.input.once('pointerdown', () => {
+        handRanks.forEach((handRank) => {
+          handRank.destroy()
+        })
+        resultText.destroy()
+        this.resetRound()
+        this.scene.start('ContinueScene', { nextScene: 'Poker' })
+        this.dealInitialCards()
+        this.PlayAnte()
       })
-      resultText.destroy()
-      this.resetRound()
-      this.scene.start('ContinueScene', { nextScene: 'Poker' })
-      this.dealInitialCards()
-      this.PlayAnte()
     })
 
     this.time.delayedCall(5000, () => {
