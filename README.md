@@ -1,15 +1,19 @@
 # card-games(タイトル)
+
 動画？
 
 # App URL
+
 Vercel URL?
 
 # iOS
-iOSのデモ画像？
+
+iOS のデモ画像？
 
 # Usage
 
 # Features
+
 ## Blackjack
 
 ## Poker
@@ -21,6 +25,7 @@ iOSのデモ画像？
 ## War
 
 # Documents
+
 👉https://github.com/recursion-team-a/card-games/wiki
 
 # Contirubutors
