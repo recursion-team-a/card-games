@@ -51,7 +51,7 @@ export default class BetScene extends PreloadScene {
     button.setInteractive()
 
     button.on('pointerdown', () => {
-      window.location.href = '/studio'
+      window.location.href = '/hub'
     })
 
     this.setUpTitle()

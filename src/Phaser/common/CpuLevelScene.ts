@@ -39,7 +39,7 @@ export default class CpuLevelScene extends PreloadScene {
     button.setInteractive()
 
     button.on('pointerdown', () => {
-      window.location.href = '/studio'
+      window.location.href = '/hub'
     })
 
     this.createButton()
