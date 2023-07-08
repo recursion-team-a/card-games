@@ -9,7 +9,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
   parent: 'phaser-blackjack-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-blackjack-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,

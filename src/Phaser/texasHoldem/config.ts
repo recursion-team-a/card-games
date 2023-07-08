@@ -5,10 +5,10 @@ import TexasHoldem from '@/Phaser/texasHoldem/TexasHoldemScene'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'phaser-speed-game',
+  parent: 'phaser-texasHoldem-game',
   scale: {
     mode: Phaser.Scale.FIT,
-    parent: 'game-content',
+    parent: 'phaser-texasHoldem-game',
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
       width: 720,
