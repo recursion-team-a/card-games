@@ -12,6 +12,7 @@ interface GameLinkProps {
   id: number
   title: string
   ruleLink: string
+  tutorialLink: string
   playLink: string
 }
 
