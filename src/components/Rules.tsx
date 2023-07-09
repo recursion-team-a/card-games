@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import React from 'react'
-import '../app/rules/rules.css'
+import '@/app/rules/rules.css'
 
 interface Word {
   id: string
